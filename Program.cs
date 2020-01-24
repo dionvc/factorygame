@@ -26,6 +26,8 @@ namespace EngineeringCorpsCS
             window.SetActive();
             ChunkManager chunkManager = new ChunkManager();
             Camera camera = new Camera();
+            window.SetFramerateLimit(60);
+            window.Closed += (s, a) => window.Close();
             while (window.IsOpen)
             {
                 
