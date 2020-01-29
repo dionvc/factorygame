@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SFML.Graphics;
+using SFML.System;
 using SFML.Window;
 
 namespace EngineeringCorpsCS
 {
     class Program
     {
-        //Render queue?
-        //BackRender queue?
         static void Main(string[] args)
         {
             RenderWindow window = new RenderWindow(new VideoMode(1280,720), "test");
@@ -28,6 +27,8 @@ namespace EngineeringCorpsCS
             Camera camera = new Camera();
             window.SetFramerateLimit(60);
             window.Closed += (s, a) => window.Close();
+            VertexArray waterquad = new VertexArray(PrimitiveType.Quads, 4);
+            RenderStates state = new RenderStates(watertile);
             while (window.IsOpen)
             {
                 
@@ -39,36 +40,48 @@ namespace EngineeringCorpsCS
                 Chunk chunk = chunkManager.GetChunk(pos[0], pos[1]);
                 int cX = pos[0] * Props.chunkSize;
                 int cY = pos[1] * Props.chunkSize;
-                Console.WriteLine(pos[0] + ": " + pos[1]);
                 for (int i = 0; i < Props.chunkSize; i++)
                 {
-                    for(int j = 0; j < Props.chunkSize; j++)
+                    for (int j = 0; j < Props.chunkSize; j++)
                     {
-                        if(chunk.GetTile(i,j) == 0)
+                        if (chunk.GetTile(i, j) == 0)
                         {
-                            water.Position = new SFML.System.Vector2f((cX + i) * 128, (cY + j) * 128);
-                            window.Draw(water);
+                            waterquad.Append(new Vertex(new Vector2f(i * 128.0f, j * 128.0f),
+                                new Vector2f(0.0f, 0.0f)));
+                            waterquad.Append(new Vertex(new Vector2f((i + 1) * 128.0f, j * 128.0f),
+                                new Vector2f(128.0f, 0.0f)));
+                            waterquad.Append(new Vertex(new Vector2f((i + 1) * 128.0f, (j + 1) * 128.0f),
+                                new Vector2f(128.0f, 128.0f)));
+                            waterquad.Append(new Vertex(new Vector2f(i * 128.0f, (j + 1) * 128.0f),
+                                new Vector2f(0.0f, 128.0f)));
                         }
-                        if(chunk.GetTile(i,j) == 1)
+                        if (chunk.GetTile(i, j) == 1)
                         {
-                            sand.Position = new SFML.System.Vector2f((cX + i) * 128, (cY + j) * 128);
+                            sand.Position = new Vector2f((cX + i) * 128, (cY + j) * 128);
                             window.Draw(sand);
                         }
                         if (chunk.GetTile(i, j) == 2)
                         {
-                            rock.Position = new SFML.System.Vector2f((cX + i) * 128, (cY + j) * 128);
+                            rock.Position = new Vector2f((cX + i) * 128, (cY + j) * 128);
                             window.Draw(rock);
                         }
                         if (chunk.GetTile(i, j) == 3)
                         {
-                            snow.Position = new SFML.System.Vector2f((cX + i) * 128, (cY + j) * 128);
+                            snow.Position = new Vector2f((cX + i) * 128, (cY + j) * 128);
                             window.Draw(snow);
                         }
 
                     }
                 }
+                window.Draw(waterquad, state);
                 window.Display();
+                waterquad.Clear();
             }
+        }
+
+        private static void Window_Closed(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

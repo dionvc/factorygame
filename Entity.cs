@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace EngineeringCorpsCS
 {
-    interface IEntity
+    abstract class Entity
     {
-
+        protected string name;
         //Consider what should be passed to entity by chunk (perhaps the chunk coordinates?)
-        void Update();
+        public abstract void Update();
     }
 }

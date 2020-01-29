@@ -12,6 +12,6 @@ namespace EngineeringCorpsCS
         public const int worldSize = 1024; //size of world in chunks
         public const int tileSize = 128; //tilesize in pixels
 
-        public const int startingSize = 8;
+        public static int startingSize = 8;
     }
 }

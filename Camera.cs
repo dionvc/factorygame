@@ -10,11 +10,16 @@ namespace EngineeringCorpsCS
 {
     class Camera
     {
-        IEntity focusedEntity;
+        Entity focusedEntity;
         View view = new View(new FloatRect(0, 0, 2 * 1280, 2 * 720));
 
+        public Camera()
+        {
+            focusedEntity = new Player();
+        }
         public void Update()
         {
+            
             if (Keyboard.IsKeyPressed(Keyboard.Key.W))
             {
                 view.Move(new SFML.System.Vector2f(0, -10));

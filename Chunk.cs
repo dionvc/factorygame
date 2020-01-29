@@ -13,9 +13,6 @@ namespace EngineeringCorpsCS
     {
 
         private byte[] terrain;
-        List<IEntity> chunkEntities;
-        List<IEntity> chunkEntitiesActive;
-        
         public Chunk()
         {
             terrain = new byte[32 * 32];
@@ -23,10 +20,7 @@ namespace EngineeringCorpsCS
 
         public void Update()
         {
-            for(int i = 0; i < chunkEntitiesActive.Count; i++)
-            {
-                //Update entities.
-            }
+
         }
         public void GenerateTerrain(int x, int y, FastNoise noise)
         {
