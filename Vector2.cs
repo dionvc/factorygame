@@ -18,13 +18,13 @@ namespace EngineeringCorpsCS
             get { return y; }
             set { this.y = value; }
         }
-        Vector2(float x, float y)
+        public Vector2(float x, float y)
         {
             this.x = x;
             this.y = y;
         }
 
-        Vector2(int[] xy)
+        public Vector2(int[] xy)
         {
             this.x = xy[0];
             this.y = xy[1];
@@ -55,12 +55,19 @@ namespace EngineeringCorpsCS
         /// Rotates a Vector2 by a number of degrees around the origin
         /// </summary>
         /// <param name="rotation"></param>
-        public void Rotate(float rotation)
+        public void VRotate(float rotation)
         {
             float tempX = this.x;
             float tempY = this.y;
             this.x = (float) ( tempX * Math.Cos(rotation) - tempY * Math.Sin(rotation) );
             this.y = (float) ( tempX * Math.Sin(rotation) + tempY * Math.Cos(rotation) );
+        }
+
+        public Vector2 Rotate(float rotation)
+        {
+            float tempX = this.x;
+            float tempY = this.y;
+            return new Vector2((float)(tempX * Math.Cos(rotation) - tempY * Math.Sin(rotation)), (float)(tempX * Math.Sin(rotation) + tempY * Math.Cos(rotation)));
         }
 
         /// <summary>
