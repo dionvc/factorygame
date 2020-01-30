@@ -40,11 +40,17 @@ namespace EngineeringCorpsCS
             return Math.Abs(botRight.y - topLeft.y);
         }
 
-        public Vector2[] GetPoints()
+        public Vector2[] GetVectors()
         {
             Vector2 topRight = new Vector2(-topLeft.x, topLeft.y);
             Vector2 botLeft = new Vector2(-botRight.x, botRight.y);
             return new[] {topLeft.Rotate(rotation), topRight.Rotate(rotation), botLeft.Rotate(rotation), botRight.Rotate(rotation) };
+        }
+
+        public float[] GetPoints()
+        {
+            Vector2 topRight = new Vector2(-topLeft.x, topLeft.y);
+            Vector2 botLeft = new Vector2(-botRight.x, botRight.y);
         }
 
         
@@ -59,7 +65,7 @@ namespace EngineeringCorpsCS
             }
             //1st check (circle check)
             //2nd check AABB if both have theta = 0
-            if(box1.rotation != 0 || box2.rotation != 0)
+            if(box1.rotation != 0 && box2.rotation != 0)
             {
                 if (box1.topLeft.x < box2.topLeft.x + box2.botRight.x &&
                    box1.topLeft.x + box1.botRight.x > box2.topLeft.x &&
@@ -75,6 +81,7 @@ namespace EngineeringCorpsCS
             }
             else
             {
+                return true;
                 //Separating Axis Theorem check
             }
         }

@@ -52,7 +52,7 @@ namespace EngineeringCorpsCS
         }
 
         /// <summary>
-        /// Rotates a Vector2 by a number of degrees around the origin
+        /// Permanently rotates a Vector2 by a number of degrees around the origin
         /// </summary>
         /// <param name="rotation"></param>
         public void VRotate(float rotation)
@@ -63,6 +63,11 @@ namespace EngineeringCorpsCS
             this.y = (float) ( tempX * Math.Sin(rotation) + tempY * Math.Cos(rotation) );
         }
 
+        /// <summary>
+        /// Returns a new Vector2 representing a rotated version of the old Vector2
+        /// </summary>
+        /// <param name="rotation"></param>
+        /// <returns></returns>
         public Vector2 Rotate(float rotation)
         {
             float tempX = this.x;
@@ -77,6 +82,13 @@ namespace EngineeringCorpsCS
         public float GetMagnitude()
         {
             return (float) Math.Sqrt((this.x * this.x) + (this.y * this.y));
+        }
+
+        public void VNormalize()
+        {
+            float mag = this.GetMagnitude();
+            this.x = this.x / mag;
+            this.y = this.y / mag;
         }
 
         /// <summary>

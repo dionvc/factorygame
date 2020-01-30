@@ -46,13 +46,13 @@ namespace EngineeringCorpsCS
                     {
                         if (chunk.GetTile(i, j) == 0)
                         {
-                            waterquad.Append(new Vertex(new Vector2f(i * 128.0f, j * 128.0f),
+                            waterquad.Append(new Vertex(new Vector2f((cX+i) * 128.0f, (cY+j) * 128.0f),
                                 new Vector2f(0.0f, 0.0f)));
-                            waterquad.Append(new Vertex(new Vector2f((i + 1) * 128.0f, j * 128.0f),
+                            waterquad.Append(new Vertex(new Vector2f((cX + i + 1) * 128.0f, (cY + j) * 128.0f),
                                 new Vector2f(128.0f, 0.0f)));
-                            waterquad.Append(new Vertex(new Vector2f((i + 1) * 128.0f, (j + 1) * 128.0f),
+                            waterquad.Append(new Vertex(new Vector2f((cX + i + 1) * 128.0f, (cY + j + 1) * 128.0f),
                                 new Vector2f(128.0f, 128.0f)));
-                            waterquad.Append(new Vertex(new Vector2f(i * 128.0f, (j + 1) * 128.0f),
+                            waterquad.Append(new Vertex(new Vector2f((cX + i) * 128.0f, (cY + j + 1) * 128.0f),
                                 new Vector2f(0.0f, 128.0f)));
                         }
                         if (chunk.GetTile(i, j) == 1)
