@@ -12,8 +12,7 @@ namespace EngineeringCorpsCS
         public Vector2 position;
         public Player()
         {
-            collisionBox = new BoundingBox(-128, -128, 128, 128);
-            collisionBox.SetRotation(45);
+            collisionBox = new BoundingBox(-32, -16, 32, 16);
             position = new Vector2(128, 128);
         }
         public override void Update()

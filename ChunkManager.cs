@@ -20,6 +20,7 @@ namespace EngineeringCorpsCS
             chunks = new Chunk[Props.worldSize * Props.worldSize];
             terrainNoise = new FastNoise();
             terrainNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
+            terrainNoise.SetSeed(new Random().Next(0, 1000));
         }
 
         public void Update()

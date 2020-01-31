@@ -29,6 +29,9 @@ namespace EngineeringCorpsCS
                 for(int j = 0; j < Props.chunkSize; j++)
                 {
                     //generate terrain type in layers from bitflag (level select)
+                    //elevation - defines where water could appear and preference for "higher" terrains
+                    //moisture - defines moisture level for more wet biomes and trees versus dead trees
+                    //rivers - could be generated from fractal noise?
                     int nx = i + x;
                     int ny = j + y;
                     double elevation =  0.5 * noise.GetPerlin(1 * nx, 1 * ny)

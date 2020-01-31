@@ -12,7 +12,7 @@ namespace EngineeringCorpsCS
     {
         public Player focusedEntity;
         View view = new View(new FloatRect(0, 0, 2 * 1280, 2 * 720));
-
+        float viewScale = 1.0f;
         public Camera()
         {
             focusedEntity = new Player();
@@ -36,6 +36,28 @@ namespace EngineeringCorpsCS
             {
                 view.Move(new SFML.System.Vector2f(10, 0));
             }
+            if (Mouse.IsButtonPressed(Mouse.Button.Left) || Mouse.IsButtonPressed(Mouse.Button.Right))
+            {
+                if(Mouse.IsButtonPressed(Mouse.Button.Left))
+                {
+                    viewScale -= 0.5f;
+                }
+                else
+                {
+                    viewScale += 0.5f;
+                }
+                if(viewScale < 0.5)
+                {
+                    viewScale = 0.5f;
+                }
+                else if (viewScale > 4)
+                {
+                    viewScale = 4.0f;
+                }
+                
+                view.Size = new SFML.System.Vector2f(viewScale * 1280, viewScale * 720);
+            }
+            focusedEntity.position = new Vector2(view.Center.X, view.Center.Y);
         }
         public View GetView()
         {

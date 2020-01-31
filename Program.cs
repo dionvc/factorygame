@@ -14,10 +14,11 @@ namespace EngineeringCorpsCS
         static void Main(string[] args)
         {
             RenderWindow window = new RenderWindow(new VideoMode(1280,720), "test");
-            Texture rocktile = new Texture("rocksquare.png");
-            Texture snowtile = new Texture("snowsquare.png");
-            Texture sandtile = new Texture("sandsquare.png");
-            Texture watertile = new Texture("watersquare.png");
+            string g = "Graphics/";
+            Texture rocktile = new Texture(g+"rocksquare.png");
+            Texture snowtile = new Texture(g+"snowsquare.png");
+            Texture sandtile = new Texture(g+"sandsquare.png");
+            Texture watertile = new Texture(g+"watersquare.png");
             Sprite rock = new Sprite(rocktile);
             Sprite snow = new Sprite(snowtile);
             Sprite sand = new Sprite(sandtile);
@@ -29,6 +30,7 @@ namespace EngineeringCorpsCS
             window.Closed += (s, a) => window.Close();
             VertexArray waterquad = new VertexArray(PrimitiveType.Quads, 4);
             RenderStates state = new RenderStates(watertile);
+            bool drawBoundingBoxes = true;
             while (window.IsOpen)
             {
                 
@@ -36,6 +38,8 @@ namespace EngineeringCorpsCS
                 window.DispatchEvents();
                 camera.Update();
                 window.SetView(camera.GetView());
+
+                //drawing terrain
                 int[] pos = ChunkManager.WorldToChunkCoords(camera.GetView().Center.X, camera.GetView().Center.Y);
                 Chunk chunk = chunkManager.GetChunk(pos[0], pos[1]);
                 int cX = pos[0] * Props.chunkSize;
@@ -74,22 +78,25 @@ namespace EngineeringCorpsCS
                     }
                 }
                 window.Draw(waterquad, state);
-                float[] points = camera.focusedEntity.collisionBox.GetPoints();
-                VertexArray boundingBoxArray = new VertexArray(PrimitiveType.LineStrip);
-                for (int i = 0; i < points.Length; i += 2)
+                //finish drawing terrain
+
+                //draw entities
+                if (drawBoundingBoxes == true)
                 {
-                    boundingBoxArray.Append(new Vertex(new Vector2f(points[i], points[i + 1])));
-                    boundingBoxArray.Append(new Vertex(new Vector2f(points[(i+2)%8], points[(i+3)%8])));
+                    float[] points = camera.focusedEntity.collisionBox.GetPoints();
+                    Vector2 position = camera.focusedEntity.position;
+                    VertexArray boundingBoxArray = new VertexArray(PrimitiveType.LineStrip);
+                    for (int i = 0; i < points.Length; i += 2)
+                    {
+                        boundingBoxArray.Append(new Vertex(new Vector2f(points[i] + position.x, points[i + 1] + position.y)));
+                        boundingBoxArray.Append(new Vertex(new Vector2f(points[(i + 2) % 8] + position.x, points[(i + 3) % 8] + position.y)));
+                    }
+                    window.Draw(boundingBoxArray);
                 }
-                window.Draw(boundingBoxArray);
+                //finish drawing entities
                 window.Display();
                 waterquad.Clear();
             }
-        }
-
-        private static void Window_Closed(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
         }
     }
 }
