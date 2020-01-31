@@ -74,6 +74,14 @@ namespace EngineeringCorpsCS
                     }
                 }
                 window.Draw(waterquad, state);
+                float[] points = camera.focusedEntity.collisionBox.GetPoints();
+                VertexArray boundingBoxArray = new VertexArray(PrimitiveType.LineStrip);
+                for (int i = 0; i < points.Length; i += 2)
+                {
+                    boundingBoxArray.Append(new Vertex(new Vector2f(points[i], points[i + 1])));
+                    boundingBoxArray.Append(new Vertex(new Vector2f(points[(i+2)%8], points[(i+3)%8])));
+                }
+                window.Draw(boundingBoxArray);
                 window.Display();
                 waterquad.Clear();
             }

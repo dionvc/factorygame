@@ -10,7 +10,7 @@ namespace EngineeringCorpsCS
 {
     class Camera
     {
-        Entity focusedEntity;
+        public Player focusedEntity;
         View view = new View(new FloatRect(0, 0, 2 * 1280, 2 * 720));
 
         public Camera()

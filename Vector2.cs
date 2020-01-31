@@ -8,15 +8,17 @@ namespace EngineeringCorpsCS
 {
     class Vector2
     {
+        float _x;
+        float _y;
         public float x
         {
-            get { return x; }
-            set { this.x = value; }
+            get => _x;
+            set => _x = value;
         }
         public float y
         {
-            get { return y; }
-            set { this.y = value; }
+            get => _y;
+            set => _y = value;
         }
         public Vector2(float x, float y)
         {
@@ -57,6 +59,11 @@ namespace EngineeringCorpsCS
         /// <param name="rotation"></param>
         public void VRotate(float rotation)
         {
+            if(rotation == 0)
+            {
+                return;
+            }
+            rotation = (rotation * (float)Math.PI) / 180;
             float tempX = this.x;
             float tempY = this.y;
             this.x = (float) ( tempX * Math.Cos(rotation) - tempY * Math.Sin(rotation) );
@@ -70,6 +77,11 @@ namespace EngineeringCorpsCS
         /// <returns></returns>
         public Vector2 Rotate(float rotation)
         {
+            if(rotation == 0)
+            {
+                return new Vector2(this.x, this.y);
+            }
+            rotation = (rotation * (float)Math.PI) / 180;
             float tempX = this.x;
             float tempY = this.y;
             return new Vector2((float)(tempX * Math.Cos(rotation) - tempY * Math.Sin(rotation)), (float)(tempX * Math.Sin(rotation) + tempY * Math.Cos(rotation)));
@@ -98,6 +110,7 @@ namespace EngineeringCorpsCS
         public float GetRotation()
         {
             float angle = (float) Math.Acos(this.x / this.GetMagnitude());
+            angle = angle * 180 / (float)Math.PI;
             if(this.y < 0)
             {
                 return -angle;
@@ -108,5 +121,9 @@ namespace EngineeringCorpsCS
             }
         }
 
+        public Vector2 Copy()
+        {
+            return new Vector2(this.x, this.y);
+        }
     }
 }
