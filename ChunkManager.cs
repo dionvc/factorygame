@@ -38,6 +38,10 @@ namespace EngineeringCorpsCS
         }
         public Chunk GetChunk(int x, int y)
         {
+            if(x < 0 || x > Props.worldSize || y < 0 || y > Props.worldSize)
+            {
+                return null;
+            }
             if (chunks[x * Props.worldSize + y] != null)
             {
                 return chunks[x * Props.worldSize + y];

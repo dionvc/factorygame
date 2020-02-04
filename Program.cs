@@ -26,6 +26,14 @@ namespace EngineeringCorpsCS
             window.SetActive();
             ChunkManager chunkManager = new ChunkManager();
             Camera camera = new Camera();
+            List<Player> players = new List<Player>();
+            Random random = new Random();
+            for(int i = 0; i < 1; i++)
+            {
+                players.Add(new Player());
+                players[i].position = new Vector2(random.Next(0, 512), random.Next(0, 512));
+            }
+            players.Add(camera.focusedEntity);
             window.SetFramerateLimit(60);
             window.Closed += (s, a) => window.Close();
             VertexArray waterquad = new VertexArray(PrimitiveType.Quads, 4);
@@ -41,40 +49,46 @@ namespace EngineeringCorpsCS
 
                 //drawing terrain
                 int[] pos = ChunkManager.WorldToChunkCoords(camera.GetView().Center.X, camera.GetView().Center.Y);
-                Chunk chunk = chunkManager.GetChunk(pos[0], pos[1]);
-                int cX = pos[0] * Props.chunkSize;
-                int cY = pos[1] * Props.chunkSize;
-                for (int i = 0; i < Props.chunkSize; i++)
+                for (int c = 0; c < 9; c++)
                 {
-                    for (int j = 0; j < Props.chunkSize; j++)
+                    Chunk chunk = chunkManager.GetChunk(pos[0] + (c) / 3 - 1, pos[1] + (c) % 3 - 1);
+                    if(chunk != null) 
                     {
-                        if (chunk.GetTile(i, j) == 0)
+                        int cX = (pos[0] + (c) / 3 - 1) * Props.chunkSize;
+                        int cY = (pos[1] + (c) % 3 - 1) * Props.chunkSize;
+                        for (int i = 0; i < Props.chunkSize; i++)
                         {
-                            waterquad.Append(new Vertex(new Vector2f((cX+i) * 128.0f, (cY+j) * 128.0f),
-                                new Vector2f(0.0f, 0.0f)));
-                            waterquad.Append(new Vertex(new Vector2f((cX + i + 1) * 128.0f, (cY + j) * 128.0f),
-                                new Vector2f(128.0f, 0.0f)));
-                            waterquad.Append(new Vertex(new Vector2f((cX + i + 1) * 128.0f, (cY + j + 1) * 128.0f),
-                                new Vector2f(128.0f, 128.0f)));
-                            waterquad.Append(new Vertex(new Vector2f((cX + i) * 128.0f, (cY + j + 1) * 128.0f),
-                                new Vector2f(0.0f, 128.0f)));
-                        }
-                        if (chunk.GetTile(i, j) == 1)
-                        {
-                            sand.Position = new Vector2f((cX + i) * 128, (cY + j) * 128);
-                            window.Draw(sand);
-                        }
-                        if (chunk.GetTile(i, j) == 2)
-                        {
-                            rock.Position = new Vector2f((cX + i) * 128, (cY + j) * 128);
-                            window.Draw(rock);
-                        }
-                        if (chunk.GetTile(i, j) == 3)
-                        {
-                            snow.Position = new Vector2f((cX + i) * 128, (cY + j) * 128);
-                            window.Draw(snow);
-                        }
+                            for (int j = 0; j < Props.chunkSize; j++)
+                            {
+                                if (chunk.GetTile(i, j) == 0)
+                                {
+                                    waterquad.Append(new Vertex(new Vector2f((cX + i) * 128.0f, (cY + j) * 128.0f),
+                                        new Vector2f(0.0f, 0.0f)));
+                                    waterquad.Append(new Vertex(new Vector2f((cX + i + 1) * 128.0f, (cY + j) * 128.0f),
+                                        new Vector2f(128.0f, 0.0f)));
+                                    waterquad.Append(new Vertex(new Vector2f((cX + i + 1) * 128.0f, (cY + j + 1) * 128.0f),
+                                        new Vector2f(128.0f, 128.0f)));
+                                    waterquad.Append(new Vertex(new Vector2f((cX + i) * 128.0f, (cY + j + 1) * 128.0f),
+                                        new Vector2f(0.0f, 128.0f)));
+                                }
+                                if (chunk.GetTile(i, j) == 1)
+                                {
+                                    sand.Position = new Vector2f((cX + i) * 128, (cY + j) * 128);
+                                    window.Draw(sand);
+                                }
+                                if (chunk.GetTile(i, j) == 2)
+                                {
+                                    rock.Position = new Vector2f((cX + i) * 128, (cY + j) * 128);
+                                    window.Draw(rock);
+                                }
+                                if (chunk.GetTile(i, j) == 3)
+                                {
+                                    snow.Position = new Vector2f((cX + i) * 128, (cY + j) * 128);
+                                    window.Draw(snow);
+                                }
 
+                            }
+                        }
                     }
                 }
                 window.Draw(waterquad, state);
@@ -83,13 +97,20 @@ namespace EngineeringCorpsCS
                 //draw entities
                 if (drawBoundingBoxes == true)
                 {
-                    float[] points = camera.focusedEntity.collisionBox.GetPoints();
-                    Vector2 position = camera.focusedEntity.position;
-                    VertexArray boundingBoxArray = new VertexArray(PrimitiveType.LineStrip);
-                    for (int i = 0; i < points.Length; i += 2)
+                    VertexArray boundingBoxArray = new VertexArray(PrimitiveType.Lines);
+                    for (int j = 0; j < players.Count; j++)
                     {
-                        boundingBoxArray.Append(new Vertex(new Vector2f(points[i] + position.x, points[i + 1] + position.y)));
-                        boundingBoxArray.Append(new Vertex(new Vector2f(points[(i + 2) % 8] + position.x, points[(i + 3) % 8] + position.y)));
+                        float[] points = players[j].collisionBox.GetPoints();
+                        Vector2 position = players[j].position;
+                        if(!players[j].Equals(camera.focusedEntity) && BoundingBox.CheckCollision(players[j].collisionBox, camera.focusedEntity.collisionBox, position, camera.focusedEntity.position))
+                        {
+                            Console.WriteLine("Collision Detected");
+                        }
+                        for (int i = 0; i < points.Length; i += 2)
+                        {
+                            boundingBoxArray.Append(new Vertex(new Vector2f(points[i] + position.x, points[i + 1] + position.y), Color.Red));
+                            boundingBoxArray.Append(new Vertex(new Vector2f(points[(i + 2) % 8] + position.x, points[(i + 3) % 8] + position.y), Color.Red));
+                        }
                     }
                     window.Draw(boundingBoxArray);
                 }

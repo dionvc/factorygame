@@ -8,18 +8,8 @@ namespace EngineeringCorpsCS
 {
     class Vector2
     {
-        float _x;
-        float _y;
-        public float x
-        {
-            get => _x;
-            set => _x = value;
-        }
-        public float y
-        {
-            get => _y;
-            set => _y = value;
-        }
+        public float x { get; set; }
+        public float y { get; set; }
         public Vector2(float x, float y)
         {
             this.x = x;
@@ -33,7 +23,7 @@ namespace EngineeringCorpsCS
         }
 
         /// <summary>
-        /// Add a Vector2 to the calling Vector2
+        /// Permanently adds a Vector2 to the calling Vector2
         /// </summary>
         /// <param name="other"></param>
         public void Add(Vector2 other)
@@ -43,7 +33,7 @@ namespace EngineeringCorpsCS
         }
         
         /// <summary>
-        /// Adds desired x and y components to a Vector2
+        /// Permanently adds desired x and y components to a Vector2
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -53,6 +43,38 @@ namespace EngineeringCorpsCS
             this.y += y;
         }
 
+        /// <summary>
+        /// Permanently subtracts desired Vector2 from a Vector2
+        /// </summary>
+        /// <param name="other"></param>
+        public void Subtract(Vector2 other)
+        {
+            this.x -= other.x;
+            this.y -= other.y;
+        }
+
+        /// <summary>
+        /// Permanently subtracts desired x and y components from a Vector2
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        public void Subtract(float x, float y)
+        {
+            this.x -= x;
+            this.y -= y;
+        }
+
+        public void Scale(float s)
+        {
+            this.x *= s;
+            this.y *= s;
+        }
+
+        public void Scale(float sx, float sy)
+        {
+            this.x *= sx;
+            this.y *= sy;
+        }
         /// <summary>
         /// Permanently rotates a Vector2 by a number of degrees around the origin
         /// </summary>
@@ -96,6 +118,9 @@ namespace EngineeringCorpsCS
             return (float) Math.Sqrt((this.x * this.x) + (this.y * this.y));
         }
 
+        /// <summary>
+        /// Permanently normalize the instance vector2 to a unit vector
+        /// </summary>
         public void VNormalize()
         {
             float mag = this.GetMagnitude();
@@ -119,6 +144,16 @@ namespace EngineeringCorpsCS
             {
                 return angle;
             }
+        }
+
+        /// <summary>
+        /// Dots the instance Vector2 with the argument Vector2
+        /// </summary>
+        /// <param name="projectOnVector"></param>
+        /// <returns></returns>
+        public float Dot(Vector2 projectOnVector)
+        {
+            return this.x * projectOnVector.x + this.y * projectOnVector.y;
         }
 
         public Vector2 Copy()

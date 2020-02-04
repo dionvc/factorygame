@@ -11,11 +11,13 @@ namespace EngineeringCorpsCS
     class Camera
     {
         public Player focusedEntity;
-        View view = new View(new FloatRect(0, 0, 2 * 1280, 2 * 720));
+        View view = new View(new FloatRect(1024, 1024, 2 * 1280, 2 * 720));
         float viewScale = 1.0f;
         public Camera()
         {
             focusedEntity = new Player();
+            focusedEntity.position = new Vector2(128, 128);
+            focusedEntity.collisionBox.SetRotation(150);
         }
         public void Update()
         {
@@ -50,9 +52,9 @@ namespace EngineeringCorpsCS
                 {
                     viewScale = 0.5f;
                 }
-                else if (viewScale > 4)
+                else if (viewScale > 8)
                 {
-                    viewScale = 4.0f;
+                    viewScale = 8.0f;
                 }
                 
                 view.Size = new SFML.System.Vector2f(viewScale * 1280, viewScale * 720);

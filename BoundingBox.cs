@@ -8,8 +8,8 @@ namespace EngineeringCorpsCS
 {
     class BoundingBox
     {
-        Vector2 topLeft;
-        Vector2 botRight;
+        Vector2 topLeft { get; set; }
+        Vector2 botRight { get; set; }
         int rotation;
         Vector2 topLeftR;
         Vector2 topRightR;
@@ -78,13 +78,29 @@ namespace EngineeringCorpsCS
             return this.rotation;
         }
 
+        /// <summary>
+        /// Gets width of original box (corresponding to local x-axis)
+        /// </summary>
+        /// <returns></returns>
         public float GetWidth()
         {
             return Math.Abs(botRight.x - topLeft.x);
         }
+        public float GetHalfWidth()
+        {
+            return (Math.Abs(botRight.x - topLeft.x)/2);
+        }
+        /// <summary>
+        /// Gets height of original box (corresponding ot local y-axis)
+        /// </summary>
+        /// <returns></returns>
         public float GetHeight()
         {
             return Math.Abs(botRight.y - topLeft.y);
+        }
+        public float GetHalfHeight()
+        {
+            return (Math.Abs(botRight.y - topLeft.y)/2);
         }
 
         /// <summary>
@@ -93,7 +109,6 @@ namespace EngineeringCorpsCS
         /// <returns></returns>
         public Vector2[] GetVectors()
         {
-            
             return new[] {topLeftR, topRightR, botLeftR, botRightR };
         }
 
@@ -106,36 +121,77 @@ namespace EngineeringCorpsCS
             return new[] { topLeftR.x, topLeftR.y, topRightR.x, topRightR.y, botRightR.x, botRightR.y, botLeftR.x, botLeftR.y };
         }
 
+        /// <summary>
+        /// Returns just 2 unit vector2's, each normals for 2 of the sides (first one is top and bottom sides, second is left and right sides)
+        /// </summary>
+        /// <returns>local xAxis, yAxis</returns>
+        public Vector2[] GetNormals()
+        {
+            Vector2 xAxis = new Vector2(topRightR.x - topLeftR.x, topRightR.y - topLeftR.y);
+            Vector2 yAxis = new Vector2(topRightR.x - botRightR.x, topRightR.y - botRightR.y);
+            xAxis.VNormalize();
+            yAxis.VNormalize();
+            return new[] { xAxis, yAxis };
+        }
+
         
         public static bool CheckCollision(BoundingBox box1, BoundingBox box2, Vector2 p1, Vector2 p2) 
         {
+            //1st check (circle check)
             float r1 = box1.topLeft.GetMagnitude();
             float r2 = box2.topLeft.GetMagnitude();
+            float r3 = box1.botRight.GetMagnitude();
+            float r4 = box2.botRight.GetMagnitude();
             float d = (float)Math.Sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y)); // calc d between two objects
-            if (r1 + r2 > d)
+            if (Math.Max(r1,r3) + Math.Max(r2,r4) < d)
             {
                 return false; //need to determine if other things need to be returned maybe
             }
-            //1st check (circle check)
             //2nd check AABB if both have theta = 0
-            if(box1.rotation != 0 && box2.rotation != 0)
+            if(box1.rotation == 0 && box2.rotation == 0)
             {
-                if (box1.topLeft.x < box2.topLeft.x + box2.botRight.x &&
-                   box1.topLeft.x + box1.botRight.x > box2.topLeft.x &&
-                   box1.topLeft.y < box2.topLeft.y + box2.botRight.y &&
-                   box1.topLeft.y + box1.botRight.y > box2.topLeft.y)
+                if (p1.x + box1.topLeft.x > p2.x + box2.botRight.x || p1.x + box1.botRight.x > p2.x + box2.topLeft.x)
                 {
-                    return true;
+                    return false;
+                }
+                else if (p1.y + box1.topLeft.y < p2.y + box2.botRight.y || p1.y + box1.botRight.y < p2.y + box2.topLeft.y)
+                {
+                    return false;
                 }
                 else
                 {
-                    return false;
+                    return true;
                 }
             }
             else
             {
-                return true;
-                //Separating Axis Theorem check
+                Vector2[] axis1 = box1.GetNormals();
+                Vector2[] axis2 = box2.GetNormals();
+                float halfW1 = box1.GetHalfWidth();
+                float halfH1 = box1.GetHalfHeight();
+                float halfW2 = box2.GetHalfWidth();
+                float halfH2 = box2.GetHalfHeight();
+                Vector2 T = p2.Copy();
+                T.Subtract(p1);
+                //Separating Axis Theorem check (final and most intensive check for accuracy)
+
+                //Checking axis' of box1
+                for (int i = 0; i < 2; i++) 
+                {
+                    //Project half vectors onto normal vector
+                    if (Math.Abs(T.Dot(axis1[i])) > Math.Abs(halfW1 * axis1[0].Dot(axis1[i])) + Math.Abs(halfH1 * axis1[1].Dot(axis1[i])) + Math.Abs(halfW2 * axis2[0].Dot(axis1[i])) + Math.Abs(halfH2 * axis2[1].Dot(axis1[i]))) {
+                        return false; //if the projection doesnt overlap then there is no collision
+                    }
+                }
+                //Checking axis' of box2
+                for (int i = 0; i < 2; i++)
+                {
+                    //Project half vectors onto normal vector
+                    if (Math.Abs(T.Dot(axis2[i])) > Math.Abs(halfW1 * axis1[0].Dot(axis2[i])) + Math.Abs(halfH1 * axis1[1].Dot(axis2[i])) + Math.Abs(halfW2 * axis2[0].Dot(axis2[i])) + Math.Abs(halfH2 * axis2[1].Dot(axis2[i]))) {
+                        return false; //if the projection doesnt overlap then there is no collision
+                    }
+                }
+                return true; //all checks failed, boxes collide
             }
         }
         

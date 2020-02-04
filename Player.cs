@@ -13,7 +13,6 @@ namespace EngineeringCorpsCS
         public Player()
         {
             collisionBox = new BoundingBox(-32, -16, 32, 16);
-            position = new Vector2(128, 128);
         }
         public override void Update()
         {
