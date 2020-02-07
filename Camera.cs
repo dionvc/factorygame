@@ -38,6 +38,10 @@ namespace EngineeringCorpsCS
             {
                 view.Move(new SFML.System.Vector2f(10, 0));
             }
+            if (Keyboard.IsKeyPressed(Keyboard.Key.R))
+            {
+                focusedEntity.collisionBox.SetRotation(focusedEntity.collisionBox.GetRotation() + 5);
+            }
             if (Mouse.IsButtonPressed(Mouse.Button.Left) || Mouse.IsButtonPressed(Mouse.Button.Right))
             {
                 if(Mouse.IsButtonPressed(Mouse.Button.Left))

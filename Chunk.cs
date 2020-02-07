@@ -22,7 +22,7 @@ namespace EngineeringCorpsCS
         {
 
         }
-        public void GenerateTerrain(int x, int y, FastNoise noise)
+        public void GenerateTerrain(int x, int y, FastNoise elevationNoise, FastNoise moistureNoise, FastNoise temperatureNoise)
         {
             for (int i = 0; i < Props.chunkSize; i++) 
             {
@@ -34,9 +34,9 @@ namespace EngineeringCorpsCS
                     //rivers - could be generated from fractal noise?
                     int nx = i + x;
                     int ny = j + y;
-                    double elevation =  0.5 * noise.GetPerlin(1 * nx, 1 * ny)
-                    +0.5 * noise.GetPerlin(2 * nx, 2 * ny)
-                    +0.5 * noise.GetPerlin(4 * nx, 2 * ny);
+                    double elevation =  0.5 * elevationNoise.GetPerlin(1 * nx, 1 * ny)
+                    +0.5 * elevationNoise.GetPerlin(2 * nx, 2 * ny)
+                    +0.5 * elevationNoise.GetPerlin(4 * nx, 4 * ny);
                     elevation *= 4;
                     elevation += 0.5;
                     SetTile(i, j, Convert.ToByte(Math.Abs(elevation)));

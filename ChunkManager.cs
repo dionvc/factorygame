@@ -13,14 +13,24 @@ namespace EngineeringCorpsCS
     {
         Chunk[] chunks;
         List<Chunk> activeChunks;
-        FastNoise terrainNoise;
+        FastNoise elevationNoise;
+        FastNoise moistureNoise;
+        FastNoise temperatureNoise;
 
         public ChunkManager()
         {
             chunks = new Chunk[Props.worldSize * Props.worldSize];
-            terrainNoise = new FastNoise();
-            terrainNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
-            terrainNoise.SetSeed(new Random().Next(0, 1000));
+            elevationNoise = new FastNoise();
+            elevationNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
+            elevationNoise.SetSeed(new Random().Next(0, 10000));
+
+            moistureNoise = new FastNoise();
+            moistureNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
+            moistureNoise.SetSeed(new Random().Next(0, 10000));
+
+            temperatureNoise = new FastNoise();
+            temperatureNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
+            temperatureNoise.SetSeed(new Random().Next(0, 10000));
         }
 
         public void Update()
@@ -33,7 +43,7 @@ namespace EngineeringCorpsCS
         public void GenerateTerrain(int x, int y)
         {
             Chunk chunk = new Chunk();
-            chunk.GenerateTerrain((x) * Props.chunkSize, (y) * Props.chunkSize, terrainNoise);
+            chunk.GenerateTerrain((x) * Props.chunkSize, (y) * Props.chunkSize, elevationNoise, moistureNoise, temperatureNoise);
             SetChunk(x, y, chunk);
         }
         public Chunk GetChunk(int x, int y)

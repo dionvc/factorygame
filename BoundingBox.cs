@@ -36,6 +36,40 @@ namespace EngineeringCorpsCS
         }
 
         /// <summary>
+        /// Creates bounding box uniformly around center of entity
+        /// </summary>
+        /// <param name="tx"></param>
+        /// <param name="ty"></param>
+        /// <param name="bx"></param>
+        /// <param name="by"></param>
+        public BoundingBox(float halfX, float halfY)
+        {
+            topLeft = new Vector2(-halfX, -halfY);
+            botRight = new Vector2(halfX, halfY);
+
+            //Rotated vectors with 0 rotation
+            topLeftR = topLeft.Copy();
+            botRightR = botRight.Copy();
+            topRightR = new Vector2(botRight.x, topLeft.y);
+            botLeftR = new Vector2(topLeft.x, botRight.y);
+        }
+
+        /// <summary>
+        /// Creates a rotated bounding box uniformly around center of entity
+        /// </summary>
+        /// <param name="tx"></param>
+        /// <param name="ty"></param>
+        /// <param name="bx"></param>
+        /// <param name="by"></param>
+        public BoundingBox(float halfX, float halfY, int rotation)
+        {
+            topLeft = new Vector2(-halfX, -halfY);
+            botRight = new Vector2(halfX, halfY);
+
+            this.SetRotation(rotation);
+        }
+
+        /// <summary>
         /// Create a rotated bounding box
         /// </summary>
         /// <param name="tx"></param>

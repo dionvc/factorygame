@@ -19,19 +19,23 @@ namespace EngineeringCorpsCS
             Texture snowtile = new Texture(g+"snowsquare.png");
             Texture sandtile = new Texture(g+"sandsquare.png");
             Texture watertile = new Texture(g+"watersquare.png");
-            Sprite rock = new Sprite(rocktile);
+            Sprite rock = new Sprite(rocktile, new IntRect(0,0,128,128));
             Sprite snow = new Sprite(snowtile);
             Sprite sand = new Sprite(sandtile);
             Sprite water = new Sprite(watertile);
+            Texture[] waves = new Texture[1]; 
+            waves[0] = new Texture(g + "WavesAlpha.png");
+            RotatedAnimation wavesTest = new RotatedAnimation(waves,new Vector2i(320,320), 1, 8, "Forward", 10.0f, new Vector2i(0, 0));
             window.SetActive();
             ChunkManager chunkManager = new ChunkManager();
             Camera camera = new Camera();
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for(int i = 0; i < 1; i++)
+            for(int i = 0; i < 10; i++)
             {
                 players.Add(new Player());
                 players[i].position = new Vector2(random.Next(0, 512), random.Next(0, 512));
+                players[i].collisionBox.SetRotation(random.Next(0, 360));
             }
             players.Add(camera.focusedEntity);
             window.SetFramerateLimit(60);
@@ -93,6 +97,13 @@ namespace EngineeringCorpsCS
                 }
                 window.Draw(waterquad, state);
                 //finish drawing terrain
+
+                //Animation Draw Test
+
+                wavesTest.Update();
+                window.Draw(wavesTest.GetAnimationFrame());
+
+                //End Animation Draw Test
 
                 //draw entities
                 if (drawBoundingBoxes == true)
