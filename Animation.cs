@@ -17,6 +17,12 @@ namespace EngineeringCorpsCS
             ForwardAndBackward = -1
         }
         AnimationBehavior behavior;
+        Sprite animationFrame;
+        Texture[] textureRefs;
+        Vector2i size; //stores x (width), y (height) of sprite to capture from texture
+        Vector2i texturePos; //position on texture
+        Vector2i textureSize;
+        Vector2i offset; //offset of sprite from center of entity in pixels 
         int incrementAmount = 1;
         public void Update()
         {

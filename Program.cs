@@ -13,25 +13,22 @@ namespace EngineeringCorpsCS
     {
         static void Main(string[] args)
         {
-            RenderWindow window = new RenderWindow(new VideoMode(1280,720), "test");
-            string g = "Graphics/";
-            Texture rocktile = new Texture(g+"rocksquare.png");
-            Texture snowtile = new Texture(g+"snowsquare.png");
-            Texture sandtile = new Texture(g+"sandsquare.png");
-            Texture watertile = new Texture(g+"watersquare.png");
-            Sprite rock = new Sprite(rocktile, new IntRect(0,0,128,128));
-            Sprite snow = new Sprite(snowtile);
-            Sprite sand = new Sprite(sandtile);
-            Sprite water = new Sprite(watertile);
-            Texture[] waves = new Texture[1]; 
-            waves[0] = new Texture(g + "WavesAlpha.png");
-            RotatedAnimation wavesTest = new RotatedAnimation(waves,new Vector2i(320,320), 1, 8, "Forward", 10.0f, new Vector2i(0, 0));
+            RenderWindow window = new RenderWindow(new VideoMode(1280, 720), "Engineering Corps");
+            TextureManager textureManager = new TextureManager();
+            textureManager.LoadTextures();
+            Sprite rock = new Sprite(textureManager.GetTexture("rocksquare"));
+            Sprite snow = new Sprite(textureManager.GetTexture("snowsquare"));
+            Sprite sand = new Sprite(textureManager.GetTexture("sandsquare"));
+
+            Texture[] waves = new Texture[1];
+            waves[0] = textureManager.GetTexture("WavesAlpha");
+            RotatedAnimation wavesTest = new RotatedAnimation(waves, new Vector2i(320, 320), 1, 8, "Forward", 10.0f, new Vector2i(0, 0));
             window.SetActive();
             ChunkManager chunkManager = new ChunkManager();
             Camera camera = new Camera();
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for(int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 players.Add(new Player());
                 players[i].position = new Vector2(random.Next(0, 512), random.Next(0, 512));
@@ -41,7 +38,7 @@ namespace EngineeringCorpsCS
             window.SetFramerateLimit(60);
             window.Closed += (s, a) => window.Close();
             VertexArray waterquad = new VertexArray(PrimitiveType.Quads, 4);
-            RenderStates state = new RenderStates(watertile);
+            RenderStates state = new RenderStates(textureManager.GetTexture("watersquare"));
             bool drawBoundingBoxes = true;
             while (window.IsOpen)
             {
