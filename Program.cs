@@ -22,7 +22,7 @@ namespace EngineeringCorpsCS
 
             Texture[] waves = new Texture[1];
             waves[0] = textureManager.GetTexture("WavesAlpha");
-            RotatedAnimation wavesTest = new RotatedAnimation(waves, new Vector2i(320, 320), 1, 8, "Forward", 10.0f, new Vector2i(0, 0));
+            RotatedAnimation wavesTest = new RotatedAnimation(waves, new Vector2i(320, 320), new Vector2f(0, 0), new Vector2f(2.0f, 2.0f), 1, 8, "Forward", 12.0f);
             window.SetActive();
             ChunkManager chunkManager = new ChunkManager();
             Camera camera = new Camera();

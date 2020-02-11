@@ -13,6 +13,7 @@ namespace EngineeringCorpsCS
     {
 
         private byte[] terrain;
+        private byte[][] test;
         public Chunk()
         {
             terrain = new byte[32 * 32];

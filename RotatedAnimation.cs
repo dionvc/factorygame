@@ -10,20 +10,16 @@ namespace EngineeringCorpsCS
 {
     class RotatedAnimation: IAnimation
     {
-        //Assumption: textures will be loaded to GPU by separate texture loader
-        //Assumption: animations can be created by animation factory, so texture and other variables will be set by factory
         enum AnimationBehavior{
             Forward = 1,
             Backward = 1,
             ForwardAndBackward = -1
         }
-        Sprite animationFrame; //array of sprites, heart of animation
-        Texture[] textureRefs;
+        Sprite animationFrame;
+        Texture[] textureRefs; //all the textures making up the animation (in order)
         Vector2i size; //stores x (width), y (height) of sprite to capture from texture
         Vector2i texturePos; //position on texture
-        Vector2i textureSize;
-        Vector2i offset; //offset of sprite from center of entity in pixels 
-        //(default draw will center sprite around entity position)
+        Vector2i textureSize; //size of a texture in the texture array
         int states = 1; //number of states (intended for rotation, eg for 2 states one north/south one east/west)
         int frames = 1; //Frames per state (assumption of static number of sprites across states (fair assumption)
         float animationSpeed = 0; //measured in ticks per frame (eg, 1 is 1 tick per frame, 2 is 2 ticks per frame, 0.5 is 2 frames per tick)
@@ -32,8 +28,20 @@ namespace EngineeringCorpsCS
         float tickAccumulator = 0; //accumulates frames to subtract from
         int incrementAmount = 1;
         AnimationBehavior behavior;
+
+        //TODO: add scale and origin
         
-        public RotatedAnimation(Texture[] textureRefs, Vector2i frameSize, int rotationStates, int framesPerState, string behavior, float animationSpeed, Vector2i offset)
+        /// <summary>
+        /// Creates a rotated animation
+        /// </summary>
+        /// <param name="textureRefs"></param>
+        /// <param name="frameSize"></param>
+        /// <param name="rotationStates"></param>
+        /// <param name="framesPerState"></param>
+        /// <param name="behavior"></param>
+        /// <param name="animationSpeed"></param>
+        /// <param name="offset"></param>
+        public RotatedAnimation(Texture[] textureRefs, Vector2i frameSize, Vector2f offset, Vector2f scale, int rotationStates, int framesPerState, string behavior, float animationSpeed)
         {
             this.animationFrame = new Sprite();
             this.size = frameSize;
@@ -41,9 +49,31 @@ namespace EngineeringCorpsCS
             this.textureSize = new Vector2i((int)this.textureRefs[0].Size.X, (int)this.textureRefs[0].Size.Y);
             this.states = rotationStates;
             this.frames = framesPerState;
-            this.offset = offset;
             this.animationSpeed = animationSpeed;
-            animationSpeed = 0;
+            animationFrame.Origin = new Vector2f(frameSize.X/2 + offset.X, frameSize.Y/2 + offset.Y);
+            animationFrame.Scale = scale;
+            SetBehavior(behavior);
+        }
+
+        /// <summary>
+        /// Simpler initializer (should really only be used for testing purposes)
+        /// </summary>
+        /// <param name="textureRef"></param>
+        /// <param name="frameSize"></param>
+        /// <param name="rotationStates"></param>
+        /// <param name="framesPerState"></param>
+        /// <param name="behavior"></param>
+        /// <param name="animationSpeed"></param>
+        public RotatedAnimation(Texture textureRef, Vector2i frameSize, int rotationStates, int framesPerState, string behavior, float animationSpeed)
+        {
+            this.animationFrame = new Sprite();
+            this.size = frameSize;
+            this.textureRefs = new Texture[] { textureRef };
+            this.textureSize = new Vector2i((int)this.textureRefs[0].Size.X, (int)this.textureRefs[0].Size.Y);
+            this.states = rotationStates;
+            this.frames = framesPerState;
+            this.animationSpeed = animationSpeed;
+            animationFrame.Origin = new Vector2f(frameSize.X / 2, frameSize.Y / 2);
             SetBehavior(behavior);
         }
 
@@ -89,11 +119,20 @@ namespace EngineeringCorpsCS
             return animationFrame;
         }
 
+        public void SetRotation(float rotation)
+        {
+            currentState = (int)Math.Round(rotation * states / 360.0f);
+        }
+
         public void SetAnimationSpeed(float animationSpeed)
         {
             this.animationSpeed = animationSpeed;
         }
 
+        /// <summary>
+        /// Sets the behavior of the animation (Forward, Backward, Forward and Backward)
+        /// </summary>
+        /// <param name="behavior"></param>
         public void SetBehavior(string behavior)
         {
             switch(behavior)
