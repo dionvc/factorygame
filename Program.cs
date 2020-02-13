@@ -16,13 +16,14 @@ namespace EngineeringCorpsCS
             RenderWindow window = new RenderWindow(new VideoMode(1280, 720), "Engineering Corps");
             TextureManager textureManager = new TextureManager();
             textureManager.LoadTextures();
-            Sprite rock = new Sprite(textureManager.GetTexture("rocksquare"));
+            Sprite rock = new Sprite(textureManager.GetTexture("asdf"));
+            rock.Scale = new Vector2f(0.5f, 0.5f);
             Sprite snow = new Sprite(textureManager.GetTexture("snowsquare"));
             Sprite sand = new Sprite(textureManager.GetTexture("sandsquare"));
-
+            InputManager input = new InputManager(window);
             Texture[] waves = new Texture[1];
             waves[0] = textureManager.GetTexture("WavesAlpha");
-            RotatedAnimation wavesTest = new RotatedAnimation(waves, new Vector2i(320, 320), new Vector2f(0, 0), new Vector2f(2.0f, 2.0f), 1, 8, "Forward", 12.0f);
+            RotatedAnimation wavesTest = new RotatedAnimation(waves, new Vector2i(320, 320), new Vector2f(0, 0), new Vector2f(2.0f, 2.0f), 1, 10, "ForwardAndBackward", 12.0f);
             window.SetActive();
             ChunkManager chunkManager = new ChunkManager();
             Camera camera = new Camera();
@@ -125,6 +126,7 @@ namespace EngineeringCorpsCS
                 //finish drawing entities
                 window.Display();
                 waterquad.Clear();
+                input.FlushInput();
             }
         }
     }

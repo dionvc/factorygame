@@ -8,9 +8,9 @@ using SFML.System;
 
 namespace EngineeringCorpsCS
 {
-    class RotatedAnimation: IAnimation
+    class RotatedAnimation : IAnimation
     {
-        enum AnimationBehavior{
+        enum AnimationBehavior {
             Forward = 1,
             Backward = 1,
             ForwardAndBackward = -1
@@ -28,8 +28,9 @@ namespace EngineeringCorpsCS
         float tickAccumulator = 0; //accumulates frames to subtract from
         int incrementAmount = 1;
         AnimationBehavior behavior;
+        bool shadow { get; }
 
-        //TODO: add scale and origin
+        //TODO: add shadow, color
         
         /// <summary>
         /// Creates a rotated animation
@@ -87,24 +88,31 @@ namespace EngineeringCorpsCS
             if (animationSpeed != 0)
             {
                 tickAccumulator += 1;
-                while (tickAccumulator > animationSpeed)
-                {
-                    currentFrame += incrementAmount;
-                    tickAccumulator -= animationSpeed;
-                }
-                if (currentFrame > frames)
-                {
-                    currentFrame = currentFrame % frames;
-                    incrementAmount *= (int)behavior;
-                }
 
                 //TODO: test multiple texture sheet support + test texture frame size (is it off by ones)
+                if (tickAccumulator > animationSpeed)
+                {
+                    while (tickAccumulator > animationSpeed)
+                    {
+                        Console.WriteLine("Frame: " + currentFrame);
+                        Console.WriteLine("Increment: " + incrementAmount);
+                        currentFrame += incrementAmount;
+                        tickAccumulator -= animationSpeed;
 
-                texturePos.X = (size.X * (currentFrame + (currentState * frames))) % (textureSize.X * textureRefs.Length);
-                texturePos.Y = (size.X * (currentFrame + (currentState * frames))) / (textureSize.X * textureRefs.Length) * size.Y;
-                int textureIndex = (texturePos.X / textureSize.X);
-                animationFrame.Texture = textureRefs[textureIndex];
-                animationFrame.TextureRect = new IntRect(texturePos, size);
+                    }
+                    if (currentFrame >= frames || currentFrame <= 0)
+                    {
+                        incrementAmount *= (int)behavior;
+                        currentFrame = (currentFrame + frames) % (frames);
+                    }
+                    texturePos.X = (size.X * (currentFrame + (currentState * frames))) % (textureSize.X * textureRefs.Length);
+                    texturePos.Y = (size.X * (currentFrame + (currentState * frames))) / (textureSize.X * textureRefs.Length) * size.Y;
+                    int textureIndex = (texturePos.X / textureSize.X);
+                    animationFrame.Texture = textureRefs[textureIndex];
+                    animationFrame.TextureRect = new IntRect(texturePos, size);
+                }
+
+                
             }
         }
 

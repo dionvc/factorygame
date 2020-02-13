@@ -51,7 +51,7 @@ namespace EngineeringCorpsCS
                     currentFrame += incrementAmount;
                     tickAccumulator -= animationSpeed;
                 }
-                if (currentFrame > frames)
+                if (currentFrame > frames || currentFrame < 0)
                 {
                     currentFrame = currentFrame % frames;
                     incrementAmount *= (int)behavior;

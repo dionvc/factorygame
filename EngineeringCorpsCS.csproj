@@ -57,7 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animation.cs" />
+    <Compile Include="GameObject.cs" />
     <Compile Include="IAnimation.cs" />
+    <Compile Include="InputManager.cs" />
     <Compile Include="RotatedAnimation.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Camera.cs" />
@@ -90,6 +92,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="csfml-Window.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\NullTexture.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\rocksquare.png">

@@ -11,9 +11,11 @@ namespace EngineeringCorpsCS
     class TextureManager
     {
         Dictionary<String, Texture> textureSet;
+        Texture nullTexture;
         public TextureManager()
         {
             textureSet = new Dictionary<string, Texture>();
+            nullTexture = new Texture("Graphics/NullTexture.png");
         }
 
         /// <summary>
@@ -56,7 +58,7 @@ namespace EngineeringCorpsCS
             }
             else
             {
-                return null; //TODO: add placeholder texture return
+                return nullTexture;
             }
         }
         public Sprite GetTextureAsSprite(string textureName)
@@ -69,7 +71,7 @@ namespace EngineeringCorpsCS
             }
             else
             {
-                return null; //TODO: add placeholder texture return
+                return new Sprite(nullTexture);
             }
         }
     }
