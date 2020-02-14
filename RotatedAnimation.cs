@@ -94,16 +94,14 @@ namespace EngineeringCorpsCS
                 {
                     while (tickAccumulator > animationSpeed)
                     {
-                        Console.WriteLine("Frame: " + currentFrame);
-                        Console.WriteLine("Increment: " + incrementAmount);
                         currentFrame += incrementAmount;
                         tickAccumulator -= animationSpeed;
-
                     }
-                    if (currentFrame >= frames || currentFrame <= 0)
+                    if (currentFrame >= frames - 1 || currentFrame <= 0)
                     {
                         incrementAmount *= (int)behavior;
                         currentFrame = (currentFrame + frames) % (frames);
+                        
                     }
                     texturePos.X = (size.X * (currentFrame + (currentState * frames))) % (textureSize.X * textureRefs.Length);
                     texturePos.Y = (size.X * (currentFrame + (currentState * frames))) / (textureSize.X * textureRefs.Length) * size.Y;
@@ -111,8 +109,6 @@ namespace EngineeringCorpsCS
                     animationFrame.Texture = textureRefs[textureIndex];
                     animationFrame.TextureRect = new IntRect(texturePos, size);
                 }
-
-                
             }
         }
 
@@ -143,16 +139,19 @@ namespace EngineeringCorpsCS
         /// <param name="behavior"></param>
         public void SetBehavior(string behavior)
         {
-            switch(behavior)
+            switch (behavior)
             {
+                case ("f"):
                 case ("Forward"):
                     this.behavior = AnimationBehavior.Forward;
                     this.incrementAmount = 1;
                     break;
+                case ("b"):
                 case ("Backward"):
                     this.behavior = AnimationBehavior.Backward;
                     this.incrementAmount = -1;
                     break;
+                case ("fb"):
                 case ("ForwardAndBackward"):
                     this.behavior = AnimationBehavior.ForwardAndBackward;
                     this.incrementAmount = 1;

@@ -24,19 +24,19 @@ namespace EngineeringCorpsCS
             
             if (Keyboard.IsKeyPressed(Keyboard.Key.W))
             {
-                view.Move(new SFML.System.Vector2f(0, -10));
+                view.Move(new SFML.System.Vector2f(0, -100));
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.A))
             {
-                view.Move(new SFML.System.Vector2f(-10, 0));
+                view.Move(new SFML.System.Vector2f(-100, 0));
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.S))
             {
-                view.Move(new SFML.System.Vector2f(0, 10));
+                view.Move(new SFML.System.Vector2f(0, 100));
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.D))
             {
-                view.Move(new SFML.System.Vector2f(10, 0));
+                view.Move(new SFML.System.Vector2f(100, 0));
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.R))
             {

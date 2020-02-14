@@ -75,6 +75,7 @@
     <Compile Include="Props.cs" />
     <Compile Include="Renderer.cs" />
     <Compile Include="TextureManager.cs" />
+    <Compile Include="TileManager.cs" />
     <Compile Include="Vector2.cs" />
   </ItemGroup>
   <ItemGroup>

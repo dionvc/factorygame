@@ -23,7 +23,7 @@ namespace EngineeringCorpsCS
             InputManager input = new InputManager(window);
             Texture[] waves = new Texture[1];
             waves[0] = textureManager.GetTexture("WavesAlpha");
-            RotatedAnimation wavesTest = new RotatedAnimation(waves, new Vector2i(320, 320), new Vector2f(0, 0), new Vector2f(2.0f, 2.0f), 1, 10, "ForwardAndBackward", 12.0f);
+            RotatedAnimation wavesTest = new RotatedAnimation(waves, new Vector2i(320, 320), new Vector2f(0, 0), new Vector2f(2.0f, 2.0f), 1, 10, "fb", 12.0f);
             window.SetActive();
             ChunkManager chunkManager = new ChunkManager();
             Camera camera = new Camera();
@@ -41,9 +41,9 @@ namespace EngineeringCorpsCS
             VertexArray waterquad = new VertexArray(PrimitiveType.Quads, 4);
             RenderStates state = new RenderStates(textureManager.GetTexture("watersquare"));
             bool drawBoundingBoxes = true;
+            window.SetFramerateLimit(60);
             while (window.IsOpen)
             {
-                
                 window.Clear();
                 window.DispatchEvents();
                 camera.Update();

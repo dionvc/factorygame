@@ -46,21 +46,27 @@ namespace EngineeringCorpsCS
             if (animationSpeed != 0)
             {
                 tickAccumulator += 1;
-                while (tickAccumulator > animationSpeed)
+
+                //TODO: test multiple texture sheet support + test texture frame size (is it off by ones)
+                if (tickAccumulator > animationSpeed)
                 {
-                    currentFrame += incrementAmount;
-                    tickAccumulator -= animationSpeed;
+                    while (tickAccumulator > animationSpeed)
+                    {
+                        currentFrame += incrementAmount;
+                        tickAccumulator -= animationSpeed;
+                    }
+                    if (currentFrame >= frames - 1 || currentFrame <= 0)
+                    {
+                        incrementAmount *= (int)behavior;
+                        currentFrame = (currentFrame + frames) % (frames);
+
+                    }
+                    texturePos.X = (size.X * currentFrame) % (textureSize.X * textureRefs.Length);
+                    texturePos.Y = (size.X * currentFrame) / (textureSize.X * textureRefs.Length) * size.Y;
+                    int textureIndex = (texturePos.X / textureSize.X);
+                    animationFrame.Texture = textureRefs[textureIndex];
+                    animationFrame.TextureRect = new IntRect(texturePos, size);
                 }
-                if (currentFrame > frames || currentFrame < 0)
-                {
-                    currentFrame = currentFrame % frames;
-                    incrementAmount *= (int)behavior;
-                }
-                texturePos.X = (size.X * currentFrame) % (textureSize.X * textureRefs.Length);
-                texturePos.Y = (size.X * currentFrame) / (textureSize.X * textureRefs.Length) * size.Y;
-                int textureIndex = (texturePos.X / textureSize.X);
-                animationFrame.Texture = textureRefs[textureIndex];
-                animationFrame.TextureRect = new IntRect(texturePos, size);
             }
         }
 
@@ -95,14 +101,17 @@ namespace EngineeringCorpsCS
         {
             switch (behavior)
             {
+                case ("f"):
                 case ("Forward"):
                     this.behavior = AnimationBehavior.Forward;
                     this.incrementAmount = 1;
                     break;
+                case ("b"):
                 case ("Backward"):
                     this.behavior = AnimationBehavior.Backward;
                     this.incrementAmount = -1;
                     break;
+                case ("fb"):
                 case ("ForwardAndBackward"):
                     this.behavior = AnimationBehavior.ForwardAndBackward;
                     this.incrementAmount = 1;

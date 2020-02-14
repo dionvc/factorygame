@@ -79,6 +79,7 @@ namespace EngineeringCorpsCS
         /// </summary>
         /// <param name="input"></param>
         void SubscribeToInput(InputManager input);
+        
         /// <summary>
         /// Removes an entity from the input handling queue
         /// </summary>
