@@ -15,7 +15,7 @@ namespace EngineeringCorpsCS
         public TextureManager()
         {
             textureSet = new Dictionary<string, Texture>();
-            nullTexture = new Texture("Graphics/NullTexture.png");
+            nullTexture = new Texture("Graphics/DebugTextures/NullTexture.png");
         }
 
         /// <summary>

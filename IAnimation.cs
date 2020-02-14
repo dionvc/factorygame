@@ -13,7 +13,8 @@ namespace EngineeringCorpsCS
         Sprite GetAnimationFrame();
         void SetAnimationSpeed(float animationSpeed);
         void SetBehavior(string behavior);
-
         void SetRotation(float rotation);
+        void SetScale(float x, float y);
+        void SetColor(byte r, byte g, byte b, byte a);
     }
 }

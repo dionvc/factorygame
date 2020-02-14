@@ -13,7 +13,9 @@ namespace EngineeringCorpsCS
     {
 
         private byte[] terrain;
-        private byte[][] test;
+        private Dictionary<Base.DrawLayer, List<Entity>> drawLayers; //Collection of entities for drawing
+        private List<Entity> entityCollection; //Collection of entities for collision
+
         public Chunk()
         {
             terrain = new byte[32 * 32];

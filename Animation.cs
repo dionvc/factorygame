@@ -84,6 +84,16 @@ namespace EngineeringCorpsCS
             //does nothing
         }
 
+        public void SetColor(byte r, byte g, byte b, byte a)
+        {
+            animationFrame.Color = new Color(r, g, b, a);
+        }
+
+        public void SetScale(float x, float y)
+        {
+            animationFrame.Scale = new Vector2f(x, y);
+        }
+
         /// <summary>
         /// Set the speed of the animation in ticks per frame
         /// </summary>

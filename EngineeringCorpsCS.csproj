@@ -57,7 +57,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animation.cs" />
-    <Compile Include="GameObject.cs" />
+    <Compile Include="Base.cs" />
+    <Compile Include="EntityPhysical.cs" />
     <Compile Include="IAnimation.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="RotatedAnimation.cs" />
@@ -75,7 +76,7 @@
     <Compile Include="Props.cs" />
     <Compile Include="Renderer.cs" />
     <Compile Include="TextureManager.cs" />
-    <Compile Include="TileManager.cs" />
+    <Compile Include="Tile.cs" />
     <Compile Include="Vector2.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -95,7 +96,22 @@
     <Content Include="csfml-Window.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Graphics\NullTexture.png">
+    <Content Include="Graphics\DebugTextures\1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\DebugTextures\2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\DebugTextures\3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\DebugTextures\4.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\DebugTextures\NullTexture.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\DebugTextures\WavesAlpha.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\rocksquare.png">
@@ -108,9 +124,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\watersquare.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Graphics\WavesAlpha.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="SFML.Audio.dll">

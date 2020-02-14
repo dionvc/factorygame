@@ -106,6 +106,8 @@ namespace EngineeringCorpsCS
                     texturePos.X = (size.X * (currentFrame + (currentState * frames))) % (textureSize.X * textureRefs.Length);
                     texturePos.Y = (size.X * (currentFrame + (currentState * frames))) / (textureSize.X * textureRefs.Length) * size.Y;
                     int textureIndex = (texturePos.X / textureSize.X);
+                    texturePos.X = (texturePos.X % (textureSize.X));
+                    Console.WriteLine("TextureIndex: " + textureIndex + "\nFrame: " + currentFrame + "\nTexPos: " + texturePos.X +  ", " + texturePos.Y);
                     animationFrame.Texture = textureRefs[textureIndex];
                     animationFrame.TextureRect = new IntRect(texturePos, size);
                 }
@@ -123,6 +125,20 @@ namespace EngineeringCorpsCS
             return animationFrame;
         }
 
+        public void SetColor(byte r, byte g, byte b, byte a)
+        {
+            animationFrame.Color = new Color(r, g, b, a);
+        }
+
+        public void SetScale(float x, float y)
+        {
+            animationFrame.Scale = new Vector2f(x, y);
+        }
+
+        /// <summary>
+        /// Sets the rotation state of the rotated animation
+        /// </summary>
+        /// <param name="rotation"></param>
         public void SetRotation(float rotation)
         {
             currentState = (int)Math.Round(rotation * states / 360.0f);

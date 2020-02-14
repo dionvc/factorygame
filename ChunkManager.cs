@@ -48,7 +48,7 @@ namespace EngineeringCorpsCS
         }
         public Chunk GetChunk(int x, int y)
         {
-            if(x < 0 || x > Props.worldSize || y < 0 || y > Props.worldSize)
+            if(x < 0 || x >= Props.worldSize || y < 0 || y >= Props.worldSize)
             {
                 return null;
             }
@@ -62,12 +62,54 @@ namespace EngineeringCorpsCS
                 return chunks[x * Props.worldSize + y];
             }
         }
+        public Chunk GetChunk(int[] xy)
+        {
+            if (xy[0] < 0 || xy[0] >= Props.worldSize || xy[1] < 0 || xy[1] >= Props.worldSize)
+            {
+                return null;
+            }
+            if (chunks[xy[0] * Props.worldSize + xy[1]] != null)
+            {
+                return chunks[xy[0] * Props.worldSize + xy[1]];
+            }
+            else
+            {
+                GenerateTerrain(xy[0], xy[1]);
+                return chunks[xy[0] * Props.worldSize + xy[1]];
+            }
+        }
+
         public void SetChunk(int x, int y, Chunk chunk)
         {
             chunks[x * Props.worldSize + y] = chunk;
         }
 
+        public void UpdateEntityInChunks(EntityPhysical entity, Vector2 prevLocation, Vector2 newLocation, int[] chunks)
+        {
+            if(WorldToChunkCoords(prevLocation).SequenceEqual(WorldToChunkCoords(newLocation)))
+            {
+                return;
+            }
+            else
+            {
 
+            }
+        }
+
+        public void InitiateEntityInChunks(Entity entity, Vector2 location)
+        {
+            GetChunk(WorldToChunkCoords(location));
+        }
+        /// <summary>
+        /// Updates a non-physical entities
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="prevLocation"></param>
+        /// <param name="newLocation"></param>
+        public void UpdateEntityInChunks(Entity entity, Vector2 prevLocation, Vector2 newLocation, int[] chunks)
+        {
+
+        }
 
 
 
@@ -98,6 +140,11 @@ namespace EngineeringCorpsCS
         public static int[] WorldToChunkCoords(float x, float y)
         {
             return new int[] {(int) Math.Floor(x/(Props.tileSize * Props.chunkSize)), (int) Math.Floor(y/(Props.tileSize * Props.chunkSize))};
+        }
+
+        public static int[] WorldToChunkCoords(Vector2 pos)
+        {
+            return new int[] { (int)Math.Floor(pos.x / (Props.tileSize * Props.chunkSize)), (int)Math.Floor(pos.y / (Props.tileSize * Props.chunkSize)) };
         }
 
         /// <summary>

@@ -13,20 +13,28 @@ namespace EngineeringCorpsCS
     {
         static void Main(string[] args)
         {
+            //Vital stuff (could be migrated to some init function)
             RenderWindow window = new RenderWindow(new VideoMode(1280, 720), "Engineering Corps");
+            window.SetFramerateLimit(60);
+            window.Closed += (s, a) => window.Close();
+            window.SetActive();
             TextureManager textureManager = new TextureManager();
             textureManager.LoadTextures();
+            InputManager input = new InputManager(window);
+            //Camera is the entry point for the game, first it subscribes to input, then an entity is added which makes the entity subscribe to input
+            ChunkManager chunkManager = new ChunkManager();
+            Camera camera = new Camera();
+
+            //Debug testing stuff
             Sprite rock = new Sprite(textureManager.GetTexture("asdf"));
             rock.Scale = new Vector2f(0.5f, 0.5f);
             Sprite snow = new Sprite(textureManager.GetTexture("snowsquare"));
             Sprite sand = new Sprite(textureManager.GetTexture("sandsquare"));
-            InputManager input = new InputManager(window);
-            Texture[] waves = new Texture[1];
-            waves[0] = textureManager.GetTexture("WavesAlpha");
-            RotatedAnimation wavesTest = new RotatedAnimation(waves, new Vector2i(320, 320), new Vector2f(0, 0), new Vector2f(2.0f, 2.0f), 1, 10, "fb", 12.0f);
-            window.SetActive();
-            ChunkManager chunkManager = new ChunkManager();
-            Camera camera = new Camera();
+            //Texture[] waves = new Texture[1];
+            //waves[0] = textureManager.GetTexture("WavesAlpha");
+            //RotatedAnimation wavesTest = new RotatedAnimation(waves, new Vector2i(320, 320), new Vector2f(0, 0), new Vector2f(2.0f, 2.0f), 1, 10, "fb", 12.0f);
+            Texture[] multi = new Texture[] { textureManager.GetTexture("1"), textureManager.GetTexture("2"), textureManager.GetTexture("3"), textureManager.GetTexture("4") };
+            RotatedAnimation multiTest = new RotatedAnimation(multi, new Vector2i(256, 256), new Vector2f(0, 0), new Vector2f(1.0f, 1.0f), 1, 4, "fb", 30.0f);
             List<Player> players = new List<Player>();
             Random random = new Random();
             for (int i = 0; i < 10; i++)
@@ -36,12 +44,10 @@ namespace EngineeringCorpsCS
                 players[i].collisionBox.SetRotation(random.Next(0, 360));
             }
             players.Add(camera.focusedEntity);
-            window.SetFramerateLimit(60);
-            window.Closed += (s, a) => window.Close();
             VertexArray waterquad = new VertexArray(PrimitiveType.Quads, 4);
             RenderStates state = new RenderStates(textureManager.GetTexture("watersquare"));
+            //End Debug testing stuff
             bool drawBoundingBoxes = true;
-            window.SetFramerateLimit(60);
             while (window.IsOpen)
             {
                 window.Clear();
@@ -98,12 +104,14 @@ namespace EngineeringCorpsCS
 
                 //Animation Draw Test
 
-                wavesTest.Update();
-                window.Draw(wavesTest.GetAnimationFrame());
+                //wavesTest.Update();
+                //window.Draw(wavesTest.GetAnimationFrame());
+                multiTest.Update();
+                window.Draw(multiTest.GetAnimationFrame());
 
                 //End Animation Draw Test
 
-                //draw entities
+                //Draw bounding boxes
                 if (drawBoundingBoxes == true)
                 {
                     VertexArray boundingBoxArray = new VertexArray(PrimitiveType.Lines);
@@ -126,7 +134,7 @@ namespace EngineeringCorpsCS
                 //finish drawing entities
                 window.Display();
                 waterquad.Clear();
-                input.FlushInput();
+                input.FlushInput(); //Flush input cache
             }
         }
     }
