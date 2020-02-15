@@ -13,6 +13,11 @@ namespace EngineeringCorpsCS
     {
         static void Main(string[] args)
         {
+            //test of logic for tile transition assignment
+            byte t = 66;
+            byte z = 96;
+            Console.WriteLine(((t & z)==0) ? 1 : 0 * 1);
+
             //Vital stuff (could be migrated to some init function)
             RenderWindow window = new RenderWindow(new VideoMode(1280, 720), "Engineering Corps");
             window.SetFramerateLimit(60);

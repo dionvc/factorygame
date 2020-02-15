@@ -7,9 +7,14 @@ using SFML.Graphics;
 
 namespace EngineeringCorpsCS
 {
-    class Tile
+    class Tile: Entity
     {
         Texture tileSheet;
-        Sprite tile;
+        
+
+        public void AppendTerrainVertices()
+        {
+
+        }
     }
 }

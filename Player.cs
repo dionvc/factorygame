@@ -14,8 +14,5 @@ namespace EngineeringCorpsCS
         {
             collisionBox = new BoundingBox(-32, -16, 32, 16);
         }
-        public override void Update()
-        {
-        }
     }
 }
