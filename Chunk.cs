@@ -60,5 +60,9 @@ namespace EngineeringCorpsCS
         {
             return terrain[x * Props.chunkSize + y];
         }
+        public byte[] GetTerrain()
+        {
+            return terrain;
+        }
     }
 }

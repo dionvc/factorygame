@@ -39,6 +39,7 @@ namespace EngineeringCorpsCS
         public Tile CreateBeachSand(byte index)
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Terrain;
+            return new Tile(textureManager.GetTexture(""), index, "Beach Sand", 1, new Color(), new Color(), collisionMask);
         }
     }
 }
