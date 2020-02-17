@@ -15,17 +15,15 @@ namespace EngineeringCorpsCS
             this.textureManager = textureManager;
         }
 
-        public Tile[] GetTerrainTiles()
+        public List<Tile> GetTerrainTiles()
         {
-            byte index = 1;
-            Tile[] tiles = new Tile[1];
-            tiles.Append(CreateDeepWater(index));
-            index++;
-            tiles.Append(CreateBeachSand(index));
-            index++;
+            List<Tile> tiles = new List<Tile>();
+            tiles.Add(CreateVoid((byte)tiles.Count));
+            tiles.Add(CreateDeepWater((byte)tiles.Count));
+            tiles.Add(CreateBeachSand((byte)tiles.Count));
             return tiles;
         }
-        public Tile[] GetTerrainPathTiles()
+        public List<Tile> GetTerrainPathTiles()
         {
             return null;
         }
@@ -33,13 +31,19 @@ namespace EngineeringCorpsCS
         public Tile CreateDeepWater(byte index)
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.TerrainSolid;
-            return new Tile(textureManager.GetTexture(""), index, "Deep Water", 0, new Color(), new Color(), collisionMask);
+            return new Tile(textureManager.GetTexture("asdf"), index, "Deep Water", 0, new Color(), new Color(), collisionMask);
         }
 
         public Tile CreateBeachSand(byte index)
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Terrain;
             return new Tile(textureManager.GetTexture(""), index, "Beach Sand", 1, new Color(), new Color(), collisionMask);
+        }
+
+        public Tile CreateVoid(byte index)
+        {
+            Base.CollisionLayer collisionMask = Base.CollisionLayer.Void & Base.CollisionLayer.TerrainSolid;
+            return new Tile(textureManager.GetTexture(""), index, "Void", 0, new Color(), new Color(), collisionMask);
         }
     }
 }

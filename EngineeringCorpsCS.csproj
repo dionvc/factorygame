@@ -64,8 +64,8 @@
     <Compile Include="RotatedAnimation.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="Chunk.cs" />
-    <Compile Include="ChunkManager.cs" />
+    <Compile Include="Chunk\Chunk.cs" />
+    <Compile Include="Chunk\ChunkManager.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="FastNoise.cs" />
     <Compile Include="mapProps.cs" />
@@ -140,6 +140,9 @@
     <Content Include="SFML.Window.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SFML\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

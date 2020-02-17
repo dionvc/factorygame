@@ -17,6 +17,7 @@ namespace EngineeringCorpsCS
             byte t = 66;
             byte z = 96;
             Console.WriteLine(((t & z)==0) ? 1 : 0 * 1);
+
             //Vital stuff (could be migrated to some init function)
             RenderWindow window = new RenderWindow(new VideoMode(1280, 720), "Engineering Corps");
             window.SetFramerateLimit(60);
@@ -28,6 +29,13 @@ namespace EngineeringCorpsCS
             //Camera is the entry point for the game, first it subscribes to input, then an entity is added which makes the entity subscribe to input
             ChunkManager chunkManager = new ChunkManager();
             Camera camera = new Camera();
+            TileManager tileManager = new TileManager(textureManager);
+            Texture[] terrainTilesheets = tileManager.GetTerrainTilesheets();
+            RenderStates[] terrainRenderStates = new RenderStates[terrainTilesheets.Length];
+            for(int i = 0; i < terrainTilesheets.Length; i++)
+            {
+                terrainRenderStates[i] = new RenderStates(terrainTilesheets[i]);
+            }
 
             //Debug testing stuff
             Sprite rock = new Sprite(textureManager.GetTexture("asdf"));
@@ -61,7 +69,13 @@ namespace EngineeringCorpsCS
 
                 //drawing terrain
                 int[] pos = ChunkManager.WorldToChunkCoords(camera.GetView().Center.X, camera.GetView().Center.Y);
-                for (int c = 0; c < 9; c++)
+                VertexArray[] test = tileManager.GenerateTerrainVertexArray(chunkManager, pos);
+                for(int i = 0; i < test.Length; i++)
+                {
+                    window.Draw(test[i], terrainRenderStates[i]);
+
+                }
+                /*for (int c = 0; c < 9; c++)
                 {
                     Chunk chunk = chunkManager.GetChunk(pos[0] + (c) / 3 - 1, pos[1] + (c) % 3 - 1);
                     if(chunk != null) 
@@ -102,8 +116,8 @@ namespace EngineeringCorpsCS
                             }
                         }
                     }
-                }
-                window.Draw(waterquad, state);
+                }*/
+                //window.Draw(waterquad, state);
                 //finish drawing terrain
 
                 //Animation Draw Test
@@ -137,7 +151,7 @@ namespace EngineeringCorpsCS
                 }
                 //finish drawing entities
                 window.Display();
-                waterquad.Clear();
+                //waterquad.Clear();
                 input.FlushInput(); //Flush input cache
             }
         }

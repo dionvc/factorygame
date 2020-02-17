@@ -30,49 +30,59 @@ namespace EngineeringCorpsCS
             this.name = name;
         }
 
-        public void AppendTerrainVertices(VertexArray vertexArray, byte[] terrain, int[] cXY, byte[] impassableTileTypes)
+        public void AppendTerrainVertices(VertexArray vertexArray, ChunkManager chunkManager, int[]pos, List<byte> impassableTileTypes)
         {
+            int[] cXY = new int[] { pos[0] * Props.chunkSize, pos[1] * Props.chunkSize };
             for (int i = 0; i < Props.chunkSize; i++)
             {
                 for (int j = 0; j < Props.chunkSize; j++)
                 {
                     //First check if tile is present at location, if it is then simply append vertices of the regular tile
-                    if (terrain[i * Props.chunkSize + j] == tileType)
+                    if (chunkManager.GetTileFromWorldInt(cXY, i, j) == tileType)
                     {
                         int variantRegular = ((i * Props.chunkSize + j) * 11) % 8;
+                        variantRegular = 0;
                         //Append regular tile variation
                         //first triangle
-                        vertexArray.Append(new Vertex(new Vector2f((cXY[0] + i) * Props.tileSize, (cXY[1] + j) * Props.tileSize), shade,
-                                        new Vector2f(Props.tileSize * variantRegular, Props.tileSize * variantRegular))); //top left
-                        vertexArray.Append(new Vertex(new Vector2f((cXY[0] + i + 1) * Props.tileSize, (cXY[1] + j) * Props.tileSize), shade,
-                            new Vector2f((Props.tileSize + 1) * variantRegular, Props.tileSize * variantRegular))); //top right
-                        vertexArray.Append(new Vertex(new Vector2f((cXY[0] + i) * Props.tileSize, (cXY[1] + j + 1) * Props.tileSize), shade,
-                            new Vector2f(Props.tileSize * variantRegular, (Props.tileSize + 1) * variantRegular))); //bottom left
+                        float oX = (cXY[0] + i) * Props.tileSize;
+                        float oY = (cXY[1] + j) * Props.tileSize;
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY),
+                            new Vector2f(Props.tileSize * variantRegular, 0.0f))); //top left
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY),
+                            new Vector2f(Props.tileSize * (variantRegular + 1), 0.0f))); //top right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize),
+                            new Vector2f(Props.tileSize * variantRegular, Props.tileSize))); //bottom left
+
                         //second triangle
-                        vertexArray.Append(new Vertex(new Vector2f((cXY[0] + i + 1) * Props.tileSize, (cXY[1] + j) * Props.tileSize), shade,
-                            new Vector2f((Props.tileSize + 1) * variantRegular, Props.tileSize * variantRegular))); //top right
-                        vertexArray.Append(new Vertex(new Vector2f((cXY[0] + i + 1) * Props.tileSize, (cXY[1] + j + 1) * Props.tileSize), shade,
-                            new Vector2f(Props.tileSize, Props.tileSize))); //bottom right
-                        vertexArray.Append(new Vertex(new Vector2f((cXY[0] + i) * Props.tileSize, (cXY[1] + j + 1) * Props.tileSize), shade,
-                            new Vector2f(Props.tileSize * variantRegular, (Props.tileSize + 1) * variantRegular))); //bottom left
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY),
+                            new Vector2f((Props.tileSize) * (variantRegular + 1), 0.0f))); //top right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize),
+                            new Vector2f(Props.tileSize * (variantRegular + 1) , Props.tileSize))); //bottom right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize),
+                            new Vector2f(Props.tileSize * (variantRegular), Props.tileSize))); //bottom left
+
                         continue;
                     }
 
                     //Next check for tile transitions
                     int value = 0;
                     int variant = ((i * Props.chunkSize + j) * 7) % 4; //variant is determine by whether the transition is into an impassable tile
-                    if (impassableTileTypes.Contains(terrain[i * Props.chunkSize + j]))
+                    if (impassableTileTypes.Contains(chunkManager.GetTileFromWorldInt(cXY, i, j)))
                     {
                         variant += 4;
                     }
-                    value += (terrain[(i - 1) * Props.chunkSize + (j - 1)] == tileType) ? 1 : 0; //top left
-                    value += (terrain[(i) * Props.chunkSize + (j - 1)] == tileType) ? 2 : 0; //top center
-                    value += (terrain[(i) * Props.chunkSize + (j - 1)] == tileType) ? 4 : 0; //top right
-                    value += (terrain[(i - 1) * Props.chunkSize + (j)] == tileType) ? 8 : 0; //left
-                    value += (terrain[(i + 1) * Props.chunkSize + (j)] == tileType) ? 16 : 0; //right
-                    value += (terrain[(i - 1) * Props.chunkSize + (j + 1)] == tileType) ? 32 : 0; //bottom left
-                    value += (terrain[(i) * Props.chunkSize + (j + 1)] == tileType) ? 64 : 0; //bottom center
-                    value += (terrain[(i + 1) * Props.chunkSize + (j + 1)] == tileType) ? 128 : 0; //bottom right
+                    value += (chunkManager.GetTileFromWorldInt(cXY, i-1, j-1) == tileType) ? 1 : 0; //top left
+                    value += (chunkManager.GetTileFromWorldInt(cXY, i, j - 1) == tileType) ? 2 : 0; //top center
+                    value += (chunkManager.GetTileFromWorldInt(cXY, i + 1, j - 1) == tileType) ? 4 : 0; //top right
+                    value += (chunkManager.GetTileFromWorldInt(cXY, i - 1, j) == tileType) ? 8 : 0; //left
+                    value += (chunkManager.GetTileFromWorldInt(cXY, i + 1, j) == tileType) ? 16 : 0; //right
+                    value += (chunkManager.GetTileFromWorldInt(cXY, i - 1, j + 1) == tileType) ? 32 : 0; //bottom left
+                    value += (chunkManager.GetTileFromWorldInt(cXY, i , j + 1) == tileType) ? 64 : 0; //bottom center
+                    value += (chunkManager.GetTileFromWorldInt(cXY, i + 1, j + 1) == tileType) ? 128 : 0; //bottom right
 
                     //Virtual mapping of surrounding tiles
                     // 1 2 3

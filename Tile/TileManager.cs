@@ -9,18 +9,19 @@ namespace EngineeringCorpsCS
 {
     class TileManager
     {
-        Tile[] terrainTiles;
-        byte[] impassableTileTypes;
-        Tile[] terrainPathTiles;
+        List<Tile> terrainTiles;
+        List<byte> impassableTileTypes;
+        List<Tile> terrainPathTiles;
         public TileManager(TextureManager textureManager)
         {
             TileFactory tileFactory = new TileFactory(textureManager);
             terrainTiles = tileFactory.GetTerrainTiles();
-            for(byte i = 0; i < terrainTiles.Length; i++)
+            impassableTileTypes = new List<byte>();
+            for(byte i = 0; i < terrainTiles.Count; i++)
             {
                 if(terrainTiles[i].collisionMask == Base.CollisionLayer.TerrainSolid)
                 {
-                    impassableTileTypes.Append(i);
+                    impassableTileTypes.Add(i);
                 }
             }
             terrainPathTiles = tileFactory.GetTerrainPathTiles();
@@ -32,15 +33,14 @@ namespace EngineeringCorpsCS
         /// <param name="chunk"></param>
         /// <param name="cXY"></param>
         /// <returns></returns>
-        public VertexArray[] GenerateTerrainVertexArray(Chunk chunk, int[] cXY)
+        public VertexArray[] GenerateTerrainVertexArray(ChunkManager chunkManager, int[] cXY)
         {
-            byte[] terrain = chunk.GetTerrain();
-            VertexArray[] terrainVertexArray = new VertexArray[terrainTiles.Length];
+            VertexArray[] terrainVertexArray = new VertexArray[terrainTiles.Count];
             //Iterate over every tile type starting with the lowest layer (0)
-            for(int i = 0; i < terrainTiles.Length; i++)
+            for(int i = 0; i < terrainTiles.Count; i++)
             {
-                terrainVertexArray[i] = new VertexArray(PrimitiveType.Triangles, 4);
-                terrainTiles[i].AppendTerrainVertices(terrainVertexArray[i], terrain, cXY, impassableTileTypes);
+                terrainVertexArray[i] = new VertexArray(PrimitiveType.Triangles,3);
+                terrainTiles[i].AppendTerrainVertices(terrainVertexArray[i], chunkManager, cXY, impassableTileTypes);
             }
             return terrainVertexArray;
         }
@@ -51,10 +51,10 @@ namespace EngineeringCorpsCS
         /// <returns></returns>
         public Texture[] GetTerrainTilesheets()
         {
-            Texture[] terrainTilesheet = new Texture[terrainTiles.Length];
-            for(byte i = 0; i < terrainTiles.Length; i++)
+            Texture[] terrainTilesheet = new Texture[terrainTiles.Count];
+            for(byte i = 0; i < terrainTiles.Count; i++)
             {
-                
+                terrainTilesheet[i] = terrainTiles[i].tileSheet;
             }
             return terrainTilesheet;
         }
