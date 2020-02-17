@@ -15,28 +15,36 @@ namespace EngineeringCorpsCS
         public enum DrawLayer
         {
             None = 0,
-            Terrain = 1,
-            Resource = 2,
-            Item = 3,
-            LayeredEntity = 4,
-            Overlay = 5,
-            Air = 6,
-            IconOverlay = 7,
-            GUI = 8
+            Terrain = 1,            //All terrain is drawn on one layer
+            TerrainDecor = 2,
+            TerrainPath = 3,        //Placed paths
+            Resource = 4,           //Some resources may have visible signs above ground
+            Item = 5,
+            EntitySorted = 6,
+            Overlay = 7,
+            Air = 8,
+            IconOverlay = 9,
+            GUI = 10
         }
 
         /// <summary>
         /// Describes the layer(s) on which the instance in question is collidable
         /// </summary>
         [Flags]
-        enum CollisionLayer
+        public enum CollisionLayer
         {
-            None = 0,
-            Terrain = 1,
-            Resource = 2,
-            Item = 4,
-
-            All = Terrain
+            None = 0,               //Doesn't collide with anything
+            Void = 1,               //Collides with void (no terrain)
+            Resource = 2,           //Resource layer is below ground
+            TerrainSolid = 4,       //For water, or super rocky terrain?
+            Terrain = 8,            //For regular terrain
+            TerrainDecor = 16,      //For decorations like grass, etc
+            TerrainPath = 32,       //For placed paths
+            Item = 64,              //For items on the ground
+            EntityStatic = 128,
+            EntityMoving = 256,
+            All = Void | Resource | TerrainSolid | Terrain | TerrainPath | Item | EntityStatic | EntityMoving
         }
+        public string name { get; protected set; }
     }
 }
