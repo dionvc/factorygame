@@ -40,15 +40,16 @@ namespace EngineeringCorpsCS
                     double elevation =  0.5 * elevationNoise.GetPerlin(1 * nx, 1 * ny)
                     +0.5 * elevationNoise.GetPerlin(2 * nx, 2 * ny)
                     +0.5 * elevationNoise.GetPerlin(4 * nx, 4 * ny);
-                    double moisture = 0.5 * elevationNoise.GetPerlin(1 * nx, 1 * ny)
-                    + 0.5 * elevationNoise.GetPerlin(2 * nx, 2 * ny)
-                    + 0.5 * elevationNoise.GetPerlin(4 * nx, 4 * ny);
-                    double temperature = 0.5 * elevationNoise.GetPerlin(1 * nx, 1 * ny)
-                    + 0.5 * elevationNoise.GetPerlin(2 * nx, 2 * ny)
-                    + 0.5 * elevationNoise.GetPerlin(4 * nx, 4 * ny);
-                    elevation *= 4;
-                    elevation += 1.5;
-                    SetTile(i, j, Convert.ToByte(Math.Abs(elevation)));
+                    double moisture = 0.5 * moistureNoise.GetPerlin(1 * nx, 1 * ny)
+                    + 0.5 * moistureNoise.GetPerlin(2 * nx, 2 * ny)
+                    + 0.5 * moistureNoise.GetPerlin(4 * nx, 4 * ny);
+                    double temperature = 0.5 * temperatureNoise.GetPerlin(1 * nx, 1 * ny)
+                    + 0.5 * temperatureNoise.GetPerlin(2 * nx, 2 * ny)
+                    + 0.5 * temperatureNoise.GetPerlin(4 * nx, 4 * ny);
+                    elevation += 0.5;
+                    moisture += 0.5;
+                    temperature += 0.5;
+                    SetTile(i, j, Convert.ToByte(Math.Abs(moisture + temperature + elevation)));
                 }
             }
         }

@@ -20,17 +20,18 @@ namespace EngineeringCorpsCS
         public ChunkManager()
         {
             chunks = new Chunk[Props.worldSize * Props.worldSize];
+            Random r = new Random(DateTime.Now.Second);
             elevationNoise = new FastNoise();
             elevationNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
-            elevationNoise.SetSeed(new Random(DateTime.Now.Second).Next(0, 10000));
+            elevationNoise.SetSeed(r.Next(0, 10000));
 
             moistureNoise = new FastNoise();
             moistureNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
-            moistureNoise.SetSeed(new Random().Next(0, 10000));
+            moistureNoise.SetSeed(r.Next(0, 10000));
 
             temperatureNoise = new FastNoise();
             temperatureNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
-            temperatureNoise.SetSeed(new Random().Next(0, 10000));
+            temperatureNoise.SetSeed(r.Next(0, 10000));
         }
 
         public void Update()
@@ -174,14 +175,19 @@ namespace EngineeringCorpsCS
         public byte GetTileFromWorld(float x, float y)
         {
             int[] xyij = WorldToTileCoords(x, y);
-            return GetChunk(new int[] { xyij[0], xyij[1] }).GetTile(xyij[0], xyij[1]);
+            Chunk chunk = GetChunk(new int[] { xyij[2], xyij[3] });
+            if(chunk == null)
+            {
+                return 0;
+            }
+            return chunk.GetTile(xyij[0], xyij[1]);
         }
 
         public byte GetTileFromWorldInt(int[] cXY, int i, int j)
         {
             int iN = (i % Props.chunkSize + Props.chunkSize) % Props.chunkSize;
             int jN = (j % Props.chunkSize + Props.chunkSize) % Props.chunkSize;
-            Chunk chunk = GetChunk(new int[] { cXY[0] + (int)Math.Floor(i * 1.0 / Props.chunkSize), cXY[1] + (int)Math.Floor(j * 1.0 / Props.chunkSize + 1) });
+            Chunk chunk = GetChunk(new int[] { cXY[0] + (int)Math.Floor(i * 1.0 / Props.chunkSize), cXY[1] + (int)Math.Floor(j * 1.0 / Props.chunkSize) });
             if (chunk == null)
             {
                 return 0; //void

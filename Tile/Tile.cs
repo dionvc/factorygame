@@ -55,23 +55,23 @@ namespace EngineeringCorpsCS
                         //Append regular tile variation
                         //first triangle
                         
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY), shade,
                             new Vector2f(Props.tileSize * variantRegular, 0.0f))); //top left
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
                             new Vector2f(Props.tileSize * (variantRegular + 1), 0.0f))); //top right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * variantRegular, Props.tileSize))); //bottom left
 
                         //second triangle
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
                             new Vector2f((Props.tileSize) * (variantRegular + 1), 0.0f))); //top right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * (variantRegular + 1) , Props.tileSize))); //bottom right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * (variantRegular), Props.tileSize))); //bottom left
 
                         continue;
@@ -114,94 +114,112 @@ namespace EngineeringCorpsCS
                     if (((value & 24) + (value & 2)) == 2)
                     {
                         //top fade
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY), shade,
                             new Vector2f(Props.tileSize * variant, Props.tileSize))); //top left
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
                             new Vector2f(Props.tileSize * (variant + 1), Props.tileSize))); //top right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * variant, 2 * Props.tileSize))); //bottom left
 
                         //second triangle
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
                             new Vector2f((Props.tileSize) * (variant + 1), Props.tileSize))); //top right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * (variant + 1), 2 * Props.tileSize))); //bottom right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * (variant), 2 * Props.tileSize))); //bottom left
                     }
                     if (((value & 24) + (value & 64)) == 64)
                     {
                         //bottom fade
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY), shade,
                             new Vector2f(Props.tileSize * (variant + 8), Props.tileSize))); //top left
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
                             new Vector2f(Props.tileSize * (variant + 1 + 8), Props.tileSize))); //top right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * (variant + 8), 2 * Props.tileSize))); //bottom left
 
                         //second triangle
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
                             new Vector2f((Props.tileSize) * (variant + 1 + 8), Props.tileSize))); //top right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * (variant + 1 + 8), 2 * Props.tileSize))); //bottom right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * (variant + 8), 2 * Props.tileSize))); //bottom left
                     }
                     if (((value & 66) + (value & 8)) == 8)
                     {
                         //left fade
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY), shade,
                             new Vector2f(Props.tileSize * variant, 2 * Props.tileSize))); //top left
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
                             new Vector2f(Props.tileSize * (variant + 1), 2 * Props.tileSize))); //top right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * variant, 3 * Props.tileSize))); //bottom left
 
                         //second triangle
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
                             new Vector2f((Props.tileSize) * (variant + 1), 2 * Props.tileSize))); //top right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * (variant + 1), 3 * Props.tileSize))); //bottom right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * (variant), 3 * Props.tileSize))); //bottom left
                     }
                     if (((value & 66) + (value & 16)) == 16)
                     {
                         //right fade
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY), shade,
                             new Vector2f(Props.tileSize * (variant + 8), 2 * Props.tileSize))); //top left
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
                             new Vector2f(Props.tileSize * (variant + 1 + 8), 2 * Props.tileSize))); //top right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * (variant + 8), 3 * Props.tileSize))); //bottom left
 
                         //second triangle
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
                             new Vector2f((Props.tileSize) * (variant + 1 + 8), 2 * Props.tileSize))); //top right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * (variant + 1 + 8), 3 * Props.tileSize))); //bottom right
 
-                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize),
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
                             new Vector2f(Props.tileSize * (variant + 8), 3 * Props.tileSize))); //bottom left
                     }
                     if ((value & 10) == 10)
                     {
                         //inside corner topleft
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY), shade,
+                            new Vector2f(Props.tileSize * variant, 3 * Props.tileSize))); //top left
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
+                            new Vector2f(Props.tileSize * (variant + 1), 3 * Props.tileSize))); //top right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
+                            new Vector2f(Props.tileSize * variant, 4 * Props.tileSize))); //bottom left
+
+                        //second triangle
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
+                            new Vector2f((Props.tileSize) * (variant + 1), 3 * Props.tileSize))); //top right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize), shade,
+                            new Vector2f(Props.tileSize * (variant + 1), 4 * Props.tileSize))); //bottom right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
+                            new Vector2f(Props.tileSize * (variant), 4 * Props.tileSize))); //bottom left
                     }
                     else if (((value & 1) + (value & 10)) == 1)
                     {

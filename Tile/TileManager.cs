@@ -58,5 +58,10 @@ namespace EngineeringCorpsCS
             }
             return terrainTilesheet;
         }
+
+        public string GetTileName(byte tileType)
+        {
+            return terrainTiles[tileType].name;
+        }
     }
 }

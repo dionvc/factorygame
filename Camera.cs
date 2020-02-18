@@ -24,19 +24,19 @@ namespace EngineeringCorpsCS
             
             if (Keyboard.IsKeyPressed(Keyboard.Key.W))
             {
-                view.Move(new SFML.System.Vector2f(0, -100));
+                view.Move(new SFML.System.Vector2f(0, -10));
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.A))
             {
-                view.Move(new SFML.System.Vector2f(-100, 0));
+                view.Move(new SFML.System.Vector2f(-10, 0));
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.S))
             {
-                view.Move(new SFML.System.Vector2f(0, 100));
+                view.Move(new SFML.System.Vector2f(0, 10));
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.D))
             {
-                view.Move(new SFML.System.Vector2f(100, 0));
+                view.Move(new SFML.System.Vector2f(10, 0));
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.R))
             {
@@ -46,11 +46,11 @@ namespace EngineeringCorpsCS
             {
                 if(Mouse.IsButtonPressed(Mouse.Button.Left))
                 {
-                    viewScale -= 0.5f;
+                    viewScale -= 0.25f;
                 }
                 else
                 {
-                    viewScale += 0.5f;
+                    viewScale += 0.25f;
                 }
                 if(viewScale < 0.5)
                 {
