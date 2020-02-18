@@ -116,6 +116,9 @@
     <Content Include="Graphics\DebugTextures\WavesAlpha.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\desertTilesheet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Graphics\rocksquare.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

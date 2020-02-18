@@ -21,6 +21,7 @@ namespace EngineeringCorpsCS
             tiles.Add(CreateVoid((byte)tiles.Count));
             tiles.Add(CreateDeepWater((byte)tiles.Count));
             tiles.Add(CreateBeachSand((byte)tiles.Count));
+            tiles.Add(CreateDesert((byte)tiles.Count));
             return tiles;
         }
         public List<Tile> GetTerrainPathTiles()
@@ -38,6 +39,12 @@ namespace EngineeringCorpsCS
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Terrain;
             return new Tile(textureManager.GetTexture("tileTransitionTest"), index, "Beach Sand", 1, new Color(), new Color(), collisionMask);
+        }
+
+        public Tile CreateDesert(byte index)
+        {
+            Base.CollisionLayer collisionMask = Base.CollisionLayer.Terrain;
+            return new Tile(textureManager.GetTexture("desertTilesheet"), index, "Desert", 1, new Color(), new Color(), collisionMask);
         }
 
         public Tile CreateVoid(byte index)
