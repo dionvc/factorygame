@@ -107,7 +107,7 @@ namespace EngineeringCorpsCS
                     texturePos.Y = (size.X * (currentFrame + (currentState * frames))) / (textureSize.X * textureRefs.Length) * size.Y;
                     int textureIndex = (texturePos.X / textureSize.X);
                     texturePos.X = (texturePos.X % (textureSize.X));
-                    Console.WriteLine("TextureIndex: " + textureIndex + "\nFrame: " + currentFrame + "\nTexPos: " + texturePos.X +  ", " + texturePos.Y);
+                    //Console.WriteLine("TextureIndex: " + textureIndex + "\nFrame: " + currentFrame + "\nTexPos: " + texturePos.X +  ", " + texturePos.Y);
                     animationFrame.Texture = textureRefs[textureIndex];
                     animationFrame.TextureRect = new IntRect(texturePos, size);
                 }

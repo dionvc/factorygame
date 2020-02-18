@@ -22,7 +22,7 @@ namespace EngineeringCorpsCS
             chunks = new Chunk[Props.worldSize * Props.worldSize];
             elevationNoise = new FastNoise();
             elevationNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
-            elevationNoise.SetSeed(new Random().Next(0, 10000));
+            elevationNoise.SetSeed(new Random(DateTime.Now.Second).Next(0, 10000));
 
             moistureNoise = new FastNoise();
             moistureNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
@@ -179,10 +179,15 @@ namespace EngineeringCorpsCS
 
         public byte GetTileFromWorldInt(int[] cXY, int i, int j)
         {
-            int iN = (i % Props.chunkSize + Props.chunkSize)%Props.chunkSize;
-            int jN = (j % Props.chunkSize + Props.chunkSize)%Props.chunkSize;
-            Chunk chunk = GetChunk(new int[] { cXY[0] + (int)Math.Ceiling((i * 1.0f) / Props.chunkSize), cXY[1] + (int)Math.Ceiling((j * 1.0f) / Props.chunkSize) });
+            int iN = (i % Props.chunkSize + Props.chunkSize) % Props.chunkSize;
+            int jN = (j % Props.chunkSize + Props.chunkSize) % Props.chunkSize;
+            Chunk chunk = GetChunk(new int[] { cXY[0] + (int)Math.Floor(i * 1.0 / Props.chunkSize), cXY[1] + (int)Math.Floor(j * 1.0 / Props.chunkSize + 1) });
+            if (chunk == null)
+            {
+                return 0; //void
+            }
             return chunk.GetTile(iN, jN);
+
         }
 
         public static int[] TileToWorldCoords(int x, int y, int cx, int cy)

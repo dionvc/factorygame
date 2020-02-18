@@ -31,13 +31,13 @@ namespace EngineeringCorpsCS
         public Tile CreateDeepWater(byte index)
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.TerrainSolid;
-            return new Tile(textureManager.GetTexture("asdf"), index, "Deep Water", 0, new Color(), new Color(), collisionMask);
+            return new Tile(textureManager.GetTexture("watersquare"), index, "Deep Water", 0, new Color(), new Color(), collisionMask);
         }
 
         public Tile CreateBeachSand(byte index)
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Terrain;
-            return new Tile(textureManager.GetTexture(""), index, "Beach Sand", 1, new Color(), new Color(), collisionMask);
+            return new Tile(textureManager.GetTexture("tileTransitionTest"), index, "Beach Sand", 1, new Color(), new Color(), collisionMask);
         }
 
         public Tile CreateVoid(byte index)

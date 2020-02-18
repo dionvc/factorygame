@@ -10,7 +10,7 @@ namespace EngineeringCorpsCS
     {
         public const int chunkSize = 32; //size of chunk in tiles
         public const int worldSize = 1024; //size of world in chunks
-        public const int tileSize = 128; //tilesize in pixels
+        public const int tileSize = 32; //tilesize in pixels
 
         public static int startingSize = 8;
     }

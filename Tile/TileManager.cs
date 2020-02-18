@@ -39,7 +39,7 @@ namespace EngineeringCorpsCS
             //Iterate over every tile type starting with the lowest layer (0)
             for(int i = 0; i < terrainTiles.Count; i++)
             {
-                terrainVertexArray[i] = new VertexArray(PrimitiveType.Triangles,3);
+                terrainVertexArray[i] = new VertexArray(PrimitiveType.Triangles);
                 terrainTiles[i].AppendTerrainVertices(terrainVertexArray[i], chunkManager, cXY, impassableTileTypes);
             }
             return terrainVertexArray;

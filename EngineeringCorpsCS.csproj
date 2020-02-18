@@ -125,6 +125,9 @@
     <Content Include="Graphics\snowsquare.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\tileTransitionTest.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Graphics\watersquare.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
