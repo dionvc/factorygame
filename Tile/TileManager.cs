@@ -61,6 +61,10 @@ namespace EngineeringCorpsCS
 
         public string GetTileName(byte tileType)
         {
+            if(tileType >= terrainTiles.Count)
+            {
+                return "Undefined";
+            }
             return terrainTiles[tileType].name;
         }
     }

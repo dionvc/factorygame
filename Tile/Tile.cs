@@ -228,6 +228,24 @@ namespace EngineeringCorpsCS
                     if ((value & 18) == 18)
                     {
                         //inside corner topright
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY), shade,
+                            new Vector2f(Props.tileSize * (variant + 8), 3 * Props.tileSize))); //top left
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
+                            new Vector2f(Props.tileSize * (variant + 1 + 8), 3 * Props.tileSize))); //top right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
+                            new Vector2f(Props.tileSize * (variant + 8), 4 * Props.tileSize))); //bottom left
+
+                        //second triangle
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
+                            new Vector2f((Props.tileSize) * (variant + 1 + 8), 3 * Props.tileSize))); //top right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize), shade,
+                            new Vector2f(Props.tileSize * (variant + 1 + 8), 4 * Props.tileSize))); //bottom right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
+                            new Vector2f(Props.tileSize * (variant + 8), 4 * Props.tileSize))); //bottom left
                     }
                     else if (((value & 4) + (value & 18)) == 4)
                     {
@@ -236,6 +254,24 @@ namespace EngineeringCorpsCS
                     if ((value & 72) == 72)
                     {
                         //inside corner bottomleft
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY), shade,
+                            new Vector2f(Props.tileSize * variant, 4 * Props.tileSize))); //top left
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
+                            new Vector2f(Props.tileSize * (variant + 1), 4 * Props.tileSize))); //top right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
+                            new Vector2f(Props.tileSize * variant, 5 * Props.tileSize))); //bottom left
+
+                        //second triangle
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
+                            new Vector2f((Props.tileSize) * (variant + 1), 4 * Props.tileSize))); //top right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize), shade,
+                            new Vector2f(Props.tileSize * (variant + 1), 5 * Props.tileSize))); //bottom right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
+                            new Vector2f(Props.tileSize * (variant), 5 * Props.tileSize))); //bottom left
                     }
                     else if (((value & 32) + (value & 72)) == 32)
                     {
@@ -244,6 +280,25 @@ namespace EngineeringCorpsCS
                     if ((value & 80) == 80)
                     {
                         //inside corner bottomright
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY), shade,
+                            new Vector2f(Props.tileSize * (variant + 8), 4 * Props.tileSize))); //top left
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
+                            new Vector2f(Props.tileSize * (variant + 1 + 8), 4 * Props.tileSize))); //top right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
+                            new Vector2f(Props.tileSize * (variant + 8), 5 * Props.tileSize))); //bottom left
+
+                        //second triangle
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY), shade,
+                            new Vector2f((Props.tileSize) * (variant + 1 + 8), 4 * Props.tileSize))); //top right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX + Props.tileSize, oY + Props.tileSize), shade,
+                            new Vector2f(Props.tileSize * (variant + 1 + 8), 5 * Props.tileSize))); //bottom right
+
+                        vertexArray.Append(new Vertex(new Vector2f(oX, oY + Props.tileSize), shade,
+                            new Vector2f(Props.tileSize * (variant + 8), 5
+                            * Props.tileSize))); //bottom left
                     }
                     else if (((value & 128) + (value & 80)) == 128)
                     {

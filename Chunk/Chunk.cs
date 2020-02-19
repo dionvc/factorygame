@@ -13,8 +13,8 @@ namespace EngineeringCorpsCS
     {
 
         private byte[] terrain;
-        private Dictionary<Base.DrawLayer, List<Entity>> drawLayers; //Collection of entities for drawing
-        private List<Entity> entityCollection; //Collection of entities for collision
+        private List<Entity> entityDrawCollection; //Collection of entities for drawing (entities will be dynamically sorted)
+        private List<Entity> entityCollection; //Collection of entities for collision (2+ different chunks may contain the same entity)
 
         public Chunk()
         {
@@ -48,8 +48,16 @@ namespace EngineeringCorpsCS
                     + 0.5 * temperatureNoise.GetPerlin(4 * nx, 4 * ny);
                     elevation += 0.5;
                     moisture += 0.5;
-                    temperature += 0.5;
-                    SetTile(i, j, Convert.ToByte(Math.Abs(moisture + temperature + elevation)));
+                    temperature += 1.5;
+                    temperature *= 2;
+                    if (moisture > 1 && elevation < 1)
+                    {
+                        SetTile(i, j, 1);
+                    }
+                    else
+                    {
+                        SetTile(i, j, Convert.ToByte(Math.Abs(temperature)));
+                    }
                 }
             }
         }

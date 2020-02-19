@@ -39,6 +39,7 @@ namespace EngineeringCorpsCS
             Font debugFont = new Font("SairaRegular.ttf");
             Text biomeText = new Text("default", debugFont, 32);
             Text fpsText = new Text("default", debugFont, 32);
+            Text coordinates = new Text("default", debugFont, 32);
             Clock clock = new Clock();
             float lastTime = 0.0f;
             bool drawBoundingBoxes = true;
@@ -74,7 +75,7 @@ namespace EngineeringCorpsCS
                 
                 //drawing terrain
                 Vector2f origin = window.MapPixelToCoords(new Vector2i(0,0), camera.GetView());
-                Vector2f extent = window.MapPixelToCoords(new Vector2i(1280, 720), camera.GetView());
+                Vector2f extent = window.MapPixelToCoords(new Vector2i((int) window.Size.X,(int) window.Size.Y), camera.GetView());
                 int[] begPos = ChunkManager.WorldToChunkCoords(origin.X, origin.Y);
                 int[] endPos = ChunkManager.WorldToChunkCoords(extent.X, extent.Y);
                 for(int i = begPos[0]; i <= endPos[0]; i++)
@@ -133,12 +134,18 @@ namespace EngineeringCorpsCS
                     float currentTime = clock.Restart().AsSeconds();
                     float fps = 1.0f / currentTime;
                     lastTime = currentTime;
-                    biomeText.DisplayedString = "Biome: " + tileManager.GetTileName(chunkManager.GetTileFromWorld(camera.focusedEntity.position.x, camera.focusedEntity.position.y));
+                    float worldX = camera.GetView().Center.X;
+                    float worldY = camera.GetView().Center.Y;
+                    int[] cXY = ChunkManager.WorldToChunkCoords(worldX, worldY);
+                    biomeText.DisplayedString = "Biome: " + tileManager.GetTileName(chunkManager.GetTileFromWorld(worldX, worldY));
                     biomeText.Position = origin;
                     fpsText.DisplayedString = "FPS/TPS: " + fps;
                     fpsText.Position = new Vector2f(origin.X, origin.Y + 32);
+                    coordinates.DisplayedString = "World Coordinates: " + worldX + ", " + worldY + "\nChunk Coordinates:" + cXY[0] + ", " + cXY[1] + "\nTile Coordinates:" + (int)(worldX / Props.tileSize) % Props.chunkSize + ", " + (int)(worldY / Props.tileSize) % Props.chunkSize;
+                    coordinates.Position = new Vector2f(origin.X, origin.Y + 64);
                     window.Draw(biomeText);
                     window.Draw(fpsText);
+                    window.Draw(coordinates);
                 }
                 
                 //finish drawing entities
