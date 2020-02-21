@@ -77,7 +77,7 @@
     <Compile Include="Props.cs" />
     <Compile Include="Renderer.cs" />
     <Compile Include="TestEntity.cs" />
-    <Compile Include="TextureManager.cs" />
+    <Compile Include="TextureContainer.cs" />
     <Compile Include="Tile\Tile.cs" />
     <Compile Include="Tile\TileFactory.cs" />
     <Compile Include="Tile\TileCollection.cs" />

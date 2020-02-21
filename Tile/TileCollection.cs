@@ -9,10 +9,11 @@ namespace EngineeringCorpsCS
 {
     class TileCollection
     {
-        List<Tile> terrainTiles;
-        public List<byte> impassableTileTypes { get; protected set; }
-        List<Tile> terrainPathTiles;
-        public TileCollection(TextureManager textureManager)
+        List<Tile> terrainTiles; //list of terrainTiles
+        List<Tile> terrainPathTiles; //list of placable paths,etc
+        List<byte> impassableTileTypes; //specifically for rendering do not use for anything else
+        
+        public TileCollection(TextureContainer textureManager)
         {
             TileFactory tileFactory = new TileFactory(textureManager);
             terrainTiles = tileFactory.GetTerrainTiles();
@@ -59,13 +60,27 @@ namespace EngineeringCorpsCS
             return terrainTilesheet;
         }
 
-        public string GetTileName(byte tileType)
+        /// <summary>
+        /// Gets the string name of the terrain tile with specified tiletype
+        /// </summary>
+        /// <param name="tileType"></param>
+        /// <returns></returns>
+        public string GetTerrainTileName(byte tileType)
         {
             if(tileType >= terrainTiles.Count)
             {
                 return "Undefined";
             }
             return terrainTiles[tileType].name;
+        }
+
+        public Tile GetTerrainTile(byte tileType)
+        {
+            if (tileType >= terrainTiles.Count)
+            {
+                return terrainTiles[0]; //return void in case of invalid terrain tile type
+            }
+            return terrainTiles[tileType];
         }
     }
 }

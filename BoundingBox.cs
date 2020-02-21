@@ -171,69 +171,124 @@ namespace EngineeringCorpsCS
         }
 
         /// <summary>
-        /// TODO: add ability to return pushback vector rather than boolean
+        /// Returns whether a collision between two collision boxes has occurred.  Also returns a pushback vector for bounding box 1 (0 for no collision).
         /// </summary>
-        /// <param name="box1"></param>
-        /// <param name="box2"></param>
-        /// <param name="p1"></param>
-        /// <param name="p2"></param>
-        /// <returns></returns>
-        public static bool CheckCollision(BoundingBox box1, BoundingBox box2, Vector2 p1, Vector2 p2) 
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="posSelf"></param>
+        /// <param name="posOther"></param>
+        /// <param name="pushBackSelf"></param>
+        /// <returns>Truth on whether there was a collision</returns>
+        public static bool CheckCollision(BoundingBox self, BoundingBox other, Vector2 posSelf, Vector2 selfVelocity, Vector2 posOther, out Vector2 pushBackSelf) 
         {
             //1st check (circle check)
-            float r1 = box1.topLeft.GetMagnitude();
-            float r2 = box2.topLeft.GetMagnitude();
-            float r3 = box1.botRight.GetMagnitude();
-            float r4 = box2.botRight.GetMagnitude();
-            float d = (float)Math.Sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y)); // calc d between two objects
-            if (Math.Max(r1,r3) + Math.Max(r2,r4) < d)
+            pushBackSelf = new Vector2(0,0);
+            float r1 = self.topLeft.GetMagnitude();
+            float r2 = other.topLeft.GetMagnitude();
+            float r3 = self.botRight.GetMagnitude();
+            float r4 = other.botRight.GetMagnitude();
+            Vector2 d = posOther.Copy();
+            d.Subtract(posSelf);
+            d.Subtract(selfVelocity);
+            if ((Math.Max(r1,r3) + Math.Max(r2,r4)) < d.GetMagnitude())
             {
-                return false; //need to determine if other things need to be returned maybe
+                return false;
             }
             //2nd check AABB if both have theta = 0
-            if(box1.rotation == 0 && box2.rotation == 0)
+            if(self.rotation == 0 && other.rotation == 0)
             {
-                if (p1.x + box1.topLeft.x > p2.x + box2.botRight.x || p1.x + box1.botRight.x > p2.x + box2.topLeft.x)
+                if (posSelf.x + selfVelocity.x < posOther.x + other.GetWidth() &&
+                    posSelf.x + selfVelocity.x + self.GetWidth() > posOther.x &&
+                    posSelf.y + selfVelocity.y < posOther.y + other.GetHeight() &&
+                    posSelf.y + selfVelocity.y + self.GetHeight() > posOther.y)
                 {
-                    return false;
-                }
-                else if (p1.y + box1.topLeft.y < p2.y + box2.botRight.y || p1.y + box1.botRight.y < p2.y + box2.topLeft.y)
-                {
-                    return false;
+                    //Calculate push back
+                    if (selfVelocity.x > selfVelocity.y) //push back in y direction
+                    {
+                        float overlapY = self.GetHalfHeight() + other.GetHalfHeight() - d.y;
+                        if (posSelf.y < posOther.y) //self above of other
+                        {
+                            pushBackSelf.Add(0, -overlapY); //push up
+                        }
+                        else //self below other
+                        {
+                            pushBackSelf.Add(0, overlapY); //push down
+                        }
+                    }
+                    else //push back in x direction
+                    {
+                        float overlapX = self.GetHalfWidth() + other.GetHalfWidth() - d.x;
+                        if (posSelf.x < posOther.x) //self is left of other
+                        {
+                            pushBackSelf.Add(-overlapX, 0); //push left
+                        }
+                        else //self right of other
+                        {
+                            pushBackSelf.Add(overlapX, 0); //push right
+                        }
+                    }
+                    return true;
                 }
                 else
                 {
-                    return true;
+                    return false;
                 }
             }
             else
             {
-                Vector2[] axis1 = box1.GetNormals();
-                Vector2[] axis2 = box2.GetNormals();
-                float halfW1 = box1.GetHalfWidth();
-                float halfH1 = box1.GetHalfHeight();
-                float halfW2 = box2.GetHalfWidth();
-                float halfH2 = box2.GetHalfHeight();
-                Vector2 T = p2.Copy();
-                T.Subtract(p1);
+                Vector2[] axis1 = self.GetNormals();
+                Vector2[] axis2 = other.GetNormals();
+                float halfW1 = self.GetHalfWidth();
+                float halfH1 = self.GetHalfHeight();
+                float halfW2 = other.GetHalfWidth();
+                float halfH2 = other.GetHalfHeight();
+                List<float> overlapAmount = new List<float>();
                 //Separating Axis Theorem check (final and most intensive check for accuracy)
 
                 //Checking axis' of box1
                 for (int i = 0; i < 2; i++) 
                 {
                     //Project half vectors onto normal vector
-                    if (Math.Abs(T.Dot(axis1[i])) > Math.Abs(halfW1 * axis1[0].Dot(axis1[i])) + Math.Abs(halfH1 * axis1[1].Dot(axis1[i])) + Math.Abs(halfW2 * axis2[0].Dot(axis1[i])) + Math.Abs(halfH2 * axis2[1].Dot(axis1[i]))) {
+                    float sP = Math.Abs(d.Dot(axis1[i]));
+                    float vP = Math.Abs(halfW1 * axis1[0].Dot(axis1[i])) + Math.Abs(halfH1 * axis1[1].Dot(axis1[i])) + Math.Abs(halfW2 * axis2[0].Dot(axis1[i])) + Math.Abs(halfH2 * axis2[1].Dot(axis1[i]));
+                    overlapAmount.Add(0);
+                    if (sP > vP) {
                         return false; //if the projection doesnt overlap then there is no collision
+                    }
+                    else
+                    {
+                        overlapAmount[i] = vP - sP;
                     }
                 }
                 //Checking axis' of box2
                 for (int i = 0; i < 2; i++)
                 {
                     //Project half vectors onto normal vector
-                    if (Math.Abs(T.Dot(axis2[i])) > Math.Abs(halfW1 * axis1[0].Dot(axis2[i])) + Math.Abs(halfH1 * axis1[1].Dot(axis2[i])) + Math.Abs(halfW2 * axis2[0].Dot(axis2[i])) + Math.Abs(halfH2 * axis2[1].Dot(axis2[i]))) {
+                    float sP = Math.Abs(d.Dot(axis2[i]));
+                    float vP = Math.Abs(halfW1 * axis1[0].Dot(axis2[i])) + Math.Abs(halfH1 * axis1[1].Dot(axis2[i])) + Math.Abs(halfW2 * axis2[0].Dot(axis2[i])) + Math.Abs(halfH2 * axis2[1].Dot(axis2[i]));
+                    overlapAmount.Add(0);
+                    if (sP > vP) {
                         return false; //if the projection doesnt overlap then there is no collision
                     }
+                    else
+                    {
+                        overlapAmount[i + 2] = vP - sP;
+                    }
                 }
+                float minOverlap = overlapAmount.Min();
+                int index = overlapAmount.IndexOf(minOverlap);
+                if(index < 2) //push back along box 1 axis
+                {
+                    axis1[index].Scale(minOverlap);
+                    pushBackSelf = axis1[index];
+                }
+                else //push back along box 2 axis
+                {
+                    axis2[index - 2].Scale(minOverlap);
+                    pushBackSelf = axis2[index - 2];
+                }
+                
+                
                 return true; //all checks failed, boxes collide
             }
         }
@@ -243,9 +298,9 @@ namespace EngineeringCorpsCS
         /// <param name="box"></param>
         /// <param name="pos"></param>
         /// <returns></returns>
-        public static bool CheckTileCollision(BoundingBox box, Vector2 pos)
+        public static bool CheckTileCollision(BoundingBox box, Vector2 pos, Base.CollisionLayer collisionMask)
         {
-            if(tileCollection.impassableTileTypes.Contains(chunkManager.GetTileFromWorld(pos.x, pos.y))) {
+            if((tileCollection.GetTerrainTile(chunkManager.GetTileFromWorld(pos.x, pos.y)).collisionMask & collisionMask) != 0) {
                 return true;
             }
             return false;

@@ -9,9 +9,9 @@ namespace EngineeringCorpsCS
 {
     class TileFactory
     {
-        TextureManager textureManager;
+        TextureContainer textureManager;
         Color defaultShade;
-        public TileFactory(TextureManager textureManager)
+        public TileFactory(TextureContainer textureManager)
         {
             this.textureManager = textureManager;
             defaultShade = new Color(255, 255, 255, 255);

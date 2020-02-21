@@ -24,7 +24,7 @@ namespace EngineeringCorpsCS
             Camera camera = new Camera();
 
             //Repository, Managers, Resource collections creation
-            TextureManager textureManager = new TextureManager();
+            TextureContainer textureManager = new TextureContainer();
             textureManager.LoadTextures();
             ChunkManager chunkManager = new ChunkManager();
             TileCollection tileCollection = new TileCollection(textureManager);
@@ -52,11 +52,11 @@ namespace EngineeringCorpsCS
             RotatedAnimation multiTest = new RotatedAnimation(multi, new Vector2i(256, 256), new Vector2f(0, 0), new Vector2f(1.0f, 1.0f), 1, 4, "fb", 30.0f);
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 100; i++)
             {
                 players.Add(new Player());
-                players[i].position = new Vector2(random.Next(0, 512), random.Next(0, 512));
-                players[i].collisionBox.SetRotation(random.Next(0, 360));
+                players[i].position = new Vector2(random.Next(0, 2048), random.Next(0, 2048));
+                //players[i].collisionBox.SetRotation(random.Next(0, 360));
             }
             #endregion
 
@@ -95,10 +95,13 @@ namespace EngineeringCorpsCS
                     {
                         float[] points = players[j].collisionBox.GetPoints();
                         Vector2 position = players[j].position;
-                        if(!players[j].Equals(camera.focusedEntity) && BoundingBox.CheckCollision(players[j].collisionBox, camera.focusedEntity.collisionBox, position, camera.focusedEntity.position))
+                        Vector2 pushBack;
+                        if(!players[j].Equals(camera.focusedEntity) && BoundingBox.CheckCollision(camera.focusedEntity.collisionBox, players[j].collisionBox, camera.focusedEntity.position,  new Vector2(camera.moveVector.X, camera.moveVector.Y), position, out pushBack))
                         {
-                            Console.WriteLine("Collision Detected");
+                            camera.moveVector.X += pushBack.x;
+                            camera.moveVector.Y += pushBack.y;
                         }
+                        
                         for (int i = 0; i < points.Length; i += 2)
                         {
                             boundingBoxArray.Append(new Vertex(new Vector2f(points[i] + position.x, points[i + 1] + position.y), Color.Red));
@@ -107,7 +110,8 @@ namespace EngineeringCorpsCS
                     }
                     window.Draw(boundingBoxArray);
                 }
-                if(drawDebugText == true)
+                camera.focusedEntity.position.Add(camera.moveVector.X, camera.moveVector.Y);
+                if (drawDebugText == true)
                 {
                     GUI.Clear(Color.Transparent);
                     
@@ -117,7 +121,7 @@ namespace EngineeringCorpsCS
                     float worldX = camera.GetView().Center.X;
                     float worldY = camera.GetView().Center.Y;
                     int[] cXY = ChunkManager.WorldToChunkCoords(worldX, worldY);
-                    biomeText.DisplayedString = "Biome: " + tileCollection.GetTileName(chunkManager.GetTileFromWorld(worldX, worldY));
+                    biomeText.DisplayedString = "Biome: " + tileCollection.GetTerrainTileName(chunkManager.GetTileFromWorld(worldX, worldY));
                     biomeText.Position = new Vector2f(0, 0);
                     fpsText.DisplayedString = "FPS/TPS: " + fps;
                     fpsText.Position = new Vector2f(0, 32);

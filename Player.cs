@@ -12,7 +12,7 @@ namespace EngineeringCorpsCS
         public Vector2 position;
         public Player()
         {
-            collisionBox = new BoundingBox(-32, -16, 32, 16);
+            collisionBox = new BoundingBox(-64, -64, 64, 64);
         }
     }
 }

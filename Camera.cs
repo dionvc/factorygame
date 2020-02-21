@@ -12,17 +12,18 @@ namespace EngineeringCorpsCS
     class Camera
     {
         public Player focusedEntity;
-        View view = new View(new FloatRect(50000, 50000, 2 * 1280, 2 * 720));
+        View view = new View(new FloatRect(256, 256, 2 * 1280, 2 * 720));
         float viewScale = 1.0f;
+        public Vector2f moveVector;
         public Camera()
         {
             focusedEntity = new Player();
-            focusedEntity.position = new Vector2(50000, 50000);
-            focusedEntity.collisionBox.SetRotation(150);
+            focusedEntity.position = new Vector2(256, 256);
+            //focusedEntity.collisionBox.SetRotation(150);
         }
         public void Update()
         {
-            Vector2f moveVector = new Vector2f(0,0);
+            moveVector = new Vector2f(0,0);
             if (Keyboard.IsKeyPressed(Keyboard.Key.W))
             {
                 moveVector = new Vector2f(0, -10);
@@ -64,15 +65,15 @@ namespace EngineeringCorpsCS
                 
                 view.Size = new SFML.System.Vector2f(viewScale * 1280, viewScale * 720);
             }
-            if (BoundingBox.CheckTileCollision(focusedEntity.collisionBox, new Vector2(view.Center.X + moveVector.X, view.Center.Y + moveVector.Y)))
+            if (false && BoundingBox.CheckTileCollision(focusedEntity.collisionBox, new Vector2(view.Center.X + moveVector.X, view.Center.Y + moveVector.Y), Base.CollisionLayer.TerrainSolid))
             {
-                moveVector = new Vector2f(0, 0);
+                //moveVector = new Vector2f(0, 0);
             }
             else
             {
-                focusedEntity.position = new Vector2(view.Center.X + moveVector.X, view.Center.Y + moveVector.Y);
+                
             }
-            view.Move(moveVector);
+            view.Center = new Vector2f(focusedEntity.position.x, focusedEntity.position.y);
         }
         public View GetView()
         {
