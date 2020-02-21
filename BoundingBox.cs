@@ -8,6 +8,8 @@ namespace EngineeringCorpsCS
 {
     class BoundingBox
     {
+        public static ChunkManager chunkManager { get;  set; }
+        public static TileCollection tileCollection{ get; set; }
         Vector2 topLeft { get; set; }
         Vector2 botRight { get; set; }
         int rotation;
@@ -168,7 +170,14 @@ namespace EngineeringCorpsCS
             return new[] { xAxis, yAxis };
         }
 
-        
+        /// <summary>
+        /// TODO: add ability to return pushback vector rather than boolean
+        /// </summary>
+        /// <param name="box1"></param>
+        /// <param name="box2"></param>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <returns></returns>
         public static bool CheckCollision(BoundingBox box1, BoundingBox box2, Vector2 p1, Vector2 p2) 
         {
             //1st check (circle check)
@@ -227,6 +236,19 @@ namespace EngineeringCorpsCS
                 }
                 return true; //all checks failed, boxes collide
             }
+        }
+        /// <summary>
+        /// Checks for collision between character and tiles
+        /// </summary>
+        /// <param name="box"></param>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static bool CheckTileCollision(BoundingBox box, Vector2 pos)
+        {
+            if(tileCollection.impassableTileTypes.Contains(chunkManager.GetTileFromWorld(pos.x, pos.y))) {
+                return true;
+            }
+            return false;
         }
         
     }

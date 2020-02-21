@@ -48,9 +48,9 @@ namespace EngineeringCorpsCS
                     + 0.5 * temperatureNoise.GetPerlin(4 * nx, 4 * ny);
                     elevation += 0.5;
                     moisture += 0.5;
-                    temperature += 1.5;
-                    temperature *= 2;
-                    if (moisture > 1 && elevation < 1)
+                    temperature += 1;
+                    temperature *= 3;
+                    if (moisture > 0.5 && elevation < 1)
                     {
                         SetTile(i, j, 1);
                     }

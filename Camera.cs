@@ -5,38 +5,39 @@ using System.Text;
 using System.Threading.Tasks;
 using SFML.Window;
 using SFML.Graphics;
+using SFML.System;
 
 namespace EngineeringCorpsCS
 {
     class Camera
     {
         public Player focusedEntity;
-        View view = new View(new FloatRect(1024, 1024, 2 * 1280, 2 * 720));
+        View view = new View(new FloatRect(50000, 50000, 2 * 1280, 2 * 720));
         float viewScale = 1.0f;
         public Camera()
         {
             focusedEntity = new Player();
-            focusedEntity.position = new Vector2(128, 128);
+            focusedEntity.position = new Vector2(50000, 50000);
             focusedEntity.collisionBox.SetRotation(150);
         }
         public void Update()
         {
-            
+            Vector2f moveVector = new Vector2f(0,0);
             if (Keyboard.IsKeyPressed(Keyboard.Key.W))
             {
-                view.Move(new SFML.System.Vector2f(0, -10));
+                moveVector = new Vector2f(0, -10);
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.A))
             {
-                view.Move(new SFML.System.Vector2f(-10, 0));
+                moveVector = new Vector2f(moveVector.X - 10, moveVector.Y + 0);
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.S))
             {
-                view.Move(new SFML.System.Vector2f(0, 10));
+                moveVector = new Vector2f(moveVector.X + 0, moveVector.Y + 10);
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.D))
             {
-                view.Move(new SFML.System.Vector2f(10, 0));
+                moveVector = new Vector2f(moveVector.X + 10, moveVector.Y - 0);
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.R))
             {
@@ -63,7 +64,15 @@ namespace EngineeringCorpsCS
                 
                 view.Size = new SFML.System.Vector2f(viewScale * 1280, viewScale * 720);
             }
-            focusedEntity.position = new Vector2(view.Center.X, view.Center.Y);
+            if (BoundingBox.CheckTileCollision(focusedEntity.collisionBox, new Vector2(view.Center.X + moveVector.X, view.Center.Y + moveVector.Y)))
+            {
+                moveVector = new Vector2f(0, 0);
+            }
+            else
+            {
+                focusedEntity.position = new Vector2(view.Center.X + moveVector.X, view.Center.Y + moveVector.Y);
+            }
+            view.Move(moveVector);
         }
         public View GetView()
         {

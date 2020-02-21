@@ -3,15 +3,59 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SFML.Graphics;
+using SFML.System;
 
 namespace EngineeringCorpsCS
 {
     class Renderer
     {
-        Renderer()
-        {
+        Dictionary<int, VertexArray[]> terrainVertexArrays;
+        Texture[] terrainTilesheets;
+        RenderStates[] terrainRenderStates;
+        TileCollection tileCollection;
+        ChunkManager chunkManager;
 
+        public Renderer(TileCollection tileCollection, ChunkManager chunkManager)
+        {
+            terrainVertexArrays = new Dictionary<int, VertexArray[]>(); //terrain cache //TODO: clear periodically
+            terrainTilesheets = tileCollection.GetTerrainTilesheets();
+            terrainRenderStates = new RenderStates[terrainTilesheets.Length];
+            this.chunkManager = chunkManager;
+            this.tileCollection = tileCollection;
+            for (int i = 0; i < terrainTilesheets.Length; i++)
+            {
+                terrainRenderStates[i] = new RenderStates(terrainTilesheets[i]);
+            }
         }
+        public void RenderWorld(RenderWindow window, Camera camera)
+        {
+            Vector2f origin = window.MapPixelToCoords(new Vector2i(0, 0), camera.GetView());
+            Vector2f extent = window.MapPixelToCoords(new Vector2i((int)window.Size.X, (int)window.Size.Y), camera.GetView());
+            int[] begPos = ChunkManager.WorldToChunkCoords(origin.X, origin.Y);
+            int[] endPos = ChunkManager.WorldToChunkCoords(extent.X, extent.Y);
+            for (int i = begPos[0]; i <= endPos[0]; i++)
+            {
+                for (int j = begPos[1]; j <= endPos[1]; j++)
+                {
+                    int key = (i) * Props.worldSize + j;
+                    if (terrainVertexArrays.TryGetValue(key, out _) == false)
+                    {
+                        terrainVertexArrays.Add(key, tileCollection.GenerateTerrainVertexArray(chunkManager, new int[] { i, j }));
+                    }
+                    VertexArray[] vArr;
+                    if (terrainVertexArrays.TryGetValue(key, out vArr))
+                    {
+                        for (int k = 1; k < vArr.Length; k++)
+                        {
+                            window.Draw(vArr[k], terrainRenderStates[k]);
+
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Collects visible chunks into list
         /// </summary>

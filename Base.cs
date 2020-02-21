@@ -12,20 +12,7 @@ namespace EngineeringCorpsCS
         /// <summary>
         /// Describes the layer on which the instance in question will be drawn
         /// </summary>
-        public enum DrawLayer
-        {
-            None = 0,
-            Terrain = 1,            //All terrain is drawn on one layer
-            TerrainDecor = 2,
-            TerrainPath = 3,        //Placed paths
-            Resource = 4,           //Some resources may have visible signs above ground
-            Item = 5,
-            EntitySorted = 6,
-            Overlay = 7,
-            Air = 8,
-            IconOverlay = 9,
-            GUI = 10
-        }
+        
 
         /// <summary>
         /// Describes the layer(s) on which the instance in question is collidable

@@ -56,12 +56,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animation.cs" />
+    <Compile Include="Drawable\Animation.cs" />
     <Compile Include="Base.cs" />
+    <Compile Include="Drawable\Drawable.cs" />
     <Compile Include="EntityPhysical.cs" />
-    <Compile Include="IAnimation.cs" />
+    <Compile Include="Drawable\IAnimation.cs" />
     <Compile Include="InputManager.cs" />
-    <Compile Include="RotatedAnimation.cs" />
+    <Compile Include="Drawable\RotatedAnimation.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Chunk\Chunk.cs" />
@@ -75,10 +76,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Props.cs" />
     <Compile Include="Renderer.cs" />
+    <Compile Include="TestEntity.cs" />
     <Compile Include="TextureManager.cs" />
     <Compile Include="Tile\Tile.cs" />
     <Compile Include="Tile\TileFactory.cs" />
-    <Compile Include="Tile\TileManager.cs" />
+    <Compile Include="Tile\TileCollection.cs" />
     <Compile Include="Vector2.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +122,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\desertTilesheet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\grassTilesheet.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\rocksquare.png">

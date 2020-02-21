@@ -24,6 +24,7 @@ namespace EngineeringCorpsCS
             tiles.Add(CreateDeepWater((byte)tiles.Count));
             tiles.Add(CreateBeachSand((byte)tiles.Count));
             tiles.Add(CreateDesert((byte)tiles.Count));
+            tiles.Add(CreateGrass((byte)tiles.Count));
             return tiles;
         }
         public List<Tile> GetTerrainPathTiles()
@@ -53,6 +54,12 @@ namespace EngineeringCorpsCS
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Void & Base.CollisionLayer.TerrainSolid;
             return new Tile(textureManager.GetTexture(""), index, "Void", 0, defaultShade, new Color(), collisionMask);
+        }
+
+        public Tile CreateGrass(byte index)
+        {
+            Base.CollisionLayer collisionMask = Base.CollisionLayer.Terrain;
+            return new Tile(textureManager.GetTexture("grassTilesheet"), index, "Grass", 1, defaultShade, new Color(), collisionMask);
         }
     }
 }

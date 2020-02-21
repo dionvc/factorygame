@@ -7,19 +7,19 @@ using SFML.Graphics;
 
 namespace EngineeringCorpsCS
 {
-    class TileManager
+    class TileCollection
     {
         List<Tile> terrainTiles;
-        List<byte> impassableTileTypes;
+        public List<byte> impassableTileTypes { get; protected set; }
         List<Tile> terrainPathTiles;
-        public TileManager(TextureManager textureManager)
+        public TileCollection(TextureManager textureManager)
         {
             TileFactory tileFactory = new TileFactory(textureManager);
             terrainTiles = tileFactory.GetTerrainTiles();
             impassableTileTypes = new List<byte>();
             for(byte i = 0; i < terrainTiles.Count; i++)
             {
-                if(terrainTiles[i].collisionMask == Base.CollisionLayer.TerrainSolid)
+                if((terrainTiles[i].collisionMask & Base.CollisionLayer.TerrainSolid) == Base.CollisionLayer.TerrainSolid)
                 {
                     impassableTileTypes.Add(i);
                 }
@@ -37,7 +37,7 @@ namespace EngineeringCorpsCS
         {
             VertexArray[] terrainVertexArray = new VertexArray[terrainTiles.Count];
             //Iterate over every tile type starting with the lowest layer (0)
-            for(int i = 0; i < terrainTiles.Count; i++)
+            for(int i = 1; i < terrainTiles.Count; i++)
             {
                 terrainVertexArray[i] = new VertexArray(PrimitiveType.Triangles);
                 terrainTiles[i].AppendTerrainVertices(terrainVertexArray[i], chunkManager, cXY, impassableTileTypes);

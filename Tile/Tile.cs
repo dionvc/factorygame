@@ -11,19 +11,19 @@ namespace EngineeringCorpsCS
     class Tile: Base
     {
         public Texture tileSheet { get; protected set; } //texture with terrain tiles
-        public byte tileType { get; protected set; } //number specifying the type of the tile (corresponding to the type in the terrain array and tilemanager collection)
+        public byte tileType { get; protected set; } //number specifying the type of the tile (corresponding to the type in the terrain array and tileCollection collection)
         public CollisionLayer collisionMask { get; protected set; } //Whatever layers are set here is what will determine its collision type
 
-        float speedModifier; //modifier for speed of entities on this tile
+        float frictionModifier; //modifier for speed of entities on this tile
         Color shade; //Apply a color to the tile
         Color mapColor; //Color that will be represented in minimap
         
 
-        public Tile(Texture tileSheet, byte tileType, string name, float speedModifier, Color shade, Color mapColor, CollisionLayer collisionMask)
+        public Tile(Texture tileSheet, byte tileType, string name, float frictionModifier, Color shade, Color mapColor, CollisionLayer collisionMask)
         {
             this.tileSheet = tileSheet;
             this.tileType = tileType;
-            this.speedModifier = speedModifier;
+            this.frictionModifier = frictionModifier;
             this.shade = shade;
             this.mapColor = mapColor;
             this.collisionMask = collisionMask;
@@ -83,10 +83,9 @@ namespace EngineeringCorpsCS
                     //Next check for tile transitions
                     int value = 0;
                     int variant = variantX % 4; //variant is determine by whether the transition is into an impassable tile
-                    
                     if (impassableTileTypes.Contains(currentTile))
                     {
-                        variant += 0;
+                        variant += 0; //TODO change to 4 + add code for if 0
                     }
                     value += (chunkManager.GetTileFromWorldInt(pos, i-1, j-1) == tileType) ? 1 : 0; //top left
                     value += (chunkManager.GetTileFromWorldInt(pos, i, j - 1) == tileType) ? 2 : 0; //top center
