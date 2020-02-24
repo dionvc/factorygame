@@ -197,35 +197,34 @@ namespace EngineeringCorpsCS
             //2nd check AABB if both have theta = 0
             if(self.rotation == 0 && other.rotation == 0)
             {
-                if (posSelf.x + selfVelocity.x < posOther.x + other.GetWidth() &&
-                    posSelf.x + selfVelocity.x + self.GetWidth() > posOther.x &&
-                    posSelf.y + selfVelocity.y < posOther.y + other.GetHeight() &&
-                    posSelf.y + selfVelocity.y + self.GetHeight() > posOther.y)
+                float halfW1 = self.GetHalfWidth();
+                float halfH1 = self.GetHalfHeight();
+                float halfW2 = other.GetHalfWidth();
+                float halfH2 = other.GetHalfHeight();
+                if (posSelf.x + selfVelocity.x < posOther.x + (2*halfW2) &&
+                    posSelf.x + selfVelocity.x + (2*halfW1) > posOther.x &&
+                    posSelf.y + selfVelocity.y < posOther.y + (2*halfH2) &&
+                    posSelf.y + selfVelocity.y + (2*halfH1) > posOther.y)
                 {
-                    //Calculate push back
-                    if (selfVelocity.x > selfVelocity.y) //push back in y direction
+
+                    float overlapY = self.GetHalfHeight() + other.GetHalfHeight() - Math.Abs(d.y);
+                    float overlapX = self.GetHalfWidth() + other.GetHalfWidth() - Math.Abs(d.x);
+                    Console.WriteLine(overlapX + " : " + overlapY);
+                    if(overlapX < overlapY && overlapX > 0) //push back along X
                     {
-                        float overlapY = self.GetHalfHeight() + other.GetHalfHeight() - d.y;
-                        if (posSelf.y < posOther.y) //self above of other
+                        if(posSelf.x < posOther.x)
                         {
-                            pushBackSelf.Add(0, -overlapY); //push up
+                            overlapX *= -1;
                         }
-                        else //self below other
-                        {
-                            pushBackSelf.Add(0, overlapY); //push down
-                        }
+                        pushBackSelf.x = overlapX;
                     }
-                    else //push back in x direction
+                    else //push back along Y
                     {
-                        float overlapX = self.GetHalfWidth() + other.GetHalfWidth() - d.x;
-                        if (posSelf.x < posOther.x) //self is left of other
+                        if(posSelf.y < posOther.y)
                         {
-                            pushBackSelf.Add(-overlapX, 0); //push left
+                            overlapY *= -1;
                         }
-                        else //self right of other
-                        {
-                            pushBackSelf.Add(overlapX, 0); //push right
-                        }
+                        pushBackSelf.y = overlapY;
                     }
                     return true;
                 }
@@ -242,7 +241,7 @@ namespace EngineeringCorpsCS
                 float halfH1 = self.GetHalfHeight();
                 float halfW2 = other.GetHalfWidth();
                 float halfH2 = other.GetHalfHeight();
-                List<float> overlapAmount = new List<float>();
+                List<float> overlapAmount = new List<float>() { 0, 0, 0, 0 };
                 //Separating Axis Theorem check (final and most intensive check for accuracy)
 
                 //Checking axis' of box1
@@ -251,7 +250,6 @@ namespace EngineeringCorpsCS
                     //Project half vectors onto normal vector
                     float sP = Math.Abs(d.Dot(axis1[i]));
                     float vP = Math.Abs(halfW1 * axis1[0].Dot(axis1[i])) + Math.Abs(halfH1 * axis1[1].Dot(axis1[i])) + Math.Abs(halfW2 * axis2[0].Dot(axis1[i])) + Math.Abs(halfH2 * axis2[1].Dot(axis1[i]));
-                    overlapAmount.Add(0);
                     if (sP > vP) {
                         return false; //if the projection doesnt overlap then there is no collision
                     }
@@ -266,7 +264,6 @@ namespace EngineeringCorpsCS
                     //Project half vectors onto normal vector
                     float sP = Math.Abs(d.Dot(axis2[i]));
                     float vP = Math.Abs(halfW1 * axis1[0].Dot(axis2[i])) + Math.Abs(halfH1 * axis1[1].Dot(axis2[i])) + Math.Abs(halfW2 * axis2[0].Dot(axis2[i])) + Math.Abs(halfH2 * axis2[1].Dot(axis2[i]));
-                    overlapAmount.Add(0);
                     if (sP > vP) {
                         return false; //if the projection doesnt overlap then there is no collision
                     }
@@ -275,9 +272,10 @@ namespace EngineeringCorpsCS
                         overlapAmount[i + 2] = vP - sP;
                     }
                 }
-                float minOverlap = overlapAmount.Min();
+                //Minimum translation vector calculation
+                float minOverlap = Math.Abs(overlapAmount.Min());
                 int index = overlapAmount.IndexOf(minOverlap);
-                if(index < 2) //push back along box 1 axis
+                if (index < 2) //push back along box 1 axis
                 {
                     axis1[index].Scale(minOverlap);
                     pushBackSelf = axis1[index];
@@ -287,7 +285,15 @@ namespace EngineeringCorpsCS
                     axis2[index - 2].Scale(minOverlap);
                     pushBackSelf = axis2[index - 2];
                 }
-                
+                //Direction correction logic
+                if((posSelf.x < posOther.x && pushBackSelf.x > 0) || (posSelf.x > posOther.x && pushBackSelf.x < 0))
+                {
+                    pushBackSelf.x *= -1;
+                }
+                if((posSelf.y > posOther.y && pushBackSelf.y < 0) || (posSelf.y < posOther.y && pushBackSelf.y > 0))
+                {
+                    pushBackSelf.y *= -1;
+                }
                 
                 return true; //all checks failed, boxes collide
             }

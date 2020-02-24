@@ -55,8 +55,8 @@ namespace EngineeringCorpsCS
             for (int i = 0; i < 100; i++)
             {
                 players.Add(new Player());
-                players[i].position = new Vector2(random.Next(0, 2048), random.Next(0, 2048));
-                //players[i].collisionBox.SetRotation(random.Next(0, 360));
+                players[i].position = new Vector2(random.Next(256, 2048), random.Next(256, 2048));
+                players[i].collisionBox.SetRotation(0);//random.Next(0, 360));
             }
             #endregion
 
