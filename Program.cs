@@ -30,8 +30,6 @@ namespace EngineeringCorpsCS
             TileCollection tileCollection = new TileCollection(textureManager);
             InputManager input = new InputManager(window);
             Renderer gameRenderer = new Renderer(tileCollection, chunkManager);
-            BoundingBox.chunkManager = chunkManager;
-            BoundingBox.tileCollection = tileCollection;
 
             //Debug flags and stuff
             Font debugFont = new Font("SairaRegular.ttf");
@@ -52,10 +50,10 @@ namespace EngineeringCorpsCS
             RotatedAnimation multiTest = new RotatedAnimation(multi, new Vector2i(256, 256), new Vector2f(0, 0), new Vector2f(1.0f, 1.0f), 1, 4, "fb", 30.0f);
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 20000; i++)
             {
                 players.Add(new Player());
-                players[i].position = new Vector2(random.Next(256, 2048), random.Next(256, 2048));
+                players[i].position = new Vector2(i * 128, i * 128);
                 players[i].collisionBox.SetRotation(0);//random.Next(0, 360));
             }
             #endregion

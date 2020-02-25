@@ -8,15 +8,25 @@ namespace EngineeringCorpsCS
 {
     class BoundingBox
     {
-        public static ChunkManager chunkManager { get;  set; }
-        public static TileCollection tileCollection{ get; set; }
+        //Vector representation
         Vector2 topLeft { get; set; }
         Vector2 botRight { get; set; }
+        //Constants
+        float radiusApproximation { get; set; }
+        float halfWidth { get; set; }
+        float width { get; set; }
+        float halfHeight { get; set; }
+        float height { get; set; }
+
+        //external representation rotated
         int rotation;
         Vector2 topLeftR;
         Vector2 topRightR;
         Vector2 botLeftR;
         Vector2 botRightR;
+
+        Vector2 xAxis = new Vector2(0,0);
+        Vector2 yAxis = new Vector2(0,0);
 
         /// <summary>
         /// Create an axis aligned bounding box
@@ -29,12 +39,9 @@ namespace EngineeringCorpsCS
         {
             topLeft = new Vector2(tx, ty);
             botRight = new Vector2(bx, by);
-
-            //Rotated vectors with 0 rotation
-            topLeftR = topLeft.Copy();
-            botRightR = botRight.Copy();
-            topRightR = new Vector2(botRight.x, topLeft.y);
-            botLeftR = new Vector2(topLeft.x, botRight.y);
+            
+            this.SetRotation(0);
+            this.calculateConstants();
         }
 
         /// <summary>
@@ -49,11 +56,8 @@ namespace EngineeringCorpsCS
             topLeft = new Vector2(-halfX, -halfY);
             botRight = new Vector2(halfX, halfY);
 
-            //Rotated vectors with 0 rotation
-            topLeftR = topLeft.Copy();
-            botRightR = botRight.Copy();
-            topRightR = new Vector2(botRight.x, topLeft.y);
-            botLeftR = new Vector2(topLeft.x, botRight.y);
+            this.SetRotation(0);
+            this.calculateConstants();
         }
 
         /// <summary>
@@ -69,6 +73,7 @@ namespace EngineeringCorpsCS
             botRight = new Vector2(halfX, halfY);
 
             this.SetRotation(rotation);
+            this.calculateConstants();
         }
 
         /// <summary>
@@ -85,6 +90,18 @@ namespace EngineeringCorpsCS
             botRight = new Vector2(bx, by);
 
             this.SetRotation(rotation);
+            this.calculateConstants();
+        }
+
+        private void calculateConstants()
+        {
+            float r1 = topLeft.GetMagnitude();
+            float r2 = botRight.GetMagnitude();
+            radiusApproximation = Math.Max(r1, r2);
+            height = Math.Abs(botRight.y - topLeft.y);
+            width = Math.Abs(botRight.x - topLeft.x);
+            halfHeight = height / 2;
+            halfWidth = width / 2;
         }
 
         /// <summary>
@@ -115,31 +132,6 @@ namespace EngineeringCorpsCS
         }
 
         /// <summary>
-        /// Gets width of original box (corresponding to local x-axis)
-        /// </summary>
-        /// <returns></returns>
-        public float GetWidth()
-        {
-            return Math.Abs(botRight.x - topLeft.x);
-        }
-        public float GetHalfWidth()
-        {
-            return (Math.Abs(botRight.x - topLeft.x)/2);
-        }
-        /// <summary>
-        /// Gets height of original box (corresponding ot local y-axis)
-        /// </summary>
-        /// <returns></returns>
-        public float GetHeight()
-        {
-            return Math.Abs(botRight.y - topLeft.y);
-        }
-        public float GetHalfHeight()
-        {
-            return (Math.Abs(botRight.y - topLeft.y)/2);
-        }
-
-        /// <summary>
         /// Get the Vectors representing each point of the bounding box
         /// </summary>
         /// <returns></returns>
@@ -163,8 +155,10 @@ namespace EngineeringCorpsCS
         /// <returns>local xAxis, yAxis</returns>
         public Vector2[] GetNormals()
         {
-            Vector2 xAxis = new Vector2(topRightR.x - topLeftR.x, topRightR.y - topLeftR.y);
-            Vector2 yAxis = new Vector2(topRightR.x - botRightR.x, topRightR.y - botRightR.y);
+            xAxis.x = topRightR.x - topLeftR.x;
+            xAxis.y = topRightR.y - topLeftR.y;
+            yAxis.x = topRightR.x - botRightR.x;
+            yAxis.y = topRightR.y - botRightR.y;
             xAxis.VNormalize();
             yAxis.VNormalize();
             return new[] { xAxis, yAxis };
@@ -183,33 +177,23 @@ namespace EngineeringCorpsCS
         {
             //1st check (circle check)
             pushBackSelf = new Vector2(0,0);
-            float r1 = self.topLeft.GetMagnitude();
-            float r2 = other.topLeft.GetMagnitude();
-            float r3 = self.botRight.GetMagnitude();
-            float r4 = other.botRight.GetMagnitude();
-            Vector2 d = posOther.Copy();
-            d.Subtract(posSelf);
-            d.Subtract(selfVelocity);
-            if ((Math.Max(r1,r3) + Math.Max(r2,r4)) < d.GetMagnitude())
+            Vector2 d = new Vector2(posOther.x - posSelf.x - selfVelocity.x, posOther.y - posSelf.y - selfVelocity.y);
+            if ((self.radiusApproximation + other.radiusApproximation) < d.GetMagnitude())
             {
                 return false;
             }
             //2nd check AABB if both have theta = 0
-            if(self.rotation == 0 && other.rotation == 0)
+            if (self.rotation == 0 && other.rotation == 0)
             {
-                float halfW1 = self.GetHalfWidth();
-                float halfH1 = self.GetHalfHeight();
-                float halfW2 = other.GetHalfWidth();
-                float halfH2 = other.GetHalfHeight();
-                if (posSelf.x + selfVelocity.x < posOther.x + (2*halfW2) &&
-                    posSelf.x + selfVelocity.x + (2*halfW1) > posOther.x &&
-                    posSelf.y + selfVelocity.y < posOther.y + (2*halfH2) &&
-                    posSelf.y + selfVelocity.y + (2*halfH1) > posOther.y)
+                
+                if (posSelf.x + selfVelocity.x < posOther.x + other.width &&
+                    posSelf.x + selfVelocity.x + self.width > posOther.x &&
+                    posSelf.y + selfVelocity.y < posOther.y + other.height &&
+                    posSelf.y + selfVelocity.y + self.height > posOther.y)
                 {
 
-                    float overlapY = self.GetHalfHeight() + other.GetHalfHeight() - Math.Abs(d.y);
-                    float overlapX = self.GetHalfWidth() + other.GetHalfWidth() - Math.Abs(d.x);
-                    Console.WriteLine(overlapX + " : " + overlapY);
+                    float overlapY = self.halfHeight + other.halfHeight- Math.Abs(d.y);
+                    float overlapX = self.halfWidth + other.halfWidth - Math.Abs(d.x);
                     if(overlapX < overlapY && overlapX > 0) //push back along X
                     {
                         if(posSelf.x < posOther.x)
@@ -237,10 +221,6 @@ namespace EngineeringCorpsCS
             {
                 Vector2[] axis1 = self.GetNormals();
                 Vector2[] axis2 = other.GetNormals();
-                float halfW1 = self.GetHalfWidth();
-                float halfH1 = self.GetHalfHeight();
-                float halfW2 = other.GetHalfWidth();
-                float halfH2 = other.GetHalfHeight();
                 List<float> overlapAmount = new List<float>() { 0, 0, 0, 0 };
                 //Separating Axis Theorem check (final and most intensive check for accuracy)
 
@@ -249,7 +229,7 @@ namespace EngineeringCorpsCS
                 {
                     //Project half vectors onto normal vector
                     float sP = Math.Abs(d.Dot(axis1[i]));
-                    float vP = Math.Abs(halfW1 * axis1[0].Dot(axis1[i])) + Math.Abs(halfH1 * axis1[1].Dot(axis1[i])) + Math.Abs(halfW2 * axis2[0].Dot(axis1[i])) + Math.Abs(halfH2 * axis2[1].Dot(axis1[i]));
+                    float vP = Math.Abs(self.halfWidth * axis1[0].Dot(axis1[i])) + Math.Abs(self.halfHeight * axis1[1].Dot(axis1[i])) + Math.Abs(other.halfWidth * axis2[0].Dot(axis1[i])) + Math.Abs(other.halfHeight * axis2[1].Dot(axis1[i]));
                     if (sP > vP) {
                         return false; //if the projection doesnt overlap then there is no collision
                     }
@@ -263,7 +243,7 @@ namespace EngineeringCorpsCS
                 {
                     //Project half vectors onto normal vector
                     float sP = Math.Abs(d.Dot(axis2[i]));
-                    float vP = Math.Abs(halfW1 * axis1[0].Dot(axis2[i])) + Math.Abs(halfH1 * axis1[1].Dot(axis2[i])) + Math.Abs(halfW2 * axis2[0].Dot(axis2[i])) + Math.Abs(halfH2 * axis2[1].Dot(axis2[i]));
+                    float vP = Math.Abs(self.halfWidth* axis1[0].Dot(axis2[i])) + Math.Abs(self.halfHeight * axis1[1].Dot(axis2[i])) + Math.Abs(other.halfWidth * axis2[0].Dot(axis2[i])) + Math.Abs(other.halfHeight * axis2[1].Dot(axis2[i]));
                     if (sP > vP) {
                         return false; //if the projection doesnt overlap then there is no collision
                     }
@@ -273,16 +253,15 @@ namespace EngineeringCorpsCS
                     }
                 }
                 //Minimum translation vector calculation
-                float minOverlap = Math.Abs(overlapAmount.Min());
-                int index = overlapAmount.IndexOf(minOverlap);
+                int index = overlapAmount.IndexOf(overlapAmount.Min());
                 if (index < 2) //push back along box 1 axis
                 {
-                    axis1[index].Scale(minOverlap);
+                    axis1[index].Scale(overlapAmount[index]);
                     pushBackSelf = axis1[index];
                 }
                 else //push back along box 2 axis
                 {
-                    axis2[index - 2].Scale(minOverlap);
+                    axis2[index - 2].Scale(overlapAmount[index]);
                     pushBackSelf = axis2[index - 2];
                 }
                 //Direction correction logic
@@ -299,14 +278,15 @@ namespace EngineeringCorpsCS
             }
         }
         /// <summary>
-        /// Checks for collision between character and tiles
+        /// Checks for collision between character and tiles, also returns the tiletype collided with
         /// </summary>
         /// <param name="box"></param>
         /// <param name="pos"></param>
         /// <returns></returns>
-        public static bool CheckTileCollision(BoundingBox box, Vector2 pos, Base.CollisionLayer collisionMask)
+        public static bool CheckTerrainTileCollision(BoundingBox box, Vector2 pos, Vector2 velocity, Base.CollisionLayer collisionMask, TileCollection tileCollection, ChunkManager chunkManager, out Tile tile)
         {
-            if((tileCollection.GetTerrainTile(chunkManager.GetTileFromWorld(pos.x, pos.y)).collisionMask & collisionMask) != 0) {
+            tile = tileCollection.GetTerrainTile(chunkManager.GetTileFromWorld(pos.x, pos.y));
+            if ((tile.collisionMask & collisionMask) != 0) {
                 return true;
             }
             return false;

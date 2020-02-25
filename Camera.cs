@@ -65,7 +65,7 @@ namespace EngineeringCorpsCS
                 
                 view.Size = new SFML.System.Vector2f(viewScale * 1280, viewScale * 720);
             }
-            if (false && BoundingBox.CheckTileCollision(focusedEntity.collisionBox, new Vector2(view.Center.X + moveVector.X, view.Center.Y + moveVector.Y), Base.CollisionLayer.TerrainSolid))
+            if (false) //&& BoundingBox.CheckTerrainTileCollision(focusedEntity.collisionBox, new Vector2(view.Center.X + moveVector.X, view.Center.Y + moveVector.Y), Base.CollisionLayer.TerrainSolid))
             {
                 //moveVector = new Vector2f(0, 0);
             }
