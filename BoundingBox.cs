@@ -25,8 +25,7 @@ namespace EngineeringCorpsCS
         Vector2 botLeftR;
         Vector2 botRightR;
 
-        Vector2 xAxis = new Vector2(0,0);
-        Vector2 yAxis = new Vector2(0,0);
+        Vector2[] normals = new Vector2[2] { new Vector2(0, 0), new Vector2(0, 0) };
 
         /// <summary>
         /// Create an axis aligned bounding box
@@ -120,6 +119,14 @@ namespace EngineeringCorpsCS
             botRightR = botRight.Rotate(rotation);
             topRightR.VRotate(rotation);
             botLeftR.VRotate(rotation);
+
+            //calculate new normals
+            normals[0].x = topRightR.x - topLeftR.x;
+            normals[0].y = topRightR.y - topLeftR.y;
+            normals[1].x = topRightR.x - botRightR.x;
+            normals[1].y = topRightR.y - botRightR.y;
+            normals[0].VNormalize();
+            normals[1].VNormalize();
         }
 
         /// <summary>
@@ -155,13 +162,7 @@ namespace EngineeringCorpsCS
         /// <returns>local xAxis, yAxis</returns>
         public Vector2[] GetNormals()
         {
-            xAxis.x = topRightR.x - topLeftR.x;
-            xAxis.y = topRightR.y - topLeftR.y;
-            yAxis.x = topRightR.x - botRightR.x;
-            yAxis.y = topRightR.y - botRightR.y;
-            xAxis.VNormalize();
-            yAxis.VNormalize();
-            return new[] { xAxis, yAxis };
+            return normals;
         }
 
         /// <summary>
@@ -185,16 +186,14 @@ namespace EngineeringCorpsCS
             //2nd check AABB if both have theta = 0
             if (self.rotation == 0 && other.rotation == 0)
             {
-                
                 if (posSelf.x + selfVelocity.x < posOther.x + other.width &&
                     posSelf.x + selfVelocity.x + self.width > posOther.x &&
                     posSelf.y + selfVelocity.y < posOther.y + other.height &&
                     posSelf.y + selfVelocity.y + self.height > posOther.y)
                 {
-
-                    float overlapY = self.halfHeight + other.halfHeight- Math.Abs(d.y);
+                    float overlapY = self.halfHeight + other.halfHeight - Math.Abs(d.y);
                     float overlapX = self.halfWidth + other.halfWidth - Math.Abs(d.x);
-                    if(overlapX < overlapY && overlapX > 0) //push back along X
+                    if(overlapX < overlapY) //push back along X
                     {
                         if(posSelf.x < posOther.x)
                         {
@@ -221,7 +220,8 @@ namespace EngineeringCorpsCS
             {
                 Vector2[] axis1 = self.GetNormals();
                 Vector2[] axis2 = other.GetNormals();
-                List<float> overlapAmount = new List<float>() { 0, 0, 0, 0 };
+                float overlapAmount = float.MaxValue;
+                int index = 0;
                 //Separating Axis Theorem check (final and most intensive check for accuracy)
 
                 //Checking axis' of box1
@@ -233,9 +233,10 @@ namespace EngineeringCorpsCS
                     if (sP > vP) {
                         return false; //if the projection doesnt overlap then there is no collision
                     }
-                    else
+                    else if(vP - sP < overlapAmount)
                     {
-                        overlapAmount[i] = vP - sP;
+                        overlapAmount = vP - sP;
+                        index = i;
                     }
                 }
                 //Checking axis' of box2
@@ -247,22 +248,25 @@ namespace EngineeringCorpsCS
                     if (sP > vP) {
                         return false; //if the projection doesnt overlap then there is no collision
                     }
-                    else
+                    else if(vP - sP < overlapAmount)
                     {
-                        overlapAmount[i + 2] = vP - sP;
+                        overlapAmount = vP - sP;
+                        index = i + 2;
                     }
                 }
                 //Minimum translation vector calculation
-                int index = overlapAmount.IndexOf(overlapAmount.Min());
+                
                 if (index < 2) //push back along box 1 axis
                 {
-                    axis1[index].Scale(overlapAmount[index]);
-                    pushBackSelf = axis1[index];
+                    pushBackSelf.x = axis1[index].x;
+                    pushBackSelf.y = axis1[index].y;
+                    pushBackSelf.Scale(overlapAmount);
                 }
                 else //push back along box 2 axis
                 {
-                    axis2[index - 2].Scale(overlapAmount[index]);
-                    pushBackSelf = axis2[index - 2];
+                    pushBackSelf.x = axis2[index - 2].x;
+                    pushBackSelf.y = axis2[index - 2].y;
+                    pushBackSelf.Scale(overlapAmount);
                 }
                 //Direction correction logic
                 if((posSelf.x < posOther.x && pushBackSelf.x > 0) || (posSelf.x > posOther.x && pushBackSelf.x < 0))
@@ -292,5 +296,14 @@ namespace EngineeringCorpsCS
             return false;
         }
         
+        public static bool CheckPointMenuCollision(float x, float y, BoundingBox box, Vector2 pos)
+        {
+            if(x <= pos.x + box.width && x >= pos.x &&
+               y <= pos.y + box.height && y >= pos.y)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace EngineeringCorpsCS
 {
-    class mapProps
+    class EntityTest: Entity
     {
-
     }
 }

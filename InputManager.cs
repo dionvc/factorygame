@@ -14,6 +14,12 @@ namespace EngineeringCorpsCS
         Dictionary<Keyboard.Key, bool> keyHeld;
         Dictionary<Keyboard.Key, bool> keyReleased;
         Dictionary<Keyboard.Key, byte> keyAccumulator;
+        public Dictionary<Mouse.Button, bool> mouseButton;
+        Dictionary<Mouse.Button, bool> mouseClick;
+        public int mouseX;
+        public int mouseY;
+        public int mouseXdiff;
+        public int mouseYdiff;
         int tickAccumulator = 0;
         int keyResetInterval = 60;
         public InputManager(Window window) 
@@ -22,10 +28,14 @@ namespace EngineeringCorpsCS
             window.SetKeyRepeatEnabled(false);
             window.KeyPressed += HandleKeyPress;
             window.KeyReleased += HandleKeyRelease;
+            window.MouseButtonPressed += HandleMouseClick;
+            window.MouseButtonReleased += HandleMouseRelease;
             keyPressed = new Dictionary<Keyboard.Key, bool>();
             keyHeld = new Dictionary<Keyboard.Key, bool>();
             keyReleased = new Dictionary<Keyboard.Key, bool>();
             keyAccumulator = new Dictionary<Keyboard.Key, byte>();
+            mouseButton = new Dictionary<Mouse.Button, bool>();
+            mouseClick = new Dictionary<Mouse.Button, bool>();
             foreach (Keyboard.Key key in Enum.GetValues(typeof(Keyboard.Key)))
             {
                 keyPressed[key] = false;
@@ -33,6 +43,19 @@ namespace EngineeringCorpsCS
                 keyHeld[key] = false;
                 keyAccumulator[key] = 0;
             }
+            foreach (Mouse.Button mb in Enum.GetValues(typeof(Mouse.Button)))
+            {
+                mouseButton[mb] = false;
+                mouseClick[mb] = false;
+            }
+        }
+        public void Update()
+        {
+            mouseXdiff = Mouse.GetPosition().X - mouseX;
+            mouseYdiff = Mouse.GetPosition().Y - mouseY;
+            mouseX = Mouse.GetPosition().X;
+            mouseY = Mouse.GetPosition().Y;
+
         }
 
         public void FlushInput()
@@ -40,6 +63,10 @@ namespace EngineeringCorpsCS
             foreach (Keyboard.Key key in Enum.GetValues(typeof(Keyboard.Key))) {
                 keyPressed[key] = false;
                 keyReleased[key] = false;
+            }
+            foreach (Mouse.Button mb in Enum.GetValues(typeof(Mouse.Button)))
+            {
+                mouseClick[mb] = false;
             }
             if (tickAccumulator > keyResetInterval)
             {
@@ -50,6 +77,16 @@ namespace EngineeringCorpsCS
                 }
             }
             tickAccumulator++;
+        }
+
+        public void HandleMouseClick(object sender, MouseButtonEventArgs e)
+        {
+            mouseButton[e.Button] = true;
+            mouseClick[e.Button] = true;
+        }
+        public void HandleMouseRelease(object sender, MouseButtonEventArgs e)
+        {
+            mouseButton[e.Button] = false;
         }
 
         public void HandleKeyPress(object sender, KeyEventArgs e)

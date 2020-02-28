@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace EngineeringCorpsCS
 {
-    class TestEntity: Entity
+    class MenuText
     {
+        //Font debugFont = new Font("SairaRegular.ttf");
+        //Text biomeText = new Text("default", debugFont, 32);
     }
 }

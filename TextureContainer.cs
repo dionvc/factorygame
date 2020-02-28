@@ -50,9 +50,7 @@ namespace EngineeringCorpsCS
         /// <returns></returns>
         public Texture GetTexture(string textureName)
         {
-            Texture returnTexture;
-            textureSet.TryGetValue(textureName, out returnTexture);
-            if(returnTexture != null)
+            if(textureSet.TryGetValue(textureName, out Texture returnTexture))
             {
                 return returnTexture;
             }
