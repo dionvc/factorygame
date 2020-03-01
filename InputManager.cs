@@ -51,10 +51,10 @@ namespace EngineeringCorpsCS
         }
         public void Update()
         {
-            mouseXdiff = Mouse.GetPosition().X - mouseX;
-            mouseYdiff = Mouse.GetPosition().Y - mouseY;
-            mouseX = Mouse.GetPosition().X;
-            mouseY = Mouse.GetPosition().Y;
+            mouseXdiff = Mouse.GetPosition(window).X - mouseX;
+            mouseYdiff = Mouse.GetPosition(window).Y - mouseY;
+            mouseX = Mouse.GetPosition(window).X;
+            mouseY = Mouse.GetPosition(window).Y;
 
         }
 

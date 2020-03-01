@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SFML.System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -40,7 +41,7 @@ namespace EngineeringCorpsCS
             botRight = new Vector2(bx, by);
             
             this.SetRotation(0);
-            this.calculateConstants();
+            this.CalculateConstants();
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace EngineeringCorpsCS
             botRight = new Vector2(halfX, halfY);
 
             this.SetRotation(0);
-            this.calculateConstants();
+            this.CalculateConstants();
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace EngineeringCorpsCS
             botRight = new Vector2(halfX, halfY);
 
             this.SetRotation(rotation);
-            this.calculateConstants();
+            this.CalculateConstants();
         }
 
         /// <summary>
@@ -89,10 +90,23 @@ namespace EngineeringCorpsCS
             botRight = new Vector2(bx, by);
 
             this.SetRotation(rotation);
-            this.calculateConstants();
+            this.CalculateConstants();
         }
 
-        private void calculateConstants()
+        /// <summary>
+        /// Creates bounding box with center at top left.  Useful for menues.
+        /// </summary>
+        /// <param name="size"></param>
+        public BoundingBox(Vector2f size)
+        {
+            topLeft = new Vector2(0, 0);
+            botRight = new Vector2(size.X, size.Y);
+
+            this.SetRotation(0);
+            this.CalculateConstants();
+        }
+
+        private void CalculateConstants()
         {
             float r1 = topLeft.GetMagnitude();
             float r2 = botRight.GetMagnitude();
@@ -296,10 +310,10 @@ namespace EngineeringCorpsCS
             return false;
         }
         
-        public static bool CheckPointMenuCollision(float x, float y, BoundingBox box, Vector2 pos)
+        public static bool CheckPointMenuCollision(float x, float y, BoundingBox box, Vector2f pos)
         {
-            if(x <= pos.x + box.width && x >= pos.x &&
-               y <= pos.y + box.height && y >= pos.y)
+            if(x <= pos.X + box.width && x >= pos.X &&
+               y <= pos.Y + box.height && y >= pos.Y)
             {
                 return true;
             }
