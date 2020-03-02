@@ -8,10 +8,9 @@ namespace EngineeringCorpsCS
 {
     class Player: Entity
     {
-        public BoundingBox collisionBox;
-        public Vector2 position;
-        public Player()
+        public Player(Vector2 pos)
         {
+            position = pos;
             collisionBox = new BoundingBox(-64, -64, 64, 64);
         }
     }

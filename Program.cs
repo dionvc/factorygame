@@ -26,16 +26,17 @@ namespace EngineeringCorpsCS
             //Repository, Managers, Resource collections creation
             TextureContainer textureManager = new TextureContainer();
             textureManager.LoadTextures();
-            SurfaceContainer chunkManager = new SurfaceContainer();
+            SurfaceContainer surfaceContainer = new SurfaceContainer();
             TileCollection tileCollection = new TileCollection(textureManager);
             InputManager input = new InputManager(window);
-            Renderer gameRenderer = new Renderer(tileCollection, chunkManager);
+            Renderer gameRenderer = new Renderer(tileCollection, surfaceContainer);
 
             //Debug flags and stuff
             Font debugFont = new Font("SairaRegular.ttf");
             Text biomeText = new Text("default", debugFont, 32);
             Text fpsText = new Text("default", debugFont, 32);
             Text coordinates = new Text("default", debugFont, 32);
+            Text collision = new Text("default", debugFont, 32);
             coordinates.LineSpacing = 0.5f;
             Clock clock = new Clock();
             bool drawBoundingBoxes = true;
@@ -51,13 +52,13 @@ namespace EngineeringCorpsCS
             RotatedAnimation multiTest = new RotatedAnimation(multi, new Vector2i(256, 256), new Vector2f(0, 0), new Vector2f(1.0f, 1.0f), 1, 4, "fb", 30.0f);
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 8; i++)
             {
-                for (int j = 0; j < 10; j++)
+                for (int j = 0; j < 8; j++)
                 {
-                    players.Add(new Player());
-                    players[i * 10 + j].position = new Vector2(1024 + 128 * i, 1024 + 128 * j);
-                    players[i * 10 + j].collisionBox.SetRotation(0);//random.Next(0, 360));
+                    players.Add(new Player(new Vector2(1024 + 128 * i, 1024 + 128 * j)));
+                    players[i * 8 + j].collisionBox.SetRotation(0);//random.Next(0, 360));
+                    surfaceContainer.InitiateEntityInChunks(players[i * 8 + j]);
                 }
             }
             #endregion
@@ -103,12 +104,8 @@ namespace EngineeringCorpsCS
                     {
                         float[] points = players[j].collisionBox.GetPoints();
                         Vector2 position = players[j].position;
-                        Vector2 pushBack;
-                        if (!players[j].Equals(camera.focusedEntity) && BoundingBox.CheckCollision(camera.focusedEntity.collisionBox, players[j].collisionBox, camera.focusedEntity.position, new Vector2(camera.moveVector.X, camera.moveVector.Y), position, out pushBack))
-                        {
-                            camera.moveVector.X += pushBack.x;
-                            camera.moveVector.Y += pushBack.y;
-                        }
+                        
+                        
                         if (players[j].position.x > origin.X && players[j].position.x < extent.X
                             && players[j].position.y > origin.Y && players[j].position.y < extent.Y)
                         {
@@ -120,6 +117,18 @@ namespace EngineeringCorpsCS
                         }
                     }
                     window.Draw(boundingBoxArray);
+                }
+
+                List<Entity> collisionList = surfaceContainer.GetChunk(SurfaceContainer.WorldToChunkIndex(camera.focusedEntity.position)).entityCollisionList;
+                int collisionChecks = collisionList.Count;
+                for (int i = 0; i < collisionList.Count; i++)
+                {
+                    Vector2 pushBack;
+                    if (BoundingBox.CheckCollision(camera.focusedEntity.collisionBox, collisionList[i].collisionBox, camera.focusedEntity.position, new Vector2(camera.moveVector.X, camera.moveVector.Y), collisionList[i].position, out pushBack))
+                    {
+                        camera.moveVector.X += pushBack.x;
+                        camera.moveVector.Y += pushBack.y;
+                    }
                 }
                 camera.focusedEntity.position.Add(camera.moveVector.X, camera.moveVector.Y);
                 //========================END entity debugging code
@@ -140,7 +149,7 @@ namespace EngineeringCorpsCS
                     float worldX = camera.GetView().Center.X;
                     float worldY = camera.GetView().Center.Y;
                     int[] cXY = SurfaceContainer.WorldToChunkCoords(worldX, worldY);
-                    biomeText.DisplayedString = "Biome: " + tileCollection.GetTerrainTileName(chunkManager.GetTileFromWorld(worldX, worldY));
+                    biomeText.DisplayedString = "Biome: " + tileCollection.GetTerrainTileName(surfaceContainer.GetTileFromWorld(worldX, worldY));
                     biomeText.Position = new Vector2f(0, 0);
                     fpsText.DisplayedString = "FPS/TPS: " + fps.ToString();
                     fpsText.Position = new Vector2f(0, 32);
@@ -149,7 +158,8 @@ namespace EngineeringCorpsCS
                         "\nTile Coordinates:" + (int)(worldX / Props.tileSize) % Props.chunkSize + ", " + (int)(worldY / Props.tileSize) % Props.chunkSize +
                         "\nChunk Index:" + SurfaceContainer.WorldToChunkIndex(worldX, worldY);
                     coordinates.Position = new Vector2f(0, 64);
-
+                    collision.Position = new Vector2f(0, 256);
+                    collision.DisplayedString = "Collision checks: " + collisionChecks;
                     VertexArray boundingBoxArray = new VertexArray(PrimitiveType.Lines);
                     float[] pointsE = test.collisionBox.GetPoints();
                     Vector2f positionE = test.position;
@@ -163,6 +173,7 @@ namespace EngineeringCorpsCS
                     GUI.Draw(biomeText);
                     GUI.Draw(fpsText);
                     GUI.Draw(coordinates);
+                    GUI.Draw(collision);
                     GUI.Display();
                 }
                 Sprite GUISprite = new Sprite(GUI.Texture);

@@ -69,9 +69,9 @@
     <Compile Include="Chunk\Chunk.cs" />
     <Compile Include="Chunk\SurfaceContainer.cs" />
     <Compile Include="Entity.cs" />
-    <Compile Include="MenuComponent.cs" />
-    <Compile Include="MenuPanel.cs" />
-    <Compile Include="MenuText.cs" />
+    <Compile Include="Menu\MenuComponent.cs" />
+    <Compile Include="Menu\MenuPanel.cs" />
+    <Compile Include="Menu\MenuText.cs" />
     <Compile Include="Noise\FastNoise.cs" />
     <Compile Include="Noise\OpenSimplexNoise.cs" />
     <Compile Include="Player.cs" />

@@ -13,11 +13,13 @@ namespace EngineeringCorpsCS
     {
 
         private byte[] terrain;
-        private List<Entity> entityList; //Collection of entities for drawing (entities will be dynamically sorted)
-        private List<Entity> entityCollisionList; //Collection of entities for collision (2+ different chunks may contain the same entity)
+        public List<Entity> entityList { get; protected set; } //Collection of entities for drawing (entities will be dynamically sorted)
+        public List<Entity> entityCollisionList { get; protected set; } //Collection of entities for collision (2+ different chunks may contain the same entity)
 
         public Chunk()
         {
+            entityList = new List<Entity>();
+            entityCollisionList = new List<Entity>();
             terrain = new byte[32 * 32];
         }
 

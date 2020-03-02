@@ -328,8 +328,8 @@ namespace EngineeringCorpsCS
             float yMax = selfPos.y + self.radiusApproximation;
             int[] top = SurfaceContainer.WorldToChunkCoords(xMin, yMin);
             int[] bot = SurfaceContainer.WorldToChunkCoords(xMax, yMax);
-            int yRange = (bot[1] - top[1]);
-            int xRange = (bot[0] - top[0]);
+            int yRange = (bot[1] - top[1]) + 1;
+            int xRange = (bot[0] - top[0]) + 1;
             int[] ret = new int[xRange * yRange];
             int k = 0;
             for (int i = top[0]; i <= bot[0]; i++)

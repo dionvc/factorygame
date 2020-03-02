@@ -14,6 +14,7 @@ namespace EngineeringCorpsCS
         public int[] collisionChunks { get; set; }
         public int centeredChunk { get; set; }
         SurfaceContainer surface;
+        public Vector2 position { get; protected set; }
         //Consider what should be passed to entity by chunk (perhaps the chunk coordinates?)
     }
 }

@@ -17,8 +17,7 @@ namespace EngineeringCorpsCS
         public Vector2f moveVector;
         public Camera()
         {
-            focusedEntity = new Player();
-            focusedEntity.position = new Vector2(256, 256);
+            focusedEntity = new Player(new Vector2(256, 256));
             //focusedEntity.collisionBox.SetRotation(150);
         }
         public void Update()

@@ -82,7 +82,7 @@ namespace EngineeringCorpsCS
 
         public Chunk GetChunk(int chunkIndex)
         {
-            if(chunkIndex < 0 || chunkIndex> (Props.worldSize * Props.worldSize))
+            if(chunkIndex < 0 || chunkIndex > (Props.worldSize * Props.worldSize))
             {
                 return null;
             }
@@ -102,12 +102,12 @@ namespace EngineeringCorpsCS
         {
             chunks[x * Props.worldSize + y] = chunk;
         }
-        public void InitiateEntityInChunks(Entity entity, Vector2 pos)
+        public void InitiateEntityInChunks(Entity entity)
         {
-            int chunkIndex = WorldToChunkIndex(pos);
+            int chunkIndex = WorldToChunkIndex(entity.position);
             entity.centeredChunk = chunkIndex;
             GetChunk(chunkIndex).AddEntityToChunk(entity);
-            int[] newCollisionChunks = BoundingBox.GetChunkBounds(entity.collisionBox, pos);
+            int[] newCollisionChunks = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
             foreach (int x in newCollisionChunks)
             {
                 GetChunk(x).AddEntityCollisionCheck(entity);
@@ -123,10 +123,10 @@ namespace EngineeringCorpsCS
         /// <param name="transPos"></param>
         /// <param name="centeredChunk"></param>
         /// <param name="collisionChunks"></param>
-        public void UpdateEntityInChunks(Entity entity, Vector2 prevPos, Vector2 transPos, int centeredChunk, int[] collisionChunks)
+        public void UpdateEntityInChunks(Entity entity, Vector2 transPos, int centeredChunk, int[] collisionChunks)
         {
             //The entity's draw/main chunk is updated first
-            Vector2 newPos = prevPos.VAdd(transPos);
+            Vector2 newPos = entity.position.VAdd(transPos);
             int newChunkIndex = WorldToChunkIndex(newPos);
             if (centeredChunk != newChunkIndex)
             {
@@ -172,7 +172,6 @@ namespace EngineeringCorpsCS
 
         /// <summary>
         /// Returns the chunk's index at a specified world coordinate
-        /// TODO: Fix
         /// </summary>
         /// <param name="pos"></param>
         /// <returns></returns>
@@ -183,7 +182,6 @@ namespace EngineeringCorpsCS
         }
         /// <summary>
         /// Returns the chunk's index at a specified world coordinate
-        /// TODO: Fix
         /// </summary>
         /// <param name="pos"></param>
         /// <returns></returns>
@@ -195,13 +193,12 @@ namespace EngineeringCorpsCS
 
         /// <summary>
         /// Returns the top left corner world coordinates of a specified chunk by index
-        /// TODO: Fix
         /// </summary>
         /// <param name="chunkIndex"></param>
         /// <returns></returns>
         public static int[] ChunkIndexToWorld(int chunkIndex)
         {
-            return new int[] { chunkIndex % Props.worldSize, chunkIndex / Props.worldSize };
+            return new int[] { chunkIndex / Props.worldSize, chunkIndex % Props.worldSize };
         }
 
         /// <summary>
