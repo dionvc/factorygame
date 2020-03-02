@@ -44,6 +44,15 @@ namespace EngineeringCorpsCS
         }
 
         /// <summary>
+        /// Returns a new Vector2 representing the addition
+        /// </summary>
+        /// <param name="other"></param>
+        public Vector2 VAdd(Vector2 other)
+        {
+            return new Vector2(this.x + other.x, this.y + other.y);
+        }
+
+        /// <summary>
         /// Permanently subtracts desired Vector2 from a Vector2
         /// </summary>
         /// <param name="other"></param>

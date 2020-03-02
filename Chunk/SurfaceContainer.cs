@@ -9,7 +9,7 @@ namespace EngineeringCorpsCS
     //stores collection of chunks, manages saving, loading, and generating chunks
     //stores collection of active chunks (to run update on)
     
-    class ChunkManager
+    class SurfaceContainer
     {
         Chunk[] chunks;
         List<Chunk> activeChunks;
@@ -17,7 +17,7 @@ namespace EngineeringCorpsCS
         FastNoise moistureNoise;
         FastNoise temperatureNoise;
 
-        public ChunkManager()
+        public SurfaceContainer()
         {
             chunks = new Chunk[Props.worldSize * Props.worldSize];
             Random r = new Random(DateTime.Now.Second);
@@ -80,58 +80,80 @@ namespace EngineeringCorpsCS
             }
         }
 
+        public Chunk GetChunk(int chunkIndex)
+        {
+            if(chunkIndex < 0 || chunkIndex> (Props.worldSize * Props.worldSize))
+            {
+                return null;
+            }
+            if (chunks[chunkIndex] != null)
+            {
+                return chunks[chunkIndex];
+            }
+            else
+            {
+                int[] chunkXY = ChunkIndexToWorld(chunkIndex);
+                GenerateTerrain(chunkXY[0] , chunkXY[1]);
+                return chunks[chunkIndex];
+            }
+        }
+
         public void SetChunk(int x, int y, Chunk chunk)
         {
             chunks[x * Props.worldSize + y] = chunk;
         }
-
-        public void UpdateEntityInChunks(EntityPhysical entity, Vector2 prevLocation, Vector2 newLocation, int[] chunks)
+        public void InitiateEntityInChunks(Entity entity, Vector2 pos)
         {
-            if(WorldToChunkCoords(prevLocation).SequenceEqual(WorldToChunkCoords(newLocation)))
+            int chunkIndex = WorldToChunkIndex(pos);
+            entity.centeredChunk = chunkIndex;
+            GetChunk(chunkIndex).AddEntityToChunk(entity);
+            int[] newCollisionChunks = BoundingBox.GetChunkBounds(entity.collisionBox, pos);
+            foreach (int x in newCollisionChunks)
             {
-                return;
+                GetChunk(x).AddEntityCollisionCheck(entity);
             }
-            else
-            {
-
-            }
+            entity.collisionChunks = newCollisionChunks;
         }
 
-        public void InitiateEntityInChunks(Entity entity, Vector2 location)
-        {
-            GetChunk(WorldToChunkCoords(location));
-        }
         /// <summary>
-        /// Updates a non-physical entities
+        /// Moves references of an entity between chunks.  Both its main chunk and chunks it can collide in.  Should be called by all movement functionality.
         /// </summary>
         /// <param name="entity"></param>
-        /// <param name="prevLocation"></param>
-        /// <param name="newLocation"></param>
-        public void UpdateEntityInChunks(Entity entity, Vector2 prevLocation, Vector2 newLocation, int[] chunks)
+        /// <param name="prevPos"></param>
+        /// <param name="transPos"></param>
+        /// <param name="centeredChunk"></param>
+        /// <param name="collisionChunks"></param>
+        public void UpdateEntityInChunks(Entity entity, Vector2 prevPos, Vector2 transPos, int centeredChunk, int[] collisionChunks)
         {
-
+            //The entity's draw/main chunk is updated first
+            Vector2 newPos = prevPos.VAdd(transPos);
+            int newChunkIndex = WorldToChunkIndex(newPos);
+            if (centeredChunk != newChunkIndex)
+            {
+                GetChunk(centeredChunk).RemoveEntityFromChunk(entity);
+                entity.centeredChunk = newChunkIndex;
+                GetChunk(newChunkIndex).AddEntityToChunk(entity);
+            }
+            //Now, the entity's collision chunks are computed
+            int[] newCollisionChunks  = BoundingBox.GetChunkBounds(entity.collisionBox, newPos);
+            foreach (int x in newCollisionChunks)
+            {
+                if(!collisionChunks.Contains(x))
+                {
+                    GetChunk(x).AddEntityCollisionCheck(entity);
+                }
+            }
+            foreach (int x in collisionChunks)
+            {
+                if(!newCollisionChunks.Contains(x))
+                {
+                    GetChunk(x).RemoveEntityCollisionCheck(entity);
+                }
+            }
+            entity.collisionChunks = newCollisionChunks;
         }
 
-
-
-
-
-        /// <summary>
-        /// Part of chunk streaming mechanism, saves inactive out of range chunks
-        /// </summary>
-        public void StreamChunkFromDisk()
-        {
-
-        }
-
-        /// <summary>
-        /// Part of chunk streaming mechanism, loads newly activated chunks
-        /// </summary>
-        public void StreamChunkToDisk()
-        {
-
-        }                       
-
+        #region Coordinate conversions
         /// <summary>
         /// Converts world coordinates to chunk coordinates
         /// </summary>
@@ -146,6 +168,40 @@ namespace EngineeringCorpsCS
         public static int[] WorldToChunkCoords(Vector2 pos)
         {
             return new int[] { (int)Math.Floor(pos.x / (Props.tileSize * Props.chunkSize)), (int)Math.Floor(pos.y / (Props.tileSize * Props.chunkSize)) };
+        }
+
+        /// <summary>
+        /// Returns the chunk's index at a specified world coordinate
+        /// TODO: Fix
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static int WorldToChunkIndex(Vector2 pos)
+        {
+            int[] wC = WorldToChunkCoords(pos);
+            return wC[0] * Props.worldSize + wC[1];
+        }
+        /// <summary>
+        /// Returns the chunk's index at a specified world coordinate
+        /// TODO: Fix
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static int WorldToChunkIndex(float x, float y)
+        {
+            int[] wC = WorldToChunkCoords(x, y);
+            return wC[0] * Props.worldSize + wC[1];
+        }
+
+        /// <summary>
+        /// Returns the top left corner world coordinates of a specified chunk by index
+        /// TODO: Fix
+        /// </summary>
+        /// <param name="chunkIndex"></param>
+        /// <returns></returns>
+        public static int[] ChunkIndexToWorld(int chunkIndex)
+        {
+            return new int[] { chunkIndex % Props.worldSize, chunkIndex / Props.worldSize };
         }
 
         /// <summary>
@@ -200,5 +256,6 @@ namespace EngineeringCorpsCS
         {
             return new int[] { (cx * Props.chunkSize + x) * Props.tileSize, (cy * Props.chunkSize + x) * Props.tileSize };
         }
+        #endregion Coordinate Conversions
     }
 }

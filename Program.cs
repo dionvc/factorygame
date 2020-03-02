@@ -26,7 +26,7 @@ namespace EngineeringCorpsCS
             //Repository, Managers, Resource collections creation
             TextureContainer textureManager = new TextureContainer();
             textureManager.LoadTextures();
-            ChunkManager chunkManager = new ChunkManager();
+            SurfaceContainer chunkManager = new SurfaceContainer();
             TileCollection tileCollection = new TileCollection(textureManager);
             InputManager input = new InputManager(window);
             Renderer gameRenderer = new Renderer(tileCollection, chunkManager);
@@ -139,12 +139,15 @@ namespace EngineeringCorpsCS
                     clock.Restart();
                     float worldX = camera.GetView().Center.X;
                     float worldY = camera.GetView().Center.Y;
-                    int[] cXY = ChunkManager.WorldToChunkCoords(worldX, worldY);
+                    int[] cXY = SurfaceContainer.WorldToChunkCoords(worldX, worldY);
                     biomeText.DisplayedString = "Biome: " + tileCollection.GetTerrainTileName(chunkManager.GetTileFromWorld(worldX, worldY));
                     biomeText.Position = new Vector2f(0, 0);
                     fpsText.DisplayedString = "FPS/TPS: " + fps.ToString();
                     fpsText.Position = new Vector2f(0, 32);
-                    coordinates.DisplayedString = "World Coordinates: " + worldX + ", " + worldY + "\nChunk Coordinates:" + cXY[0] + ", " + cXY[1] + "\nTile Coordinates:" + (int)(worldX / Props.tileSize) % Props.chunkSize + ", " + (int)(worldY / Props.tileSize) % Props.chunkSize;
+                    coordinates.DisplayedString = "World Coordinates: " + worldX + ", " + worldY + 
+                        "\nChunk Coordinates:" + cXY[0] + ", " + cXY[1] + 
+                        "\nTile Coordinates:" + (int)(worldX / Props.tileSize) % Props.chunkSize + ", " + (int)(worldY / Props.tileSize) % Props.chunkSize +
+                        "\nChunk Index:" + SurfaceContainer.WorldToChunkIndex(worldX, worldY);
                     coordinates.Position = new Vector2f(0, 64);
 
                     VertexArray boundingBoxArray = new VertexArray(PrimitiveType.Lines);

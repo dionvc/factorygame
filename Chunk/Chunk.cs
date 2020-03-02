@@ -13,8 +13,8 @@ namespace EngineeringCorpsCS
     {
 
         private byte[] terrain;
-        private List<Entity> entityDrawCollection; //Collection of entities for drawing (entities will be dynamically sorted)
-        private List<Entity> entityCollection; //Collection of entities for collision (2+ different chunks may contain the same entity)
+        private List<Entity> entityList; //Collection of entities for drawing (entities will be dynamically sorted)
+        private List<Entity> entityCollisionList; //Collection of entities for collision (2+ different chunks may contain the same entity)
 
         public Chunk()
         {
@@ -72,6 +72,24 @@ namespace EngineeringCorpsCS
         public byte[] GetTerrain()
         {
             return terrain;
+        }
+
+        public void AddEntityToChunk(Entity entity)
+        {
+            entityList.Add(entity);
+        }
+        public void AddEntityCollisionCheck(Entity entity)
+        {
+            entityCollisionList.Add(entity);
+        }
+        public void RemoveEntityFromChunk(Entity entity)
+        {
+            entityList.Remove(entity);
+        }
+
+        public void RemoveEntityCollisionCheck(Entity entity)
+        {
+            entityCollisionList.Remove(entity);
         }
     }
 }

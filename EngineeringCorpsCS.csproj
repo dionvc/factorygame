@@ -67,7 +67,7 @@
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Chunk\Chunk.cs" />
-    <Compile Include="Chunk\ChunkManager.cs" />
+    <Compile Include="Chunk\SurfaceContainer.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="MenuComponent.cs" />
     <Compile Include="MenuPanel.cs" />

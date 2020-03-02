@@ -30,7 +30,7 @@ namespace EngineeringCorpsCS
             this.name = name;
         }
 
-        public void AppendTerrainVertices(VertexArray vertexArray, ChunkManager chunkManager, int[]pos, List<byte> impassableTileTypes)
+        public void AppendTerrainVertices(VertexArray vertexArray, SurfaceContainer chunkManager, int[]pos, List<byte> impassableTileTypes)
         {
             int[] cXY = new int[] { pos[0] * Props.chunkSize, pos[1] * Props.chunkSize };
             for (int i = 0; i < Props.chunkSize; i++)
@@ -45,8 +45,8 @@ namespace EngineeringCorpsCS
                     variantX ^= variantX >> 15;
                     variantX *= 246822519;
                     variantX = Math.Abs(variantX);
-                    float oX = (cXY[0] + i) * Props.tileSize;
-                    float oY = (cXY[1] + j) * Props.tileSize;
+                    float oX = (cXY[0] + i) * Props.tileSize + 0.5f;
+                    float oY = (cXY[1] + j) * Props.tileSize + 0.5f;
                     //First check if tile is present at location, if it is then simply append vertices of the regular tile
                     byte currentTile = chunkManager.GetTileFromWorldInt(pos, i, j);
                     if (currentTile == this.tileType)

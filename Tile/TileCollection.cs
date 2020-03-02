@@ -34,7 +34,7 @@ namespace EngineeringCorpsCS
         /// <param name="chunk"></param>
         /// <param name="cXY"></param>
         /// <returns></returns>
-        public VertexArray[] GenerateTerrainVertexArray(ChunkManager chunkManager, int[] cXY)
+        public VertexArray[] GenerateTerrainVertexArray(SurfaceContainer chunkManager, int[] cXY)
         {
             VertexArray[] terrainVertexArray = new VertexArray[terrainTiles.Count];
             //Iterate over every tile type starting with the lowest layer (0)

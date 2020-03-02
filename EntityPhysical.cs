@@ -8,5 +8,6 @@ namespace EngineeringCorpsCS
 {
     class EntityPhysical: Entity
     {
+        
     }
 }

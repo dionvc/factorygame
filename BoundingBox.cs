@@ -301,7 +301,7 @@ namespace EngineeringCorpsCS
         /// <param name="box"></param>
         /// <param name="pos"></param>
         /// <returns></returns>
-        public static bool CheckTerrainTileCollision(BoundingBox box, Vector2 pos, Vector2 velocity, Base.CollisionLayer collisionMask, TileCollection tileCollection, ChunkManager chunkManager, out Tile tile)
+        public static bool CheckTerrainTileCollision(BoundingBox box, Vector2 pos, Vector2 velocity, Base.CollisionLayer collisionMask, TileCollection tileCollection, SurfaceContainer chunkManager, out Tile tile)
         {
             tile = tileCollection.GetTerrainTile(chunkManager.GetTileFromWorld(pos.x, pos.y));
             if ((tile.collisionMask & collisionMask) != 0) {
@@ -318,6 +318,74 @@ namespace EngineeringCorpsCS
                 return true;
             }
             return false;
+        }
+
+        public static int[] GetChunkBounds(BoundingBox self, Vector2 selfPos)
+        {
+            float xMin = selfPos.x - self.radiusApproximation;
+            float xMax = selfPos.x + self.radiusApproximation;
+            float yMin = selfPos.y - self.radiusApproximation;
+            float yMax = selfPos.y + self.radiusApproximation;
+            int[] top = SurfaceContainer.WorldToChunkCoords(xMin, yMin);
+            int[] bot = SurfaceContainer.WorldToChunkCoords(xMax, yMax);
+            int yRange = (bot[1] - top[1]);
+            int xRange = (bot[0] - top[0]);
+            int[] ret = new int[xRange * yRange];
+            int k = 0;
+            for (int i = top[0]; i <= bot[0]; i++)
+            {
+                for (int j = top[1]; j <= bot[1]; j++)
+                {
+                    ret[k] = i * Props.worldSize + j;
+                    k++;
+                }
+            }
+            return ret;
+
+            /*if(self.rotation == 0)
+            {
+                int[] top = SurfaceContainer.WorldToChunkCoords(selfPos.x + self.topLeftR.x, selfPos.y + self.topLeftR.y);
+                int[] bot = SurfaceContainer.WorldToChunkCoords(selfPos.x + self.botLeftR.y, selfPos.y + self.botLeftR.y);
+                int yRange = (bot[1] - top[1]);
+                int xRange = (bot[0] - top[0]);
+                int[] ret = new int[xRange * yRange];
+                int k = 0;
+                for(int i = top[0]; i <= bot[0]; i++)
+                {
+                    for(int j = top[1]; j <= bot[1]; j++)
+                    {
+                        ret[k] = i * Props.worldSize + j;
+                        k++;
+                    }
+                }
+                return ret;
+            }
+            int[][] coords = new int[4][];
+            coords[0] = SurfaceContainer.WorldToChunkCoords(selfPos.VAdd(self.topLeftR));
+            coords[1] = SurfaceContainer.WorldToChunkCoords(selfPos.VAdd(self.topRightR));
+            coords[2] = SurfaceContainer.WorldToChunkCoords(selfPos.VAdd(self.botLeftR));
+            coords[3] = SurfaceContainer.WorldToChunkCoords(selfPos.VAdd(self.botRightR));
+            int[] min = new int[] { coords[0][0], coords[0][1] };
+            int[] max = new int[] { coords[3][0], coords[3][1] };
+            for (int i = 0; i < 4; i++)
+            {
+                if(coords[i][0] <= min[0])
+                {
+                    min[0] = coords[i][0]; 
+                }
+                if(coords[i][0] >= max[0])
+                {
+                    max[0] = coords[i][0];
+                }
+                if(coords[i][1] <= min[1])
+                {
+                    min[1] = coords[i][1];
+                }
+                if(coords[i][1] >= max[1])
+                {
+                    max[1] = coords[i][1];
+                }
+            }*/
         }
     }
 }

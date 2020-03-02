@@ -14,9 +14,9 @@ namespace EngineeringCorpsCS
         Texture[] terrainTilesheets;
         RenderStates[] terrainRenderStates;
         TileCollection tileCollection;
-        ChunkManager chunkManager;
+        SurfaceContainer chunkManager;
 
-        public Renderer(TileCollection tileCollection, ChunkManager chunkManager)
+        public Renderer(TileCollection tileCollection, SurfaceContainer chunkManager)
         {
             terrainVertexArrays = new Dictionary<int, VertexArray[]>(); //terrain cache //TODO: clear periodically
             terrainTilesheets = tileCollection.GetTerrainTilesheets();
@@ -32,8 +32,8 @@ namespace EngineeringCorpsCS
         {
             Vector2f origin = window.MapPixelToCoords(new Vector2i(0, 0), camera.GetView());
             Vector2f extent = window.MapPixelToCoords(new Vector2i((int)window.Size.X, (int)window.Size.Y), camera.GetView());
-            int[] begPos = ChunkManager.WorldToChunkCoords(origin.X, origin.Y);
-            int[] endPos = ChunkManager.WorldToChunkCoords(extent.X, extent.Y);
+            int[] begPos = SurfaceContainer.WorldToChunkCoords(origin.X, origin.Y);
+            int[] endPos = SurfaceContainer.WorldToChunkCoords(extent.X, extent.Y);
             for (int i = begPos[0]; i <= endPos[0]; i++)
             {
                 for (int j = begPos[1]; j <= endPos[1]; j++)
@@ -64,10 +64,10 @@ namespace EngineeringCorpsCS
         /// <param name="camW"></param>
         /// <param name="camH"></param>
         /// <param name="chunkM"></param>
-        void GetVisibleChunks(float camX, float camY, float camW, float camH, ChunkManager chunkM)
+        void GetVisibleChunks(float camX, float camY, float camW, float camH, SurfaceContainer chunkM)
         {
-            int[] top = ChunkManager.WorldToChunkCoords(camX, camY);
-            int[] bot = ChunkManager.WorldToChunkCoords(camX + camW, camY + camH);
+            int[] top = SurfaceContainer.WorldToChunkCoords(camX, camY);
+            int[] bot = SurfaceContainer.WorldToChunkCoords(camX + camW, camY + camH);
             List<Chunk> cList = new List<Chunk>();
             for(int i = top[0]; i < bot[0]; i++)
             {
