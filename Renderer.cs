@@ -10,18 +10,21 @@ namespace EngineeringCorpsCS
 {
     class Renderer
     {
-        Dictionary<int, VertexArray[]> terrainVertexArrays;
+        Dictionary<int, VertexArray[]> terrainVertexArrays; //can be cached
+        VertexArray boundingBoxArray; //must be reconstructed every frame
         Texture[] terrainTilesheets;
         RenderStates[] terrainRenderStates;
         TileCollection tileCollection;
-        SurfaceContainer chunkManager;
+        SurfaceContainer surface;
+        bool drawBoundingBoxes = true;
 
         public Renderer(TileCollection tileCollection, SurfaceContainer chunkManager)
         {
             terrainVertexArrays = new Dictionary<int, VertexArray[]>(); //terrain cache //TODO: clear periodically
+            boundingBoxArray = new VertexArray(PrimitiveType.Lines);
             terrainTilesheets = tileCollection.GetTerrainTilesheets();
             terrainRenderStates = new RenderStates[terrainTilesheets.Length];
-            this.chunkManager = chunkManager;
+            this.surface = chunkManager;
             this.tileCollection = tileCollection;
             for (int i = 0; i < terrainTilesheets.Length; i++)
             {
@@ -41,7 +44,7 @@ namespace EngineeringCorpsCS
                     int key = (i) * Props.worldSize + j;
                     if (terrainVertexArrays.TryGetValue(key, out _) == false)
                     {
-                        terrainVertexArrays.Add(key, tileCollection.GenerateTerrainVertexArray(chunkManager, new int[] { i, j }));
+                        terrainVertexArrays.Add(key, tileCollection.GenerateTerrainVertexArray(surface, new int[] { i, j }));
                     }
                     VertexArray[] vArr;
                     if (terrainVertexArrays.TryGetValue(key, out vArr))
@@ -53,6 +56,32 @@ namespace EngineeringCorpsCS
                         }
                     }
                 }
+            }
+            if (drawBoundingBoxes == true)
+            {
+                for (int i = begPos[0]; i <= endPos[0]; i++)
+                {
+                    for (int j = begPos[1]; j <= endPos[1]; j++)
+                    {
+                        List<Entity> boxList = surface.GetChunk(i, j).entityList;
+                        for (int k = 0; k < boxList.Count; k++)
+                        {
+                            if (boxList[k].position.x > origin.X && boxList[k].position.x < extent.X
+                                && boxList[k].position.y > origin.Y && boxList[k].position.y < extent.Y)
+                            {
+                                float[] points = boxList[k].collisionBox.GetPoints();
+                                Vector2 position = boxList[k].position;
+                                for (int l = 0; l < points.Length; l += 2)
+                                {
+                                    boundingBoxArray.Append(new Vertex(new Vector2f(points[l] + position.x, points[l + 1] + position.y), Color.Red));
+                                    boundingBoxArray.Append(new Vertex(new Vector2f(points[(l + 2) % 8] + position.x, points[(l + 3) % 8] + position.y), Color.Red));
+                                }
+                            }
+                        }
+                    }
+                }
+                window.Draw(boundingBoxArray);
+                boundingBoxArray.Clear();
             }
         }
 

@@ -18,9 +18,11 @@ namespace EngineeringCorpsCS
             window.SetFramerateLimit(60);
             window.Closed += (s, a) => window.Close();
             window.SetActive();
+            Image icon = new Image("Graphics/EngineeringCorpsIcon.png");
+            window.SetIcon(icon.Size.X, icon.Size.Y, icon.Pixels);
 
             //Camera is the entry point for the game, first it subscribes to input, then an entity is added which makes the entity subscribe to input
-            
+
 
 
             //Repository, Managers, Resource collections creation
@@ -44,15 +46,17 @@ namespace EngineeringCorpsCS
             Clock clock = new Clock();
             bool drawBoundingBoxes = true;
             bool drawDebugText = true;
+            //TODO: contain within renderer?
             RenderTexture GUI = new RenderTexture(window.Size.X, window.Size.Y);
+            //TODO: contain guiview in camera?
             View GUIView = new View(new Vector2f(640, 360), new Vector2f(1280, 720));
 
             #region randomstuff
             //Texture[] waves = new Texture[1];
             //waves[0] = textureManager.GetTexture("WavesAlpha");
             //RotatedAnimation wavesTest = new RotatedAnimation(waves, new Vector2i(320, 320), new Vector2f(0, 0), new Vector2f(2.0f, 2.0f), 1, 10, "fb", 12.0f);
-            Texture[] multi = new Texture[] { textureManager.GetTexture("1"), textureManager.GetTexture("2"), textureManager.GetTexture("3"), textureManager.GetTexture("4") };
-            RotatedAnimation multiTest = new RotatedAnimation(multi, new Vector2i(256, 256), new Vector2f(0, 0), new Vector2f(1.0f, 1.0f), 1, 4, "fb", 30.0f);
+            //Texture[] multi = new Texture[] { textureManager.GetTexture("1"), textureManager.GetTexture("2"), textureManager.GetTexture("3"), textureManager.GetTexture("4") };
+            //RotatedAnimation multiTest = new RotatedAnimation(multi, new Vector2i(256, 256), new Vector2f(0, 0), new Vector2f(1.0f, 1.0f), 1, 4, "fb", 30.0f);
             List<Player> players = new List<Player>();
             Random random = new Random();
             for (int i = 0; i < 320; i++)
@@ -89,40 +93,17 @@ namespace EngineeringCorpsCS
                 window.SetView(camera.GetView());
                 //drawing game world (terrain, entities)
                 gameRenderer.RenderWorld(window, camera);
-                //draw GUI
+                //set the view to GUI
+                //window.SetView(GUIView);
+                //drawing menus (main menu, pause, ingame, etc)
                 //gameRenderer.RenderGUI();
 
                 //The following is debugging code to be removed
 
-                //==============================START animation debugging code
-                multiTest.Update();
-                window.Draw(multiTest.GetAnimationFrame());
-
-                //==============================END Animation Draw Test
-
-                //==============================START entity debugging code
+                //==============================START bounding box drawing code
+                //TODO: Move to gamerenderer
                 Vector2f origin = window.MapPixelToCoords(new Vector2i(0, 0), camera.GetView());
                 Vector2f extent = window.MapPixelToCoords(new Vector2i((int)window.Size.X, (int)window.Size.Y), camera.GetView());
-                if (drawBoundingBoxes == true)
-                {
-                    VertexArray boundingBoxArray = new VertexArray(PrimitiveType.Lines);
-                    for (int j = 0; j < players.Count; j++)
-                    {
-                        if (players[j].position.x > origin.X && players[j].position.x < extent.X
-                            && players[j].position.y > origin.Y && players[j].position.y < extent.Y)
-                        {
-                            float[] points = players[j].collisionBox.GetPoints();
-                            Vector2 position = players[j].position;
-                            for (int i = 0; i < points.Length; i += 2)
-                            {
-                                boundingBoxArray.Append(new Vertex(new Vector2f(points[i] + position.x, points[i + 1] + position.y), Color.Red));
-                                boundingBoxArray.Append(new Vertex(new Vector2f(points[(i + 2) % 8] + position.x, points[(i + 3) % 8] + position.y), Color.Red));
-                            }
-                        }
-                    }
-                    window.Draw(boundingBoxArray);
-                }
-                
                 
                 //========================END entity debugging code
 

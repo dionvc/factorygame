@@ -51,10 +51,10 @@ namespace EngineeringCorpsCS
         /// <param name="ty"></param>
         /// <param name="bx"></param>
         /// <param name="by"></param>
-        public BoundingBox(float halfX, float halfY)
+        public BoundingBox(float x, float y)
         {
-            topLeft = new Vector2(-halfX, -halfY);
-            botRight = new Vector2(halfX, halfY);
+            topLeft = new Vector2(-x/2, -y/2);
+            botRight = new Vector2(x/2, y/2);
 
             this.SetRotation(0);
             this.CalculateConstants();
@@ -343,6 +343,7 @@ namespace EngineeringCorpsCS
             }
             return ret;
 
+            #region more complex chunk bound code
             /*if(self.rotation == 0)
             {
                 int[] top = SurfaceContainer.WorldToChunkCoords(selfPos.x + self.topLeftR.x, selfPos.y + self.topLeftR.y);
@@ -387,6 +388,7 @@ namespace EngineeringCorpsCS
                     max[1] = coords[i][1];
                 }
             }*/
+            #endregion more complex chunk bound code
         }
     }
 }
