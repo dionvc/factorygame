@@ -116,16 +116,16 @@ namespace EngineeringCorpsCS
             if (keyAccumulator[e.Code] < byte.MaxValue)
             {
                 keyAccumulator[e.Code]++;
-                Console.WriteLine("KeyAccumulated: " + keyAccumulator[e.Code] + " : " + e.ToString());
+                //Console.WriteLine("KeyAccumulated: " + keyAccumulator[e.Code] + " : " + e.ToString());
             }
-            Console.WriteLine("KeyPressed: " + e.ToString());
+            //Console.WriteLine("KeyPressed: " + e.ToString());
         }
 
         private void HandleKeyRelease(object sender, KeyEventArgs e)
         {
             keyHeld[e.Code] = false;
             keyReleased[e.Code] = true;
-            Console.WriteLine("KeyReleased: " + e.ToString());
+            //Console.WriteLine("KeyReleased: " + e.ToString());
         }
 
         /// <summary>

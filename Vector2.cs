@@ -154,7 +154,7 @@ namespace EngineeringCorpsCS
         /// <returns></returns>
         public float GetRotation()
         {
-            float angle = (float) Math.Acos(this.x / this.GetMagnitude());
+            float angle = (float) Math.Atan2(this.y, this.x);
             angle = angle * 180 / (float)Math.PI;
             if(this.y < 0)
             {
@@ -162,7 +162,7 @@ namespace EngineeringCorpsCS
             }
             else
             {
-                return angle;
+                return angle + 180.0f;
             }
         }
 

@@ -65,11 +65,11 @@ namespace EngineeringCorpsCS
         /// <param name="framesPerState"></param>
         /// <param name="behavior"></param>
         /// <param name="animationSpeed"></param>
-        public RotatedAnimation(Texture textureRef, Vector2i frameSize, int rotationStates, int framesPerState, string behavior, float animationSpeed)
+        public RotatedAnimation(Texture[] textureRef, Vector2i frameSize, int rotationStates, int framesPerState, string behavior, float animationSpeed)
         {
             this.animationFrame = new Sprite();
             this.size = frameSize;
-            this.textureRefs = new Texture[] { textureRef };
+            this.textureRefs = textureRef;
             this.textureSize = new Vector2i((int)this.textureRefs[0].Size.X, (int)this.textureRefs[0].Size.Y);
             this.states = rotationStates;
             this.frames = framesPerState;
@@ -142,6 +142,7 @@ namespace EngineeringCorpsCS
         override public void SetRotation(float rotation)
         {
             currentState = (int)Math.Round(rotation * states / 360.0f);
+            currentState = currentState % states;
         }
 
         public void SetAnimationSpeed(float animationSpeed)

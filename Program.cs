@@ -44,7 +44,6 @@ namespace EngineeringCorpsCS
             Text coordinates = new Text("default", debugFont, 32);
             coordinates.LineSpacing = 0.5f;
             Clock clock = new Clock();
-            bool drawBoundingBoxes = true;
             bool drawDebugText = true;
             //TODO: contain within renderer?
             RenderTexture GUI = new RenderTexture(window.Size.X, window.Size.Y);
@@ -57,13 +56,14 @@ namespace EngineeringCorpsCS
             //RotatedAnimation wavesTest = new RotatedAnimation(waves, new Vector2i(320, 320), new Vector2f(0, 0), new Vector2f(2.0f, 2.0f), 1, 10, "fb", 12.0f);
             //Texture[] multi = new Texture[] { textureManager.GetTexture("1"), textureManager.GetTexture("2"), textureManager.GetTexture("3"), textureManager.GetTexture("4") };
             //RotatedAnimation multiTest = new RotatedAnimation(multi, new Vector2i(256, 256), new Vector2f(0, 0), new Vector2f(1.0f, 1.0f), 1, 4, "fb", 30.0f);
+            
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for (int i = 0; i < 320; i++)
+            for (int i = 0; i < 1; i++)
             {
-                for (int j = 0; j < 320; j++)
+                for (int j = 0; j < 1; j++)
                 {
-                    players.Add(new Player(new Vector2(2048 + 128 * i, 2048 + 128 * j), surfaceContainer));
+                    players.Add(new Player(new Vector2(2048 + 128 * i, 2048 + 128 * j), surfaceContainer, textureManager));
                 }
             }
             #endregion
@@ -93,20 +93,13 @@ namespace EngineeringCorpsCS
                 window.SetView(camera.GetView());
                 //drawing game world (terrain, entities)
                 gameRenderer.RenderWorld(window, camera);
+                window.Draw(players[0].playerTest.GetAnimationFrame());
                 //set the view to GUI
                 //window.SetView(GUIView);
                 //drawing menus (main menu, pause, ingame, etc)
                 //gameRenderer.RenderGUI();
 
                 //The following is debugging code to be removed
-
-                //==============================START bounding box drawing code
-                //TODO: Move to gamerenderer
-                Vector2f origin = window.MapPixelToCoords(new Vector2i(0, 0), camera.GetView());
-                Vector2f extent = window.MapPixelToCoords(new Vector2i((int)window.Size.X, (int)window.Size.Y), camera.GetView());
-                
-                //========================END entity debugging code
-
                 //==============================START menu debugging code
                 window.SetView(GUIView);
                 if (drawDebugText == true)
