@@ -102,10 +102,16 @@ namespace EngineeringCorpsCS
         {
             chunks[x * Props.worldSize + y] = chunk;
         }
+
+        /// <summary>
+        /// Called on creation of an entity
+        /// </summary>
+        /// <param name="entity"></param>
         public void InitiateEntityInChunks(Entity entity)
         {
             int chunkIndex = WorldToChunkIndex(entity.position);
             entity.centeredChunk = chunkIndex;
+            entity.surface = this;
             GetChunk(chunkIndex).AddEntityToChunk(entity);
             int[] newCollisionChunks = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
             foreach (int x in newCollisionChunks)
@@ -123,14 +129,14 @@ namespace EngineeringCorpsCS
         /// <param name="transPos"></param>
         /// <param name="centeredChunk"></param>
         /// <param name="collisionChunks"></param>
-        public void UpdateEntityInChunks(Entity entity, Vector2 transPos, int centeredChunk, int[] collisionChunks)
+        public void UpdateEntityInChunks(Entity entity, Vector2 transPos)
         {
             //The entity's draw/main chunk is updated first
             Vector2 newPos = entity.position.VAdd(transPos);
             int newChunkIndex = WorldToChunkIndex(newPos);
-            if (centeredChunk != newChunkIndex)
+            if (entity.centeredChunk != newChunkIndex)
             {
-                GetChunk(centeredChunk).RemoveEntityFromChunk(entity);
+                GetChunk(entity.centeredChunk).RemoveEntityFromChunk(entity);
                 entity.centeredChunk = newChunkIndex;
                 GetChunk(newChunkIndex).AddEntityToChunk(entity);
             }
@@ -138,12 +144,12 @@ namespace EngineeringCorpsCS
             int[] newCollisionChunks  = BoundingBox.GetChunkBounds(entity.collisionBox, newPos);
             foreach (int x in newCollisionChunks)
             {
-                if(!collisionChunks.Contains(x))
+                if(!entity.collisionChunks.Contains(x))
                 {
                     GetChunk(x).AddEntityCollisionCheck(entity);
                 }
             }
-            foreach (int x in collisionChunks)
+            foreach (int x in entity.collisionChunks)
             {
                 if(!newCollisionChunks.Contains(x))
                 {
@@ -151,6 +157,20 @@ namespace EngineeringCorpsCS
                 }
             }
             entity.collisionChunks = newCollisionChunks;
+        }
+
+
+        /// <summary>
+        /// Called on destruction or transferring to another surface
+        /// </summary>
+        /// <param name="entity"></param>
+        public void RemoveEntity(Entity entity)
+        {
+            GetChunk(entity.centeredChunk).RemoveEntityFromChunk(entity);
+            foreach (int x in entity.collisionChunks)
+            {
+                GetChunk(x).RemoveEntityCollisionCheck(entity);
+            }
         }
 
         #region Coordinate conversions

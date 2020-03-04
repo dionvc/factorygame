@@ -8,6 +8,9 @@ namespace EngineeringCorpsCS
 {
     class EntityPhysical: Entity
     {
-        
+        override public void OnClick()
+        {
+
+        }
     }
 }

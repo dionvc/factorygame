@@ -8,13 +8,20 @@ namespace EngineeringCorpsCS
 {
     abstract class Entity : Base
     {
-        public string name { get; }
-        public string type { get; }
-        public BoundingBox collisionBox { get; protected set; }
         public int[] collisionChunks { get; set; }
         public int centeredChunk { get; set; }
-        SurfaceContainer surface;
+        public SurfaceContainer surface { get; set; }
+
+
+        public string name { get; }
+        public string type { get; }
+        public BoundingBox collisionBox { get; set; }
+        
         public Vector2 position { get; protected set; }
         //Consider what should be passed to entity by chunk (perhaps the chunk coordinates?)
+        /// <summary>
+        /// Defines behavior of entity upon being clicked.  Example: Open a menu.
+        /// </summary>
+        abstract public void OnClick();
     }
 }

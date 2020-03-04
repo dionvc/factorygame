@@ -197,6 +197,8 @@ namespace EngineeringCorpsCS
             {
                 return false;
             }
+            #region broken simple check TODO: check to see if can be fixed
+            /*
             //2nd check AABB if both have theta = 0
             if (self.rotation == 0 && other.rotation == 0)
             {
@@ -229,71 +231,70 @@ namespace EngineeringCorpsCS
                 {
                     return false;
                 }
-            }
-            else
-            {
-                Vector2[] axis1 = self.GetNormals();
-                Vector2[] axis2 = other.GetNormals();
-                float overlapAmount = float.MaxValue;
-                int index = 0;
-                //Separating Axis Theorem check (final and most intensive check for accuracy)
+            }*/
+            #endregion
+            //Separating Axis Theorem check (final and most intensive check for accuracy)
+            Vector2[] axis1 = self.GetNormals();
+            Vector2[] axis2 = other.GetNormals();
+            float overlapAmount = float.MaxValue;
+            int index = 0;
+            
 
-                //Checking axis' of box1
-                for (int i = 0; i < 2; i++) 
-                {
-                    //Project half vectors onto normal vector
-                    float sP = Math.Abs(d.Dot(axis1[i]));
-                    float vP = Math.Abs(self.halfWidth * axis1[0].Dot(axis1[i])) + Math.Abs(self.halfHeight * axis1[1].Dot(axis1[i])) + Math.Abs(other.halfWidth * axis2[0].Dot(axis1[i])) + Math.Abs(other.halfHeight * axis2[1].Dot(axis1[i]));
-                    if (sP > vP) {
-                        return false; //if the projection doesnt overlap then there is no collision
-                    }
-                    else if(vP - sP < overlapAmount)
-                    {
-                        overlapAmount = vP - sP;
-                        index = i;
-                    }
+            //Checking axis' of box1
+            for (int i = 0; i < 2; i++) 
+            {
+                //Project half vectors onto normal vector
+                float sP = Math.Abs(d.Dot(axis1[i]));
+                float vP = Math.Abs(self.halfWidth * axis1[0].Dot(axis1[i])) + Math.Abs(self.halfHeight * axis1[1].Dot(axis1[i])) + Math.Abs(other.halfWidth * axis2[0].Dot(axis1[i])) + Math.Abs(other.halfHeight * axis2[1].Dot(axis1[i]));
+                if (sP > vP) {
+                    return false; //if the projection doesnt overlap then there is no collision
                 }
-                //Checking axis' of box2
-                for (int i = 0; i < 2; i++)
+                else if(vP - sP < overlapAmount)
                 {
-                    //Project half vectors onto normal vector
-                    float sP = Math.Abs(d.Dot(axis2[i]));
-                    float vP = Math.Abs(self.halfWidth* axis1[0].Dot(axis2[i])) + Math.Abs(self.halfHeight * axis1[1].Dot(axis2[i])) + Math.Abs(other.halfWidth * axis2[0].Dot(axis2[i])) + Math.Abs(other.halfHeight * axis2[1].Dot(axis2[i]));
-                    if (sP > vP) {
-                        return false; //if the projection doesnt overlap then there is no collision
-                    }
-                    else if(vP - sP < overlapAmount)
-                    {
-                        overlapAmount = vP - sP;
-                        index = i + 2;
-                    }
+                    overlapAmount = vP - sP;
+                    index = i;
                 }
-                //Minimum translation vector calculation
-                
-                if (index < 2) //push back along box 1 axis
-                {
-                    pushBackSelf.x = axis1[index].x;
-                    pushBackSelf.y = axis1[index].y;
-                    pushBackSelf.Scale(overlapAmount);
-                }
-                else //push back along box 2 axis
-                {
-                    pushBackSelf.x = axis2[index - 2].x;
-                    pushBackSelf.y = axis2[index - 2].y;
-                    pushBackSelf.Scale(overlapAmount);
-                }
-                //Direction correction logic
-                if((posSelf.x < posOther.x && pushBackSelf.x > 0) || (posSelf.x > posOther.x && pushBackSelf.x < 0))
-                {
-                    pushBackSelf.x *= -1;
-                }
-                if((posSelf.y > posOther.y && pushBackSelf.y < 0) || (posSelf.y < posOther.y && pushBackSelf.y > 0))
-                {
-                    pushBackSelf.y *= -1;
-                }
-                
-                return true; //all checks failed, boxes collide
             }
+            //Checking axis' of box2
+            for (int i = 0; i < 2; i++)
+            {
+                //Project half vectors onto normal vector
+                float sP = Math.Abs(d.Dot(axis2[i]));
+                float vP = Math.Abs(self.halfWidth* axis1[0].Dot(axis2[i])) + Math.Abs(self.halfHeight * axis1[1].Dot(axis2[i])) + Math.Abs(other.halfWidth * axis2[0].Dot(axis2[i])) + Math.Abs(other.halfHeight * axis2[1].Dot(axis2[i]));
+                if (sP > vP) {
+                    return false; //if the projection doesnt overlap then there is no collision
+                }
+                else if(vP - sP < overlapAmount)
+                {
+                    overlapAmount = vP - sP;
+                    index = i + 2;
+                }
+            }
+            //Minimum translation vector calculation
+                
+            if (index < 2) //push back along box 1 axis
+            {
+                pushBackSelf.x = axis1[index].x;
+                pushBackSelf.y = axis1[index].y;
+                pushBackSelf.Scale(overlapAmount);
+            }
+            else //push back along box 2 axis
+            {
+                pushBackSelf.x = axis2[index - 2].x;
+                pushBackSelf.y = axis2[index - 2].y;
+                pushBackSelf.Scale(overlapAmount);
+            }
+            //Direction correction logic
+            if((posSelf.x < posOther.x && pushBackSelf.x > 0) || (posSelf.x > posOther.x && pushBackSelf.x < 0))
+            {
+                pushBackSelf.x *= -1;
+            }
+            if((posSelf.y > posOther.y && pushBackSelf.y < 0) || (posSelf.y < posOther.y && pushBackSelf.y > 0))
+            {
+                pushBackSelf.y *= -1;
+            }
+                
+            return true; //all checks failed, boxes collide
         }
         /// <summary>
         /// Checks for collision between character and tiles, also returns the tiletype collided with

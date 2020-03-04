@@ -23,6 +23,17 @@ namespace EngineeringCorpsCS
         }
 
         /// <summary>
+        /// Sets the vector2 to some quantity.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        public void Set(float x, float y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+        /// <summary>
         /// Permanently adds a Vector2 to the calling Vector2
         /// </summary>
         /// <param name="other"></param>

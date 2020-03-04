@@ -21,14 +21,18 @@ namespace EngineeringCorpsCS
 
             //Camera is the entry point for the game, first it subscribes to input, then an entity is added which makes the entity subscribe to input
             
-            Camera camera = new Camera();
+
 
             //Repository, Managers, Resource collections creation
             TextureContainer textureManager = new TextureContainer();
             textureManager.LoadTextures();
+            FontContainer fontContainer = new FontContainer();
+            fontContainer.LoadFonts();
             SurfaceContainer surfaceContainer = new SurfaceContainer();
             TileCollection tileCollection = new TileCollection(textureManager);
             InputManager input = new InputManager(window);
+            Camera camera = new Camera();
+            camera.SubscribeToInput(input);
             Renderer gameRenderer = new Renderer(tileCollection, surfaceContainer);
 
             //Debug flags and stuff
@@ -36,7 +40,6 @@ namespace EngineeringCorpsCS
             Text biomeText = new Text("default", debugFont, 32);
             Text fpsText = new Text("default", debugFont, 32);
             Text coordinates = new Text("default", debugFont, 32);
-            Text collision = new Text("default", debugFont, 32);
             coordinates.LineSpacing = 0.5f;
             Clock clock = new Clock();
             bool drawBoundingBoxes = true;
@@ -52,13 +55,11 @@ namespace EngineeringCorpsCS
             RotatedAnimation multiTest = new RotatedAnimation(multi, new Vector2i(256, 256), new Vector2f(0, 0), new Vector2f(1.0f, 1.0f), 1, 4, "fb", 30.0f);
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 320; i++)
             {
-                for (int j = 0; j < 8; j++)
+                for (int j = 0; j < 320; j++)
                 {
-                    players.Add(new Player(new Vector2(1024 + 128 * i, 1024 + 128 * j)));
-                    players[i * 8 + j].collisionBox.SetRotation(0);//random.Next(0, 360));
-                    surfaceContainer.InitiateEntityInChunks(players[i * 8 + j]);
+                    players.Add(new Player(new Vector2(2048 + 128 * i, 2048 + 128 * j), surfaceContainer));
                 }
             }
             #endregion
@@ -68,19 +69,24 @@ namespace EngineeringCorpsCS
             test2.AttachComponent(textTest);
             test.AttachComponent(test2);
             test.AttachComponent(textTest);
-            //TODO: compartmentalize
-            players.Add(camera.focusedEntity);
-            
+
+            camera.focusedEntity = players[0];
+            players[0].SubscribeToInput(input);
             
             while (window.IsOpen)
             {
+                //prepare for drawing and dispatch window events
                 window.Clear();
                 window.DispatchEvents();
-                camera.Update(); //TODO: compartmentalize into input manager
-                window.SetView(camera.GetView());
+                
+                //update input
                 input.Update();
-
-
+                //update entities
+                players[0].Update();
+                //update camera
+                camera.Update();
+                //set the view to current camera
+                window.SetView(camera.GetView());
                 //drawing game world (terrain, entities)
                 gameRenderer.RenderWorld(window, camera);
                 //draw GUI
@@ -102,13 +108,11 @@ namespace EngineeringCorpsCS
                     VertexArray boundingBoxArray = new VertexArray(PrimitiveType.Lines);
                     for (int j = 0; j < players.Count; j++)
                     {
-                        float[] points = players[j].collisionBox.GetPoints();
-                        Vector2 position = players[j].position;
-                        
-                        
                         if (players[j].position.x > origin.X && players[j].position.x < extent.X
                             && players[j].position.y > origin.Y && players[j].position.y < extent.Y)
                         {
+                            float[] points = players[j].collisionBox.GetPoints();
+                            Vector2 position = players[j].position;
                             for (int i = 0; i < points.Length; i += 2)
                             {
                                 boundingBoxArray.Append(new Vertex(new Vector2f(points[i] + position.x, points[i + 1] + position.y), Color.Red));
@@ -118,19 +122,8 @@ namespace EngineeringCorpsCS
                     }
                     window.Draw(boundingBoxArray);
                 }
-
-                List<Entity> collisionList = surfaceContainer.GetChunk(SurfaceContainer.WorldToChunkIndex(camera.focusedEntity.position)).entityCollisionList;
-                int collisionChecks = collisionList.Count;
-                for (int i = 0; i < collisionList.Count; i++)
-                {
-                    Vector2 pushBack;
-                    if (BoundingBox.CheckCollision(camera.focusedEntity.collisionBox, collisionList[i].collisionBox, camera.focusedEntity.position, new Vector2(camera.moveVector.X, camera.moveVector.Y), collisionList[i].position, out pushBack))
-                    {
-                        camera.moveVector.X += pushBack.x;
-                        camera.moveVector.Y += pushBack.y;
-                    }
-                }
-                camera.focusedEntity.position.Add(camera.moveVector.X, camera.moveVector.Y);
+                
+                
                 //========================END entity debugging code
 
                 //==============================START menu debugging code
@@ -158,8 +151,6 @@ namespace EngineeringCorpsCS
                         "\nTile Coordinates:" + (int)(worldX / Props.tileSize) % Props.chunkSize + ", " + (int)(worldY / Props.tileSize) % Props.chunkSize +
                         "\nChunk Index:" + SurfaceContainer.WorldToChunkIndex(worldX, worldY);
                     coordinates.Position = new Vector2f(0, 64);
-                    collision.Position = new Vector2f(0, 256);
-                    collision.DisplayedString = "Collision checks: " + collisionChecks;
                     VertexArray boundingBoxArray = new VertexArray(PrimitiveType.Lines);
                     float[] pointsE = test.collisionBox.GetPoints();
                     Vector2f positionE = test.position;
@@ -173,7 +164,6 @@ namespace EngineeringCorpsCS
                     GUI.Draw(biomeText);
                     GUI.Draw(fpsText);
                     GUI.Draw(coordinates);
-                    GUI.Draw(collision);
                     GUI.Display();
                 }
                 Sprite GUISprite = new Sprite(GUI.Texture);
@@ -183,7 +173,6 @@ namespace EngineeringCorpsCS
 
 
                 window.Display();
-                input.FlushInput(); //Flush input cache
             }
         }
     }
