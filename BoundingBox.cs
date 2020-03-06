@@ -302,9 +302,9 @@ namespace EngineeringCorpsCS
         /// <param name="box"></param>
         /// <param name="pos"></param>
         /// <returns></returns>
-        public static bool CheckTerrainTileCollision(BoundingBox box, Vector2 pos, Vector2 velocity, Base.CollisionLayer collisionMask, TileCollection tileCollection, SurfaceContainer chunkManager, out Tile tile)
+        public static bool CheckTerrainTileCollision(BoundingBox box, Vector2 pos, Vector2 velocity, Base.CollisionLayer collisionMask, TileCollection tileCollection, SurfaceContainer surface, out Tile tile)
         {
-            tile = tileCollection.GetTerrainTile(chunkManager.GetTileFromWorld(pos.x, pos.y));
+            tile = tileCollection.GetTerrainTile(surface.GetTileFromWorld(pos.x, pos.y));
             if ((tile.collisionMask & collisionMask) != 0) {
                 return true;
             }

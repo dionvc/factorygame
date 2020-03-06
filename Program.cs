@@ -30,8 +30,9 @@ namespace EngineeringCorpsCS
             textureManager.LoadTextures();
             FontContainer fontContainer = new FontContainer();
             fontContainer.LoadFonts();
-            SurfaceContainer surfaceContainer = new SurfaceContainer();
+            
             TileCollection tileCollection = new TileCollection(textureManager);
+            SurfaceContainer surfaceContainer = new SurfaceContainer(tileCollection);
             InputManager input = new InputManager(window);
             Camera camera = new Camera();
             camera.SubscribeToInput(input);
@@ -59,9 +60,9 @@ namespace EngineeringCorpsCS
             
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 16; i++)
             {
-                for (int j = 0; j < 1; j++)
+                for (int j = 0; j < 16; j++)
                 {
                     players.Add(new Player(new Vector2(2048 + 128 * i, 2048 + 128 * j), surfaceContainer, textureManager));
                 }

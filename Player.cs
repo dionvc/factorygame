@@ -16,35 +16,19 @@ namespace EngineeringCorpsCS
         public Player(Vector2 pos, SurfaceContainer surface, TextureContainer textureContainer)
         {
             position = pos;
-            collisionBox = new BoundingBox(-64, -64, 64, 64);
+            collisionBox = new BoundingBox(32, 32);
             surface.InitiateEntityInChunks(this);
             velocity = new Vector2(0, 0);
             Texture[] playerTextures = new Texture[] { textureContainer.GetTexture("orcrunning") };
             playerTest = new RotatedAnimation(playerTextures, new Vector2i(128, 128), 8, 8, "Forward", 12.0f);
+            collisionMask = CollisionLayer.EntityPhysical | CollisionLayer.TerrainSolid;
         }
         /// <summary>
         /// TODO: Add inheritance structure
         /// </summary>
         public void Update()
         {
-            int[] chunkList = BoundingBox.GetChunkBounds(collisionBox, position);
-            for (int i = 0; i < chunkList.Length; i++)
-            {
-                List<Entity> collisionList = surface.GetChunk(chunkList[i]).entityCollisionList;
-                for (int j = 0; j < collisionList.Count; j++)
-                {
-                    //TODO: Add collision mask check
-                    if (!collisionList[j].Equals(this))
-                    {
-                        Vector2 pushBack;
-                        if (BoundingBox.CheckCollision(collisionBox, collisionList[j].collisionBox, position, velocity, collisionList[j].position, out pushBack))
-                        {
-                            velocity.Add(pushBack);
-                        }
-                    }
-                }
-            }
-            surface.UpdateEntityInChunks(this, velocity);
+            surface.ApplyPhysicalCollision(this, velocity);
             position.Add(velocity);
             if (velocity.x != 0 || velocity.y != 0)
             {
@@ -57,7 +41,6 @@ namespace EngineeringCorpsCS
 
                 }
             }
-            
             playerTest.Update();
             playerTest.GetAnimationFrame().Position = new Vector2f(position.x, position.y);
             playerTest.SetAnimationSpeed(velocity.GetMagnitude()/2);

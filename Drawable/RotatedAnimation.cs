@@ -103,13 +103,7 @@ namespace EngineeringCorpsCS
                         currentFrame = (currentFrame + frames) % (frames);
                         
                     }
-                    texturePos.X = (size.X * (currentFrame + (currentState * frames))) % (textureSize.X * textureRefs.Length);
-                    texturePos.Y = (size.X * (currentFrame + (currentState * frames))) / (textureSize.X * textureRefs.Length) * size.Y;
-                    int textureIndex = (texturePos.X / textureSize.X);
-                    texturePos.X = (texturePos.X % (textureSize.X));
-                    //Console.WriteLine("TextureIndex: " + textureIndex + "\nFrame: " + currentFrame + "\nTexPos: " + texturePos.X +  ", " + texturePos.Y);
-                    animationFrame.Texture = textureRefs[textureIndex];
-                    animationFrame.TextureRect = new IntRect(texturePos, size);
+                    
                 }
             }
         }
@@ -122,6 +116,14 @@ namespace EngineeringCorpsCS
         {
             //Idea, pass in current frame of game and store that.  The delta between current and last can be used to calculate current frame
             //rather than constantly updating animation
+            //Calculate the texture box when the sprite is needed
+            texturePos.X = (size.X * (currentFrame + (currentState * frames))) % (textureSize.X * textureRefs.Length);
+            texturePos.Y = (size.X * (currentFrame + (currentState * frames))) / (textureSize.X * textureRefs.Length) * size.Y;
+            int textureIndex = (texturePos.X / textureSize.X);
+            texturePos.X = (texturePos.X % (textureSize.X));
+            //Console.WriteLine("TextureIndex: " + textureIndex + "\nFrame: " + currentFrame + "\nTexPos: " + texturePos.X +  ", " + texturePos.Y);
+            animationFrame.Texture = textureRefs[textureIndex];
+            animationFrame.TextureRect = new IntRect(texturePos, size);
             return animationFrame;
         }
 

@@ -71,6 +71,10 @@ namespace EngineeringCorpsCS
         {
             return terrain[x * Props.chunkSize + y];
         }
+        public byte GetTile(int tileIndex)
+        {
+            return terrain[tileIndex];
+        }
         public byte[] GetTerrain()
         {
             return terrain;

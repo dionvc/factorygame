@@ -28,9 +28,8 @@ namespace EngineeringCorpsCS
             TerrainDecor = 16,      //For decorations like grass, etc
             TerrainPath = 32,       //For placed paths
             Item = 64,              //For items on the ground
-            EntityStatic = 128,
-            EntityMoving = 256,
-            All = Void | Resource | TerrainSolid | Terrain | TerrainPath | Item | EntityStatic | EntityMoving
+            EntityPhysical = 128,
+            All = Void | Resource | TerrainSolid | Terrain | TerrainPath | Item | EntityPhysical
         }
         public string name { get; protected set; }
     }

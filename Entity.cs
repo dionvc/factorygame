@@ -8,12 +8,24 @@ namespace EngineeringCorpsCS
 {
     abstract class Entity : Base
     {
+        /// <summary>
+        /// Tracks the chunks the entity is stored in for collision
+        /// </summary>
         public int[] collisionChunks { get; set; }
+        /// <summary>
+        /// Tracks the chunk the entity is centered in
+        /// </summary>
         public int centeredChunk { get; set; }
+        /// <summary>
+        /// Tracks the surface the entity is present on
+        /// </summary>
         public SurfaceContainer surface { get; set; }
+        /// <summary>
+        /// Entity collision mask
+        /// </summary>
+        public CollisionLayer collisionMask { get; set; }
 
 
-        public string name { get; }
         public string type { get; }
         public BoundingBox collisionBox { get; set; }
         

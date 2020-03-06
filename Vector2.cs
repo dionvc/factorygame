@@ -156,14 +156,7 @@ namespace EngineeringCorpsCS
         {
             float angle = (float) Math.Atan2(this.y, this.x);
             angle = angle * 180 / (float)Math.PI;
-            if(this.y < 0)
-            {
-                return -angle;
-            }
-            else
-            {
-                return angle + 180.0f;
-            }
+            return (angle + 360.0f) % 360.0f;
         }
 
         /// <summary>
