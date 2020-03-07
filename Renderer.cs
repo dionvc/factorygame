@@ -8,7 +8,7 @@ using SFML.System;
 
 namespace EngineeringCorpsCS
 {
-    class Renderer
+    class Renderer: IInputSubscriber
     {
         Dictionary<int, VertexArray[]> terrainVertexArrays; //can be cached
         VertexArray boundingBoxArray; //must be reconstructed every frame
@@ -63,7 +63,25 @@ namespace EngineeringCorpsCS
                 {
                     for (int j = begPos[1]; j <= endPos[1]; j++)
                     {
-                        List<Entity> boxList = surface.GetChunk(i, j).entityList;
+                        Chunk chunk = surface.GetChunk(i, j);
+                        for (int k = 0; k < Props.chunkSize; k++)
+                        {
+                            for(int l = 0; l < Props.chunkSize; l ++)
+                            {
+                                Tile tile = tileCollection.GetTerrainTile(chunk.GetTile(k, l));
+                                if((tile.collisionMask & Base.CollisionLayer.TerrainSolid) != 0)
+                                {
+                                    float[] points = surface.tileBox.GetPoints();
+                                    Vector2 position = SurfaceContainer.WorldToTileVector(i * Props.worldSize + j, k * Props.chunkSize + l);
+                                    for (int x = 0; x < points.Length; x += 2)
+                                    {
+                                        boundingBoxArray.Append(new Vertex(new Vector2f(points[x] + position.x, points[x + 1] + position.y), Color.Blue));
+                                        boundingBoxArray.Append(new Vertex(new Vector2f(points[(x + 2) % 8] + position.x, points[(x + 3) % 8] + position.y), Color.Blue));
+                                    }
+                                }
+                            }
+                        }
+                        List<Entity> boxList = chunk.entityList;
                         for (int k = 0; k < boxList.Count; k++)
                         {
                             if (boxList[k].position.x > origin.X && boxList[k].position.x < extent.X
@@ -84,29 +102,6 @@ namespace EngineeringCorpsCS
                 boundingBoxArray.Clear();
             }
         }
-
-        /// <summary>
-        /// Collects visible chunks into list
-        /// </summary>
-        /// <param name="camX"></param>
-        /// <param name="camY"></param>
-        /// <param name="camW"></param>
-        /// <param name="camH"></param>
-        /// <param name="chunkM"></param>
-        void GetVisibleChunks(float camX, float camY, float camW, float camH, SurfaceContainer chunkM)
-        {
-            int[] top = SurfaceContainer.WorldToChunkCoords(camX, camY);
-            int[] bot = SurfaceContainer.WorldToChunkCoords(camX + camW, camY + camH);
-            List<Chunk> cList = new List<Chunk>();
-            for(int i = top[0]; i < bot[0]; i++)
-            {
-                for(int j = top[1]; j < top[1]; j++)
-                {
-                    cList.Add(chunkM.GetChunk(i, j));
-                }
-            }
-        }
-
         //Construct vertex arrays for each visible chunk and each visible tile (cull tiles)
         //Store these vertex arrays
 
@@ -115,5 +110,21 @@ namespace EngineeringCorpsCS
         //Update visible chunks if camera location changes enough
 
         //Get entities every frame from visible chunks and cull, then sort
+
+        public void SubscribeToInput(InputManager input)
+        {
+            input.AddInputSubscriber(this, false);
+        }
+        public void UnsubscribeToInput(InputManager input)
+        {
+            input.RemoveInputSubscriber(this, false);
+        }
+        public void HandleInput(InputManager input)
+        {
+            if(input.keyPressed[InputBindings.showBoundingBoxes])
+            {
+                drawBoundingBoxes = !drawBoundingBoxes;
+            }
+        }
     }
 }

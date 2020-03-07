@@ -16,7 +16,7 @@ namespace EngineeringCorpsCS
         public Player(Vector2 pos, SurfaceContainer surface, TextureContainer textureContainer)
         {
             position = pos;
-            collisionBox = new BoundingBox(32, 32);
+            collisionBox = new BoundingBox(48, 48);
             surface.InitiateEntityInChunks(this);
             velocity = new Vector2(0, 0);
             Texture[] playerTextures = new Texture[] { textureContainer.GetTexture("orcrunning") };
@@ -28,7 +28,7 @@ namespace EngineeringCorpsCS
         /// </summary>
         public void Update()
         {
-            surface.ApplyPhysicalCollision(this, velocity);
+            BoundingBox.ApplyPhysicalCollision(this, velocity);
             position.Add(velocity);
             if (velocity.x != 0 || velocity.y != 0)
             {
@@ -63,19 +63,19 @@ namespace EngineeringCorpsCS
         {
             if (input.keyHeld[InputBindings.moveUp])
             {
-                velocity.Add(0, -10);
+                velocity.Add(0, -16);
             }
             if (input.keyHeld[InputBindings.moveDown])
             {
-                velocity.Add(0, 10);
+                velocity.Add(0, 16);
             }
             if (input.keyHeld[InputBindings.moveLeft])
             {
-                velocity.Add(-10, 0);
+                velocity.Add(-16, 0);
             }
             if(input.keyHeld[InputBindings.moveRight])
             {
-                velocity.Add(10, 0);
+                velocity.Add(16, 0);
             }
         }
     }

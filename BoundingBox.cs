@@ -285,15 +285,16 @@ namespace EngineeringCorpsCS
                 pushBackSelf.Scale(overlapAmount);
             }
             //Direction correction logic
-            if((posSelf.x < posOther.x && pushBackSelf.x > 0) || (posSelf.x > posOther.x && pushBackSelf.x < 0))
-            {
-                pushBackSelf.x *= -1;
-            }
-            if((posSelf.y > posOther.y && pushBackSelf.y < 0) || (posSelf.y < posOther.y && pushBackSelf.y > 0))
+            if ((posSelf.y > posOther.y && pushBackSelf.y < 0) || (posSelf.y < posOther.y && pushBackSelf.y > 0))
             {
                 pushBackSelf.y *= -1;
             }
-                
+            if ((posSelf.x > posOther.x && pushBackSelf.x < 0) || (posSelf.x < posOther.x && pushBackSelf.x > 0))
+            {
+                pushBackSelf.x *= -1;
+            }
+
+
             return true; //all checks failed, boxes collide
         }
         /// <summary>
@@ -321,12 +322,18 @@ namespace EngineeringCorpsCS
             return false;
         }
 
-        public static int[] GetChunkBounds(BoundingBox self, Vector2 selfPos)
+        /// <summary>
+        /// Gets the chunks the entity is possibly present in chunk indices
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="selfPos"></param>
+        /// <returns></returns>
+        public static int[] GetChunkBounds(BoundingBox self, Vector2 posSelf)
         {
-            float xMin = selfPos.x - self.radiusApproximation;
-            float xMax = selfPos.x + self.radiusApproximation;
-            float yMin = selfPos.y - self.radiusApproximation;
-            float yMax = selfPos.y + self.radiusApproximation;
+            float xMin = posSelf.x - self.radiusApproximation - 3 * Props.tileSize;
+            float xMax = posSelf.x + self.radiusApproximation + 3 * Props.tileSize;
+            float yMin = posSelf.y - self.radiusApproximation - 3 * Props.tileSize;
+            float yMax = posSelf.y + self.radiusApproximation + 3 * Props.tileSize;
             int[] top = SurfaceContainer.WorldToChunkCoords(xMin, yMin);
             int[] bot = SurfaceContainer.WorldToChunkCoords(xMax, yMax);
             int yRange = (bot[1] - top[1]) + 1;
@@ -389,6 +396,88 @@ namespace EngineeringCorpsCS
                 }
             }*/
             #endregion more complex chunk bound code
+        }
+
+        public static int[][] GetTileBounds(BoundingBox self, Vector2 posSelf)
+        {
+            float xMin = posSelf.x - self.radiusApproximation - 3 * Props.tileSize;
+            float xMax = posSelf.x + self.radiusApproximation + 3 * Props.tileSize;
+            float yMin = posSelf.y - self.radiusApproximation - 3 * Props.tileSize;
+            float yMax = posSelf.y + self.radiusApproximation + 3 * Props.tileSize;
+            int[] top = SurfaceContainer.WorldToTileCoords(xMin, yMin);
+            int[] bot = SurfaceContainer.WorldToTileCoords(xMax, yMax);
+            int yRange = (bot[1] - top[1]) + 1;
+            int xRange = (bot[0] - top[0]) + 1;
+            int[][] ret = new int[xRange * yRange][];
+            int x = 0;
+            for (int i = top[0]; i <= bot[0]; i++)
+            {
+                for (int j = top[1]; j <= bot[1]; j++)
+                {
+                    int tileXmin = i == top[0] ? top[2] : 0;
+                    int tileXmax = i == bot[0] ? bot[2] + 1 : Props.chunkSize;
+                    int tileYmin = j == top[1] ? top[3] : 0;
+                    int tileYmax = j == bot[1] ? bot[3] + 1 : Props.chunkSize;
+                    ret[x] = new int[(tileXmax - tileXmin) * (tileYmax - tileYmin)];
+                    int y = 0;
+                    for(int k = tileXmin; k < tileXmax; k++)
+                    {
+                        for(int l = tileYmin; l < tileYmax; l++)
+                        {
+                            ret[x][y] = k * Props.chunkSize + l;
+                            y++;
+                        }
+                    }
+                    x++;
+                }
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Standard collision check for moving objects
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="velocity"></param>
+        public static void ApplyPhysicalCollision(Entity entity, Vector2 velocity)
+        {
+            Vector2 newEntityPos = new Vector2(entity.position.x, entity.position.y);
+            int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, newEntityPos);
+            int[][] tileList = BoundingBox.GetTileBounds(entity.collisionBox, newEntityPos);
+            
+            //Checks collisions with entities
+            for (int i = 0; i < chunkList.Length; i++)
+            {
+                Chunk chunk = entity.surface.GetChunk(chunkList[i]);
+                for (int j = 0; j < tileList[i].Length; j++)
+                {
+                    Vector2 pushBack;
+                    Tile tile = entity.surface.tileCollection.GetTerrainTile(chunk.GetTile(tileList[i][j]));
+                    if ((entity.collisionMask & tile.collisionMask) != 0)
+                    {
+                        
+                        Vector2 tilePos = SurfaceContainer.WorldToTileVector(chunkList[i], tileList[i][j]);
+                        if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, velocity, tilePos, out pushBack))
+                        {
+                            velocity.Add(pushBack);
+                        }
+                    }
+                }
+                List<Entity> collisionList = chunk.entityCollisionList;
+                for (int j = 0; j < collisionList.Count; j++)
+                {
+                    Vector2 pushBack;
+                    if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !collisionList[j].Equals(entity))
+                    {
+                        
+                        if (BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, velocity, collisionList[j].position, out pushBack))
+                        {
+                            velocity.Add(pushBack);
+                        }
+                    }
+                }
+            }
+            entity.surface.UpdateEntityInChunks(entity, velocity);
         }
     }
 }

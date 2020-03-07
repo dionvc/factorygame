@@ -37,6 +37,7 @@ namespace EngineeringCorpsCS
             Camera camera = new Camera();
             camera.SubscribeToInput(input);
             Renderer gameRenderer = new Renderer(tileCollection, surfaceContainer);
+            gameRenderer.SubscribeToInput(input);
 
             //Debug flags and stuff
             Font debugFont = new Font("SairaRegular.ttf");
@@ -60,11 +61,11 @@ namespace EngineeringCorpsCS
             
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for (int i = 0; i < 16; i++)
+            for (int i = 0; i < 32; i++)
             {
-                for (int j = 0; j < 16; j++)
+                for (int j = 0; j < 32; j++)
                 {
-                    players.Add(new Player(new Vector2(2048 + 128 * i, 2048 + 128 * j), surfaceContainer, textureManager));
+                    players.Add(new Player(new Vector2(2048 + 32 * i, 2048 + 32 * j), surfaceContainer, textureManager));
                 }
             }
             #endregion

@@ -16,12 +16,12 @@ namespace EngineeringCorpsCS
         FastNoise elevationNoise;
         FastNoise moistureNoise;
         FastNoise temperatureNoise;
-        BoundingBox tileBox;
-        TileCollection tileCollection;
+        public BoundingBox tileBox { get; protected set; }
+        public TileCollection tileCollection { get; protected set; }
 
         public SurfaceContainer(TileCollection tileCollection)
         {
-            tileBox = new BoundingBox(0, 0, 32, 32);
+            tileBox = new BoundingBox(-16, -16, 16, 16);
             this.tileCollection = tileCollection;
             chunks = new Chunk[Props.worldSize * Props.worldSize];
             Random r = new Random(DateTime.Now.Second);
@@ -177,36 +177,7 @@ namespace EngineeringCorpsCS
             }
         }
 
-        public void ApplyPhysicalCollision(Entity entity, Vector2 velocity)
-        {
-            Vector2 pushBack;
-            Tile tile = tileCollection.GetTerrainTile(GetTileFromWorld(new Vector2(entity.position.x + velocity.x, entity.position.y + velocity.y)));
-            if ((entity.collisionMask & tile.collisionMask) != 0)
-            {
-                Vector2 tilePos = WorldToTileVector(entity.position, velocity);
-                if (BoundingBox.CheckCollision(entity.collisionBox, tileBox, entity.position, velocity, tilePos , out pushBack));
-                {
-                    velocity.Add(pushBack);
-                }
-            }
-            int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
-            for (int i = 0; i < chunkList.Length; i++)
-            {
-                List<Entity> collisionList = GetChunk(chunkList[i]).entityCollisionList;
-                for (int j = 0; j < collisionList.Count; j++)
-                {
-                    //TODO: Add collision mask check
-                    if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !collisionList[j].Equals(entity))
-                    {
-                        if (BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, velocity, collisionList[j].position, out pushBack))
-                        {
-                            velocity.Add(pushBack);
-                        }
-                    }
-                }
-            }
-            UpdateEntityInChunks(entity, velocity);
-        }
+        
 
         #region Coordinate conversions TODO: Cull this section down to "index" type functions
         /// <summary>
@@ -217,6 +188,9 @@ namespace EngineeringCorpsCS
         /// <returns>x,y chunk coords</returns>
         public static int[] WorldToChunkCoords(float x, float y)
         {
+            x = x < 0 ? x = 0 : x;
+            y = y < 0 ? y = 0 : y;
+            //TODO: add extremity chunk check (eg x > worldsize... or whatever)
             return new int[] {(int) Math.Floor(x/(Props.tileSize * Props.chunkSize)), (int) Math.Floor(y/(Props.tileSize * Props.chunkSize))};
         }
 
@@ -253,7 +227,7 @@ namespace EngineeringCorpsCS
         /// <returns></returns>
         public static int[] ChunkIndexToWorld(int chunkIndex)
         {
-            return new int[] { chunkIndex / Props.worldSize, chunkIndex % Props.worldSize };
+            return new int[] { (chunkIndex / Props.worldSize), (chunkIndex % Props.worldSize) };
         }
 
         /// <summary>
@@ -277,14 +251,23 @@ namespace EngineeringCorpsCS
         {
             int xR = (int)Math.Floor(x/Props.tileSize);
             int yR = (int)Math.Floor(y/Props.tileSize);
-            return new int[] { xR % Props.chunkSize, yR % Props.chunkSize, xR/Props.chunkSize, yR/Props.chunkSize };
+            return new int[] { xR/Props.chunkSize, yR/Props.chunkSize, xR % Props.chunkSize, yR % Props.chunkSize };
+        }
+
+        public static int[] WorldToAbsoluteTileCoords(float x, float y)
+        {
+            int xR = (int)Math.Floor(x / Props.tileSize);
+            int yR = (int)Math.Floor(y / Props.tileSize);
+            return new int[] { xR, yR };
         }
         
-        public static Vector2 WorldToTileVector(Vector2 pos, Vector2 velocity)
+        public static Vector2 WorldToTileVector(int chunkIndex, int tileIndex)
         {
-            float xC =  16.0f + (float)Math.Round((pos.x + velocity.x) - ((pos.x + velocity.x) % Props.tileSize));
-            float yC =  16.0f + (float)Math.Round((pos.y + velocity.y) - ((pos.y + velocity.y) % Props.tileSize));
-            return new Vector2(xC, yC);
+            float x = 0.5f + (chunkIndex / Props.worldSize) * Props.chunkSize * Props.tileSize;
+            float y = 0.5f + (chunkIndex % Props.worldSize) * Props.chunkSize * Props.tileSize;
+            x += (tileIndex / Props.chunkSize) * Props.tileSize;
+            y += (tileIndex % Props.chunkSize) * Props.tileSize;
+            return new Vector2(x, y);
         }
         
         public static int WorldToTileIndex(Vector2 pos)
@@ -297,12 +280,12 @@ namespace EngineeringCorpsCS
         public byte GetTileFromWorld(float x, float y)
         {
             int[] xyij = WorldToTileCoords(x, y);
-            Chunk chunk = GetChunk(new int[] { xyij[2], xyij[3] });
+            Chunk chunk = GetChunk(new int[] { xyij[0], xyij[1] });
             if(chunk == null)
             {
                 return 0;
             }
-            return chunk.GetTile(xyij[0], xyij[1]);
+            return chunk.GetTile(xyij[2], xyij[3]);
         }
 
         public byte GetTileFromWorld(Vector2 pos)
