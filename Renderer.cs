@@ -73,10 +73,14 @@ namespace EngineeringCorpsCS
                                 {
                                     float[] points = surface.tileBox.GetPoints();
                                     Vector2 position = SurfaceContainer.WorldToTileVector(i * Props.worldSize + j, k * Props.chunkSize + l);
-                                    for (int x = 0; x < points.Length; x += 2)
+                                    if (position.x > origin.X && position.x < extent.X &&
+                                        position.y > origin.Y && position.y < extent.Y)
                                     {
-                                        boundingBoxArray.Append(new Vertex(new Vector2f(points[x] + position.x, points[x + 1] + position.y), Color.Blue));
-                                        boundingBoxArray.Append(new Vertex(new Vector2f(points[(x + 2) % 8] + position.x, points[(x + 3) % 8] + position.y), Color.Blue));
+                                        for (int x = 0; x < points.Length; x += 2)
+                                        {
+                                            boundingBoxArray.Append(new Vertex(new Vector2f(points[x] + position.x, points[x + 1] + position.y), Color.Blue));
+                                            boundingBoxArray.Append(new Vertex(new Vector2f(points[(x + 2) % 8] + position.x, points[(x + 3) % 8] + position.y), Color.Blue));
+                                        }
                                     }
                                 }
                             }

@@ -16,7 +16,7 @@ namespace EngineeringCorpsCS
         public Player(Vector2 pos, SurfaceContainer surface, TextureContainer textureContainer)
         {
             position = pos;
-            collisionBox = new BoundingBox(48, 48);
+            collisionBox = new BoundingBox(20, 20);
             surface.InitiateEntityInChunks(this);
             velocity = new Vector2(0, 0);
             Texture[] playerTextures = new Texture[] { textureContainer.GetTexture("orcrunning") };
@@ -28,22 +28,25 @@ namespace EngineeringCorpsCS
         /// </summary>
         public void Update()
         {
-            BoundingBox.ApplyPhysicalCollision(this, velocity);
+            if (velocity.GetMagnitude() != 0)
+            {
+                BoundingBox.ApplyPhysicalCollision(this, velocity);
+            }
             position.Add(velocity);
             if (velocity.x != 0 || velocity.y != 0)
             {
                 if (velocity.GetRotation() != rotation)
                 {
                     
-                    rotation = velocity.GetRotation();
+                    rotation = velocity.GetRotation() + 180.0f;
                     Console.WriteLine(rotation);
                     playerTest.SetRotation(rotation);
 
                 }
             }
             playerTest.Update();
-            playerTest.GetAnimationFrame().Position = new Vector2f(position.x, position.y);
-            playerTest.SetAnimationSpeed(velocity.GetMagnitude()/2);
+            playerTest.GetAnimationFrame().Position = new Vector2f(position.x, position.y - 16.0f);
+            playerTest.SetAnimationSpeed(60/velocity.GetMagnitude());
             velocity.Set(0, 0);
         }
         override public void OnClick()
@@ -63,19 +66,19 @@ namespace EngineeringCorpsCS
         {
             if (input.keyHeld[InputBindings.moveUp])
             {
-                velocity.Add(0, -16);
+                velocity.Add(0, -6);
             }
             if (input.keyHeld[InputBindings.moveDown])
             {
-                velocity.Add(0, 16);
+                velocity.Add(0, 6);
             }
             if (input.keyHeld[InputBindings.moveLeft])
             {
-                velocity.Add(-16, 0);
+                velocity.Add(-6, 0);
             }
             if(input.keyHeld[InputBindings.moveRight])
             {
-                velocity.Add(16, 0);
+                velocity.Add(6, 0);
             }
         }
     }

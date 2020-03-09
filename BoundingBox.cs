@@ -238,7 +238,6 @@ namespace EngineeringCorpsCS
             Vector2[] axis2 = other.GetNormals();
             float overlapAmount = float.MaxValue;
             int index = 0;
-            
 
             //Checking axis' of box1
             for (int i = 0; i < 2; i++) 
@@ -264,26 +263,27 @@ namespace EngineeringCorpsCS
                 if (sP > vP) {
                     return false; //if the projection doesnt overlap then there is no collision
                 }
-                else if(vP - sP < overlapAmount)
+                else if (vP - sP < overlapAmount)
                 {
                     overlapAmount = vP - sP;
                     index = i + 2;
                 }
             }
             //Minimum translation vector calculation
-                
+            //TODO: fix.  As of now we have a list of indices with minimum translations.  Want to pick the one that allows sliding
+            //Potential solution, do a check with just velocity x, and then just velocity y. Will essentially require doubling collision check code here,
+            //but may be the fix that is needed
             if (index < 2) //push back along box 1 axis
             {
-                pushBackSelf.x = axis1[index].x;
-                pushBackSelf.y = axis1[index].y;
-                pushBackSelf.Scale(overlapAmount);
+                pushBackSelf.x += axis1[index].x;
+                pushBackSelf.y += axis1[index].y;
             }
             else //push back along box 2 axis
             {
-                pushBackSelf.x = axis2[index - 2].x;
-                pushBackSelf.y = axis2[index - 2].y;
-                pushBackSelf.Scale(overlapAmount);
+                pushBackSelf.x += axis2[index - 2].x;
+                pushBackSelf.y += axis2[index - 2].y;
             }
+            pushBackSelf.Scale(overlapAmount);
             //Direction correction logic
             if ((posSelf.y > posOther.y && pushBackSelf.y < 0) || (posSelf.y < posOther.y && pushBackSelf.y > 0))
             {
@@ -330,10 +330,10 @@ namespace EngineeringCorpsCS
         /// <returns></returns>
         public static int[] GetChunkBounds(BoundingBox self, Vector2 posSelf)
         {
-            float xMin = posSelf.x - self.radiusApproximation - 3 * Props.tileSize;
-            float xMax = posSelf.x + self.radiusApproximation + 3 * Props.tileSize;
-            float yMin = posSelf.y - self.radiusApproximation - 3 * Props.tileSize;
-            float yMax = posSelf.y + self.radiusApproximation + 3 * Props.tileSize;
+            float xMin = posSelf.x - self.radiusApproximation - 4 * Props.tileSize;
+            float xMax = posSelf.x + self.radiusApproximation + 4 * Props.tileSize;
+            float yMin = posSelf.y - self.radiusApproximation - 4 * Props.tileSize;
+            float yMax = posSelf.y + self.radiusApproximation + 4 * Props.tileSize;
             int[] top = SurfaceContainer.WorldToChunkCoords(xMin, yMin);
             int[] bot = SurfaceContainer.WorldToChunkCoords(xMax, yMax);
             int yRange = (bot[1] - top[1]) + 1;
@@ -400,10 +400,10 @@ namespace EngineeringCorpsCS
 
         public static int[][] GetTileBounds(BoundingBox self, Vector2 posSelf)
         {
-            float xMin = posSelf.x - self.radiusApproximation - 3 * Props.tileSize;
-            float xMax = posSelf.x + self.radiusApproximation + 3 * Props.tileSize;
-            float yMin = posSelf.y - self.radiusApproximation - 3 * Props.tileSize;
-            float yMax = posSelf.y + self.radiusApproximation + 3 * Props.tileSize;
+            float xMin = posSelf.x - self.radiusApproximation - 4 * Props.tileSize;
+            float xMax = posSelf.x + self.radiusApproximation + 4 * Props.tileSize;
+            float yMin = posSelf.y - self.radiusApproximation - 4 * Props.tileSize;
+            float yMax = posSelf.y + self.radiusApproximation + 4 * Props.tileSize;
             int[] top = SurfaceContainer.WorldToTileCoords(xMin, yMin);
             int[] bot = SurfaceContainer.WorldToTileCoords(xMax, yMax);
             int yRange = (bot[1] - top[1]) + 1;
@@ -445,17 +445,17 @@ namespace EngineeringCorpsCS
             int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, newEntityPos);
             int[][] tileList = BoundingBox.GetTileBounds(entity.collisionBox, newEntityPos);
             
-            //Checks collisions with entities
+            //Checks collisions with entities and tiles
             for (int i = 0; i < chunkList.Length; i++)
             {
                 Chunk chunk = entity.surface.GetChunk(chunkList[i]);
+                Vector2 pushBack;
+                //tile collision checks
                 for (int j = 0; j < tileList[i].Length; j++)
                 {
-                    Vector2 pushBack;
                     Tile tile = entity.surface.tileCollection.GetTerrainTile(chunk.GetTile(tileList[i][j]));
                     if ((entity.collisionMask & tile.collisionMask) != 0)
                     {
-                        
                         Vector2 tilePos = SurfaceContainer.WorldToTileVector(chunkList[i], tileList[i][j]);
                         if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, velocity, tilePos, out pushBack))
                         {
@@ -463,10 +463,10 @@ namespace EngineeringCorpsCS
                         }
                     }
                 }
+                //entity collision checks
                 List<Entity> collisionList = chunk.entityCollisionList;
                 for (int j = 0; j < collisionList.Count; j++)
                 {
-                    Vector2 pushBack;
                     if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !collisionList[j].Equals(entity))
                     {
                         

@@ -263,8 +263,8 @@ namespace EngineeringCorpsCS
         
         public static Vector2 WorldToTileVector(int chunkIndex, int tileIndex)
         {
-            float x = 0.5f + (chunkIndex / Props.worldSize) * Props.chunkSize * Props.tileSize;
-            float y = 0.5f + (chunkIndex % Props.worldSize) * Props.chunkSize * Props.tileSize;
+            float x = 16.5f + (chunkIndex / Props.worldSize) * Props.chunkSize * Props.tileSize;
+            float y = 16.5f + (chunkIndex % Props.worldSize) * Props.chunkSize * Props.tileSize;
             x += (tileIndex / Props.chunkSize) * Props.tileSize;
             y += (tileIndex % Props.chunkSize) * Props.tileSize;
             return new Vector2(x, y);

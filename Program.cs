@@ -61,12 +61,9 @@ namespace EngineeringCorpsCS
             
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for (int i = 0; i < 32; i++)
+            for (int i = 0; i < 1024; i++)
             {
-                for (int j = 0; j < 32; j++)
-                {
-                    players.Add(new Player(new Vector2(2048 + 32 * i, 2048 + 32 * j), surfaceContainer, textureManager));
-                }
+                players.Add(new Player(new Vector2(48 * i, 48 * i), surfaceContainer, textureManager));
             }
             #endregion
             MenuPanel test = new MenuPanel(new Vector2f(0,0), new Vector2f(150, 150), new bool[] { true, true });
@@ -76,8 +73,8 @@ namespace EngineeringCorpsCS
             test.AttachComponent(test2);
             test.AttachComponent(textTest);
 
-            camera.focusedEntity = players[0];
-            players[0].SubscribeToInput(input);
+            camera.focusedEntity = players[15];
+            players[15].SubscribeToInput(input);
             
             while (window.IsOpen)
             {
@@ -88,14 +85,21 @@ namespace EngineeringCorpsCS
                 //update input
                 input.Update();
                 //update entities
-                players[0].Update();
+                foreach (Player p in players)
+                {
+                    p.Update();
+                }
                 //update camera
                 camera.Update();
                 //set the view to current camera
                 window.SetView(camera.GetView());
                 //drawing game world (terrain, entities)
                 gameRenderer.RenderWorld(window, camera);
-                window.Draw(players[0].playerTest.GetAnimationFrame());
+                foreach (Player p in players)
+                {
+                    window.Draw(p.playerTest.GetAnimationFrame());
+                }
+                
                 //set the view to GUI
                 //window.SetView(GUIView);
                 //drawing menus (main menu, pause, ingame, etc)
