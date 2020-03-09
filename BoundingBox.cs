@@ -451,6 +451,9 @@ namespace EngineeringCorpsCS
                 Chunk chunk = entity.surface.GetChunk(chunkList[i]);
                 Vector2 pushBack;
                 //tile collision checks
+                //Perhaps switch to continually checking whether the player is colliding with a tile at his position until he isnt colliding with a tile?
+                //Would fix the situation where getting stuck in water still allows movement within
+                //TODO: try solution outline above
                 for (int j = 0; j < tileList[i].Length; j++)
                 {
                     Tile tile = entity.surface.tileCollection.GetTerrainTile(chunk.GetTile(tileList[i][j]));

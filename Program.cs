@@ -61,9 +61,9 @@ namespace EngineeringCorpsCS
             
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for (int i = 0; i < 1024; i++)
+            for (int i = 0; i < 256; i++)
             {
-                players.Add(new Player(new Vector2(48 * i, 48 * i), surfaceContainer, textureManager));
+                players.Add(new Player(new Vector2(1024 + 48 * i, 1024 + 48 * i), surfaceContainer, textureManager));
             }
             #endregion
             MenuPanel test = new MenuPanel(new Vector2f(0,0), new Vector2f(150, 150), new bool[] { true, true });
@@ -74,7 +74,10 @@ namespace EngineeringCorpsCS
             test.AttachComponent(textTest);
 
             camera.focusedEntity = players[15];
-            players[15].SubscribeToInput(input);
+            foreach (Player p in players)
+            {
+                p.SubscribeToInput(input);
+            }
             
             while (window.IsOpen)
             {

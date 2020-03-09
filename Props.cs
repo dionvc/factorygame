@@ -13,5 +13,6 @@ namespace EngineeringCorpsCS
         public const int tileSize = 32; //tilesize in pixels
 
         public static int startingSize = 8;
+        public static float maxVelocity = 12.0f;
     }
 }
