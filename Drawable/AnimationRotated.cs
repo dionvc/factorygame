@@ -8,7 +8,7 @@ using SFML.System;
 
 namespace EngineeringCorpsCS
 {
-    class RotatedAnimation : Drawable, IAnimation
+    class AnimationRotated : Drawable
     {
         enum AnimationBehavior {
             Forward = 1,
@@ -28,7 +28,6 @@ namespace EngineeringCorpsCS
         float tickAccumulator = 0; //accumulates frames to subtract from
         int incrementAmount = 1;
         AnimationBehavior behavior;
-        bool shadow { get; }
 
         //TODO: add shadow, color
         
@@ -41,8 +40,8 @@ namespace EngineeringCorpsCS
         /// <param name="framesPerState"></param>
         /// <param name="behavior"></param>
         /// <param name="animationSpeed"></param>
-        /// <param name="offset"></param>
-        public RotatedAnimation(Texture[] textureRefs, Vector2i frameSize, Vector2f offset, Vector2f scale, int rotationStates, int framesPerState, string behavior, float animationSpeed)
+        /// <param name="textureOffset"></param>
+        public AnimationRotated(Texture[] textureRefs, Vector2i frameSize, Vector2f textureOffset, Vector2f drawOffset, Vector2f scale, int rotationStates, int framesPerState, string behavior, float animationSpeed)
         {
             this.animationFrame = new Sprite();
             this.size = frameSize;
@@ -51,7 +50,8 @@ namespace EngineeringCorpsCS
             this.states = rotationStates;
             this.frames = framesPerState;
             this.animationSpeed = animationSpeed;
-            animationFrame.Origin = new Vector2f(frameSize.X/2 + offset.X, frameSize.Y/2 + offset.Y);
+            this.drawOffset = drawOffset;
+            animationFrame.Origin = new Vector2f(frameSize.X/2 + textureOffset.X, frameSize.Y/2 + textureOffset.Y);
             animationFrame.Scale = scale;
             SetBehavior(behavior);
         }
@@ -65,7 +65,7 @@ namespace EngineeringCorpsCS
         /// <param name="framesPerState"></param>
         /// <param name="behavior"></param>
         /// <param name="animationSpeed"></param>
-        public RotatedAnimation(Texture[] textureRef, Vector2i frameSize, int rotationStates, int framesPerState, string behavior, float animationSpeed)
+        public AnimationRotated(Texture[] textureRef, Vector2i frameSize, int rotationStates, int framesPerState, string behavior, float animationSpeed)
         {
             this.animationFrame = new Sprite();
             this.size = frameSize;
@@ -83,12 +83,11 @@ namespace EngineeringCorpsCS
         /// <summary>
         /// Updates the animation's sprite based on its animation speed and behavior
         /// </summary>
-        public void Update()
+        override public void Update()
         {
             if (animationSpeed != 0)
             {
                 tickAccumulator += 1;
-
                 //TODO: test multiple texture sheet support + test texture frame size (is it off by ones)
                 if (tickAccumulator > animationSpeed)
                 {
@@ -112,10 +111,12 @@ namespace EngineeringCorpsCS
         /// Gets the current sprite of the animation
         /// </summary>
         /// <returns></returns>
-        public Sprite GetAnimationFrame()
+        override public Sprite GetSprite()
         {
-            //Idea, pass in current frame of game and store that.  The delta between current and last can be used to calculate current frame
+            //TODO: ?Idea?, pass in current frame of game and store that.  The delta between current and last can be used to calculate current frame
             //rather than constantly updating animation
+
+
             //Calculate the texture box when the sprite is needed
             texturePos.X = (size.X * (currentFrame + (currentState * frames))) % (textureSize.X * textureRefs.Length);
             texturePos.Y = (size.X * (currentFrame + (currentState * frames))) / (textureSize.X * textureRefs.Length) * size.Y;
@@ -147,7 +148,7 @@ namespace EngineeringCorpsCS
             currentState = currentState % states;
         }
 
-        public void SetAnimationSpeed(float animationSpeed)
+        override public void SetAnimationSpeed(float animationSpeed)
         {
             this.animationSpeed = animationSpeed;
         }
@@ -156,7 +157,7 @@ namespace EngineeringCorpsCS
         /// Sets the behavior of the animation (Forward, Backward, Forward and Backward)
         /// </summary>
         /// <param name="behavior"></param>
-        public void SetBehavior(string behavior)
+        override public void SetBehavior(string behavior)
         {
             switch (behavior)
             {

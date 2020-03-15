@@ -5,13 +5,28 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{7E57B0D1-719E-4C0A-BBAF-0C09C1387060}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>EngineeringCorpsCS</RootNamespace>
     <AssemblyName>EngineeringCorpsCS</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -40,9 +55,7 @@
   <PropertyGroup>
     <ApplicationIcon>EngineeringCorpsIcon.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup>
-    <NoWin32Manifest>true</NoWin32Manifest>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="SFML.Audio, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\SFML.Audio.2.5.0\lib\netstandard2.0\SFML.Audio.dll</HintPath>
@@ -67,26 +80,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Drawable\Animation.cs" />
-    <Compile Include="Base.cs" />
+    <Compile Include="Entity\Base.cs" />
     <Compile Include="Drawable\Drawable.cs" />
-    <Compile Include="EntityPhysical.cs" />
-    <Compile Include="Drawable\IAnimation.cs" />
+    <Compile Include="Entity\EntityPhysical.cs" />
     <Compile Include="FontContainer.cs" />
-    <Compile Include="IInputSubscriber.cs" />
-    <Compile Include="InputBindings.cs" />
-    <Compile Include="InputManager.cs" />
-    <Compile Include="Drawable\RotatedAnimation.cs" />
+    <Compile Include="Input\IInputSubscriber.cs" />
+    <Compile Include="Input\InputBindings.cs" />
+    <Compile Include="Input\InputManager.cs" />
+    <Compile Include="Drawable\AnimationRotated.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Chunk\Chunk.cs" />
     <Compile Include="Chunk\SurfaceContainer.cs" />
-    <Compile Include="Entity.cs" />
+    <Compile Include="Entity\Entity.cs" />
+    <Compile Include="Menu\MenuButton.cs" />
     <Compile Include="Menu\MenuComponent.cs" />
     <Compile Include="Menu\MenuPanel.cs" />
     <Compile Include="Menu\MenuText.cs" />
     <Compile Include="Noise\FastNoise.cs" />
     <Compile Include="Noise\OpenSimplexNoise.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="Entity\Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Props.cs" />
@@ -183,6 +196,17 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

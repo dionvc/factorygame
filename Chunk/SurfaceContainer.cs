@@ -21,7 +21,7 @@ namespace EngineeringCorpsCS
 
         public SurfaceContainer(TileCollection tileCollection)
         {
-            tileBox = new BoundingBox(-16, -16, 16, 16);
+            tileBox = new BoundingBox(-17, -17, 17, 17);
             this.tileCollection = tileCollection;
             chunks = new Chunk[Props.worldSize * Props.worldSize];
             Random r = new Random(DateTime.Now.Second);
@@ -96,7 +96,7 @@ namespace EngineeringCorpsCS
             }
             else
             {
-                int[] chunkXY = ChunkIndexToWorld(chunkIndex);
+                int[] chunkXY = ChunkIndexToChunkCoords(chunkIndex);
                 GenerateTerrain(chunkXY[0] , chunkXY[1]);
                 return chunks[chunkIndex];
             }
@@ -225,7 +225,7 @@ namespace EngineeringCorpsCS
         /// </summary>
         /// <param name="chunkIndex"></param>
         /// <returns></returns>
-        public static int[] ChunkIndexToWorld(int chunkIndex)
+        public static int[] ChunkIndexToChunkCoords(int chunkIndex)
         {
             return new int[] { (chunkIndex / Props.worldSize), (chunkIndex % Props.worldSize) };
         }

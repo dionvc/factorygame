@@ -8,7 +8,7 @@ using SFML.System;
 
 namespace EngineeringCorpsCS
 {
-    class Animation: Drawable, IAnimation
+    class Animation: Drawable
     {
         enum AnimationBehavior
         {
@@ -41,12 +41,11 @@ namespace EngineeringCorpsCS
             SetBehavior(behavior);
         }
 
-        public void Update()
+        override public void Update()
         {
             if (animationSpeed != 0)
             {
                 tickAccumulator += 1;
-
                 //TODO: test multiple texture sheet support + test texture frame size (is it off by ones)
                 if (tickAccumulator > animationSpeed)
                 {
@@ -61,17 +60,17 @@ namespace EngineeringCorpsCS
                         currentFrame = (currentFrame + frames) % (frames);
 
                     }
-                    texturePos.X = (size.X * currentFrame) % (textureSize.X * textureRefs.Length);
-                    texturePos.Y = (size.X * currentFrame) / (textureSize.X * textureRefs.Length) * size.Y;
-                    int textureIndex = (texturePos.X / textureSize.X);
-                    animationFrame.Texture = textureRefs[textureIndex];
-                    animationFrame.TextureRect = new IntRect(texturePos, size);
                 }
             }
         }
 
-        public Sprite GetAnimationFrame()
+        override public Sprite GetSprite()
         {
+            texturePos.X = (size.X * currentFrame) % (textureSize.X * textureRefs.Length);
+            texturePos.Y = (size.X * currentFrame) / (textureSize.X * textureRefs.Length) * size.Y;
+            int textureIndex = (texturePos.X / textureSize.X);
+            animationFrame.Texture = textureRefs[textureIndex];
+            animationFrame.TextureRect = new IntRect(texturePos, size);
             return animationFrame;
         }
 
@@ -98,7 +97,7 @@ namespace EngineeringCorpsCS
         /// Set the speed of the animation in ticks per frame
         /// </summary>
         /// <param name="animationSpeed"></param>
-        public void SetAnimationSpeed(float animationSpeed)
+        override public void SetAnimationSpeed(float animationSpeed)
         {
             this.animationSpeed = animationSpeed;
         }
@@ -107,7 +106,7 @@ namespace EngineeringCorpsCS
         /// Sets the behavior of the animation (Forward, Backward, Forward and Backward)
         /// </summary>
         /// <param name="behavior"></param>
-        public void SetBehavior(string behavior)
+        override public void SetBehavior(string behavior)
         {
             switch (behavior)
             {

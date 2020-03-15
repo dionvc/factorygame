@@ -253,6 +253,10 @@ namespace EngineeringCorpsCS
                     overlapAmount = vP - sP;
                     index = i;
                 }
+                else if(vP - sP <= overlapAmount)
+                {
+                    //A case where there are two potential pushback directions
+                }
             }
             //Checking axis' of box2
             for (int i = 0; i < 2; i++)
@@ -268,11 +272,20 @@ namespace EngineeringCorpsCS
                     overlapAmount = vP - sP;
                     index = i + 2;
                 }
+                else if (vP - sP <= overlapAmount)
+                {
+                    //Need to select correct direction when two possible pushback directions
+                    //1.  The velocity is the going to usually be the same in both the x and y
+                    //2.  Dotting the velocity onto the current axis will give the same result for both x and y then
+                    //3.  Cannot do much without exterior info (is there something above/below versus to the left and right, both is already solved)
+                    //4.  Could pass in a "preferred axis based on neighboring items"
+                    //5. for tiles, preferred axis is easy
+                    //6. for entities, it is much harder.
+                }
             }
             //Minimum translation vector calculation
             //TODO: fix.  As of now we have a list of indices with minimum translations.  Want to pick the one that allows sliding
-            //Potential solution, do a check with just velocity x, and then just velocity y. Will essentially require doubling collision check code here,
-            //but may be the fix that is needed
+            //Potential solution, if there are two equal overlap amounts, pick the overlap axis with the least effect on the velocity
             if (index < 2) //push back along box 1 axis
             {
                 pushBackSelf.x += axis1[index].x;
@@ -297,20 +310,6 @@ namespace EngineeringCorpsCS
 
             return true; //all checks failed, boxes collide
         }
-        /// <summary>
-        /// Checks for collision between character and tiles, also returns the tiletype collided with
-        /// </summary>
-        /// <param name="box"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public static bool CheckTerrainTileCollision(BoundingBox box, Vector2 pos, Vector2 velocity, Base.CollisionLayer collisionMask, TileCollection tileCollection, SurfaceContainer surface, out Tile tile)
-        {
-            tile = tileCollection.GetTerrainTile(surface.GetTileFromWorld(pos.x, pos.y));
-            if ((tile.collisionMask & collisionMask) != 0) {
-                return true;
-            }
-            return false;
-        }
         
         public static bool CheckPointMenuCollision(float x, float y, BoundingBox box, Vector2f pos)
         {
@@ -330,10 +329,10 @@ namespace EngineeringCorpsCS
         /// <returns></returns>
         public static int[] GetChunkBounds(BoundingBox self, Vector2 posSelf)
         {
-            float xMin = posSelf.x - self.radiusApproximation - 4 * Props.tileSize;
-            float xMax = posSelf.x + self.radiusApproximation + 4 * Props.tileSize;
-            float yMin = posSelf.y - self.radiusApproximation - 4 * Props.tileSize;
-            float yMax = posSelf.y + self.radiusApproximation + 4 * Props.tileSize;
+            float xMin = posSelf.x - self.radiusApproximation - Props.tileCollisionFactor * Props.tileSize;
+            float xMax = posSelf.x + self.radiusApproximation + Props.tileCollisionFactor * Props.tileSize;
+            float yMin = posSelf.y - self.radiusApproximation - Props.tileCollisionFactor * Props.tileSize;
+            float yMax = posSelf.y + self.radiusApproximation + Props.tileCollisionFactor * Props.tileSize;
             int[] top = SurfaceContainer.WorldToChunkCoords(xMin, yMin);
             int[] bot = SurfaceContainer.WorldToChunkCoords(xMax, yMax);
             int yRange = (bot[1] - top[1]) + 1;
@@ -398,12 +397,18 @@ namespace EngineeringCorpsCS
             #endregion more complex chunk bound code
         }
 
+        /// <summary>
+        /// Gets the tiles the entity could possibly occupy in tile indices
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="posSelf"></param>
+        /// <returns></returns>
         public static int[][] GetTileBounds(BoundingBox self, Vector2 posSelf)
         {
-            float xMin = posSelf.x - self.radiusApproximation - 4 * Props.tileSize;
-            float xMax = posSelf.x + self.radiusApproximation + 4 * Props.tileSize;
-            float yMin = posSelf.y - self.radiusApproximation - 4 * Props.tileSize;
-            float yMax = posSelf.y + self.radiusApproximation + 4 * Props.tileSize;
+            float xMin = posSelf.x - self.radiusApproximation - Props.tileCollisionFactor * Props.tileSize;
+            float xMax = posSelf.x + self.radiusApproximation + Props.tileCollisionFactor * Props.tileSize;
+            float yMin = posSelf.y - self.radiusApproximation - Props.tileCollisionFactor * Props.tileSize;
+            float yMax = posSelf.y + self.radiusApproximation + Props.tileCollisionFactor * Props.tileSize;
             int[] top = SurfaceContainer.WorldToTileCoords(xMin, yMin);
             int[] bot = SurfaceContainer.WorldToTileCoords(xMax, yMax);
             int yRange = (bot[1] - top[1]) + 1;
@@ -439,48 +444,60 @@ namespace EngineeringCorpsCS
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="velocity"></param>
-        public static void ApplyPhysicalCollision(Entity entity, Vector2 velocity)
+        public static void ApplyPhysicalCollision(Entity entity, Vector2 totalVelocity)
         {
-            Vector2 newEntityPos = new Vector2(entity.position.x, entity.position.y);
-            int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, newEntityPos);
-            int[][] tileList = BoundingBox.GetTileBounds(entity.collisionBox, newEntityPos);
-            
-            //Checks collisions with entities and tiles
-            for (int i = 0; i < chunkList.Length; i++)
+            int intervals = (int)Math.Ceiling(totalVelocity.GetMagnitude() / Props.maxVelocity);
+            Vector2 scaledVelocity = totalVelocity.Copy();
+            scaledVelocity.Scale(1.0f / intervals);
+            for (int splits = 0; splits < intervals; splits++)
             {
-                Chunk chunk = entity.surface.GetChunk(chunkList[i]);
-                Vector2 pushBack;
-                //tile collision checks
-                //Perhaps switch to continually checking whether the player is colliding with a tile at his position until he isnt colliding with a tile?
-                //Would fix the situation where getting stuck in water still allows movement within
-                //TODO: try solution outline above
-                for (int j = 0; j < tileList[i].Length; j++)
+                Vector2 velocity = scaledVelocity.Copy();
+                Vector2 newEntityPos = new Vector2(entity.position.x + velocity.x, entity.position.y + velocity.y);
+                int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, newEntityPos);
+                int[][] tileList = BoundingBox.GetTileBounds(entity.collisionBox, newEntityPos);
+
+                //Checks collisions with entities and tiles
+                for (int i = 0; i < chunkList.Length; i++)
                 {
-                    Tile tile = entity.surface.tileCollection.GetTerrainTile(chunk.GetTile(tileList[i][j]));
-                    if ((entity.collisionMask & tile.collisionMask) != 0)
+                    Chunk chunk = entity.surface.GetChunk(chunkList[i]);
+                    Vector2 pushBack;
+
+                    //entity collision checks
+                    List<Entity> collisionList = chunk.entityCollisionList;
+                    for (int j = 0; j < collisionList.Count; j++)
                     {
-                        Vector2 tilePos = SurfaceContainer.WorldToTileVector(chunkList[i], tileList[i][j]);
-                        if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, velocity, tilePos, out pushBack))
+                        if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !collisionList[j].Equals(entity))
                         {
-                            velocity.Add(pushBack);
+
+                            if (BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, velocity, collisionList[j].position, out pushBack))
+                            {
+                                velocity.Add(pushBack);
+                            }
+                        }
+                    }
+
+                    //tile collision checks
+                    //Perhaps switch to continually checking whether the player is colliding with a tile at his position until he isnt colliding with a tile?
+                    //Would fix the situation where getting stuck in water still allows movement within
+                    //TODO: try solution outline above
+                    for (int j = 0; j < tileList[i].Length; j++)
+                    {
+                        Tile tile = entity.surface.tileCollection.GetTerrainTile(chunk.GetTile(tileList[i][j]));
+                        if ((entity.collisionMask & tile.collisionMask) != 0)
+                        {
+                            Vector2 tilePos = SurfaceContainer.WorldToTileVector(chunkList[i], tileList[i][j]);
+                            if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, velocity, tilePos, out pushBack))
+                            {
+                                velocity.Add(pushBack);
+                            }
                         }
                     }
                 }
-                //entity collision checks
-                List<Entity> collisionList = chunk.entityCollisionList;
-                for (int j = 0; j < collisionList.Count; j++)
-                {
-                    if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !collisionList[j].Equals(entity))
-                    {
-                        
-                        if (BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, velocity, collisionList[j].position, out pushBack))
-                        {
-                            velocity.Add(pushBack);
-                        }
-                    }
-                }
+                entity.position.Add(velocity);
             }
-            entity.surface.UpdateEntityInChunks(entity, velocity);
+            //TODO: need to add total failure check, where the end result of the overall collision ends up inside of a colliding body, and in such a case set velocity to 0
+            
+            entity.surface.UpdateEntityInChunks(entity, totalVelocity);
         }
     }
 }

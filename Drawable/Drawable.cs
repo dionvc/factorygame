@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SFML.Graphics;
+using SFML.System;
 
 namespace EngineeringCorpsCS
 {
@@ -22,9 +24,15 @@ namespace EngineeringCorpsCS
             IconOverlay = 9,
             GUI = 10
         }
-        
+
+        public Vector2f drawOffset { get; set; }
+
         public abstract void SetRotation(float rotation);
         public abstract void SetScale(float x, float y);
         public abstract void SetColor(byte r, byte g, byte b, byte a);
+        public abstract Sprite GetSprite();
+        public abstract void Update();
+        public abstract void SetAnimationSpeed(float animationSpeed);
+        public abstract void SetBehavior(string behavior);
     }
 }

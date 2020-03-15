@@ -13,17 +13,13 @@ namespace EngineeringCorpsCS
     {
         static void Main(string[] args)
         {
-            //Window initialization
+            //Window initialization (all of this stays here I think)
             RenderWindow window = new RenderWindow(new VideoMode(1280, 720), "Engineering Corps");
             window.SetFramerateLimit(60);
             window.Closed += (s, a) => window.Close();
             window.SetActive();
             Image icon = new Image("Graphics/EngineeringCorpsIcon.png");
             window.SetIcon(icon.Size.X, icon.Size.Y, icon.Pixels);
-
-            //Camera is the entry point for the game, first it subscribes to input, then an entity is added which makes the entity subscribe to input
-
-
 
             //Repository, Managers, Resource collections creation
             TextureContainer textureManager = new TextureContainer();
@@ -46,38 +42,38 @@ namespace EngineeringCorpsCS
             Text coordinates = new Text("default", debugFont, 32);
             coordinates.LineSpacing = 0.5f;
             Clock clock = new Clock();
+
+            //TODO: contain following within renderer?
             bool drawDebugText = true;
-            //TODO: contain within renderer?
             RenderTexture GUI = new RenderTexture(window.Size.X, window.Size.Y);
             //TODO: contain guiview in camera?
             View GUIView = new View(new Vector2f(640, 360), new Vector2f(1280, 720));
 
-            #region randomstuff
-            //Texture[] waves = new Texture[1];
-            //waves[0] = textureManager.GetTexture("WavesAlpha");
-            //RotatedAnimation wavesTest = new RotatedAnimation(waves, new Vector2i(320, 320), new Vector2f(0, 0), new Vector2f(2.0f, 2.0f), 1, 10, "fb", 12.0f);
-            //Texture[] multi = new Texture[] { textureManager.GetTexture("1"), textureManager.GetTexture("2"), textureManager.GetTexture("3"), textureManager.GetTexture("4") };
-            //RotatedAnimation multiTest = new RotatedAnimation(multi, new Vector2i(256, 256), new Vector2f(0, 0), new Vector2f(1.0f, 1.0f), 1, 4, "fb", 30.0f);
-            
+            #region test entities
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for (int i = 0; i < 256; i++)
+            for (int i = 0; i < 2048; i++)
             {
                 players.Add(new Player(new Vector2(1024 + 48 * i, 1024 + 48 * i), surfaceContainer, textureManager));
             }
+            foreach(Player p in players)
+            {
+                p.SubscribeToInput(input);
+            }
+            //players[15].SubscribeToInput(input);
             #endregion
+            //Menu testing
             MenuPanel test = new MenuPanel(new Vector2f(0,0), new Vector2f(150, 150), new bool[] { true, true });
             MenuText textTest = new MenuText(new Vector2f(0, 0), new Vector2f(140, 150), new bool[] { true, true }, debugFont, "This is test text intentionally long to test line splitting functionalityaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 32);
             MenuPanel test2 = new MenuPanel(new Vector2f(300, 300), new Vector2f(200, 200), new bool[] { true, true });
             test2.AttachComponent(textTest);
             test.AttachComponent(test2);
             test.AttachComponent(textTest);
+            //End menu testing
 
+            //Attaching the camera to something!
             camera.focusedEntity = players[15];
-            foreach (Player p in players)
-            {
-                p.SubscribeToInput(input);
-            }
+            
             
             while (window.IsOpen)
             {
@@ -98,10 +94,8 @@ namespace EngineeringCorpsCS
                 window.SetView(camera.GetView());
                 //drawing game world (terrain, entities)
                 gameRenderer.RenderWorld(window, camera);
-                foreach (Player p in players)
-                {
-                    window.Draw(p.playerTest.GetAnimationFrame());
-                }
+                //TODO: compartmentalize into renderer
+                
                 
                 //set the view to GUI
                 //window.SetView(GUIView);

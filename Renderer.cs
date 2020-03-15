@@ -57,63 +57,102 @@ namespace EngineeringCorpsCS
                     }
                 }
             }
-            if (drawBoundingBoxes == true)
+            for (int i = begPos[0]; i <= endPos[0]; i++)
             {
-                for (int i = begPos[0]; i <= endPos[0]; i++)
+                for (int j = begPos[1]; j <= endPos[1]; j++)
                 {
-                    for (int j = begPos[1]; j <= endPos[1]; j++)
+                    Chunk chunk = surface.GetChunk(i, j);
+                    #region Tile bounding box drawing
+                    if (drawBoundingBoxes == true)
                     {
-                        Chunk chunk = surface.GetChunk(i, j);
+                        float[] pointsTile = surface.tileBox.GetPoints();
                         for (int k = 0; k < Props.chunkSize; k++)
                         {
-                            for(int l = 0; l < Props.chunkSize; l ++)
+                            for (int l = 0; l < Props.chunkSize; l++)
                             {
                                 Tile tile = tileCollection.GetTerrainTile(chunk.GetTile(k, l));
-                                if((tile.collisionMask & Base.CollisionLayer.TerrainSolid) != 0)
+                                if ((tile.collisionMask & Base.CollisionLayer.TerrainSolid) != 0)
                                 {
-                                    float[] points = surface.tileBox.GetPoints();
+
                                     Vector2 position = SurfaceContainer.WorldToTileVector(i * Props.worldSize + j, k * Props.chunkSize + l);
                                     if (position.x > origin.X && position.x < extent.X &&
                                         position.y > origin.Y && position.y < extent.Y)
                                     {
-                                        for (int x = 0; x < points.Length; x += 2)
+                                        for (int x = 0; x < pointsTile.Length; x += 2)
                                         {
-                                            boundingBoxArray.Append(new Vertex(new Vector2f(points[x] + position.x, points[x + 1] + position.y), Color.Blue));
-                                            boundingBoxArray.Append(new Vertex(new Vector2f(points[(x + 2) % 8] + position.x, points[(x + 3) % 8] + position.y), Color.Blue));
+                                            boundingBoxArray.Append(new Vertex(new Vector2f(pointsTile[x] + position.x, pointsTile[x + 1] + position.y), Color.Blue));
+                                            boundingBoxArray.Append(new Vertex(new Vector2f(pointsTile[(x + 2) % 8] + position.x, pointsTile[(x + 3) % 8] + position.y), Color.Blue));
                                         }
                                     }
                                 }
                             }
                         }
-                        List<Entity> boxList = chunk.entityList;
-                        for (int k = 0; k < boxList.Count; k++)
+                    }
+                    #endregion Tile bounding box drawing
+                    List<Entity> entityList = chunk.entityList;
+                    entityList.Sort(delegate (Entity a, Entity b)
+                    {
+                        int ydiff = a.position.y.CompareTo(b.position.y);
+                        if (ydiff != 0) return ydiff;
+                        else return a.position.x.CompareTo(b.position.x);
+                    });
+                    for (int k = 0; k < entityList.Count; k++)
+                    {
+                        if (entityList[k].position.x > origin.X && entityList[k].position.x < extent.X
+                            && entityList[k].position.y > origin.Y && entityList[k].position.y < extent.Y)
                         {
-                            if (boxList[k].position.x > origin.X && boxList[k].position.x < extent.X
-                                && boxList[k].position.y > origin.Y && boxList[k].position.y < extent.Y)
+                            Sprite drawSprite = entityList[k].drawArray[0].GetSprite();
+                            drawSprite.Position = new Vector2f(entityList[k].position.x, entityList[k].position.y) + entityList[k].drawArray[0].drawOffset; //TODO: insert offset addition
+                            window.Draw(drawSprite);
+                            #region Entity bounding box drawing
+                            if (drawBoundingBoxes == true)
                             {
-                                float[] points = boxList[k].collisionBox.GetPoints();
-                                Vector2 position = boxList[k].position;
-                                for (int l = 0; l < points.Length; l += 2)
+                                float[] pointsEntity = entityList[k].collisionBox.GetPoints();
+                                Vector2 position = entityList[k].position;
+                                for (int l = 0; l < pointsEntity.Length; l += 2)
                                 {
-                                    boundingBoxArray.Append(new Vertex(new Vector2f(points[l] + position.x, points[l + 1] + position.y), Color.Red));
-                                    boundingBoxArray.Append(new Vertex(new Vector2f(points[(l + 2) % 8] + position.x, points[(l + 3) % 8] + position.y), Color.Red));
+                                    boundingBoxArray.Append(new Vertex(new Vector2f(pointsEntity[l] + position.x, pointsEntity[l + 1] + position.y), Color.Red));
+                                    boundingBoxArray.Append(new Vertex(new Vector2f(pointsEntity[(l + 2) % 8] + position.x, pointsEntity[(l + 3) % 8] + position.y), Color.Red));
                                 }
                             }
+                            #endregion Entity bounding box drawing
                         }
                     }
                 }
-                window.Draw(boundingBoxArray);
-                boundingBoxArray.Clear();
+                if (drawBoundingBoxes == true) {
+                    window.Draw(boundingBoxArray);
+                    boundingBoxArray.Clear();
+                }
             }
         }
-        //Construct vertex arrays for each visible chunk and each visible tile (cull tiles)
-        //Store these vertex arrays
 
-        //Check every frame the camera location
+        /// <summary>
+        /// Clears the entire cache of terrain vertices
+        /// </summary>
+        public void ClearTerrainVertexCache()
+        {
+            terrainVertexArrays.Clear();
+        }
+        
+        /// <summary>
+        /// Removes the terrain vertex array for a specified chunkIndex, if it is already present.  Rebuilding is handled by the RenderWorld function.
+        /// </summary>
+        /// <param name="chunkIndex"></param>
+        public void RemoveCachedTerrainVertexArray(int chunkIndex)
+        {
+            if(terrainVertexArrays.ContainsKey(chunkIndex))
+            {
+                terrainVertexArrays.Remove(chunkIndex);
+            }
+        }
 
-        //Update visible chunks if camera location changes enough
-
-        //Get entities every frame from visible chunks and cull, then sort
+        /// <summary>
+        /// Culls terrain vertex arrays that are too far away based on camera variables.
+        /// </summary>
+        public void CullTerrainVertexCache(Camera camera)
+        {
+            //TODO: Finish culling algorithm
+        }
 
         public void SubscribeToInput(InputManager input)
         {
