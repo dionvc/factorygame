@@ -29,7 +29,10 @@ namespace EngineeringCorpsCS
         {
             ///TODO: Move this
             BoundingBox.ApplyPhysicalCollision(this, velocity);
-            rotation = velocity.GetRotation() + 180.0f;
+            if (velocity.x != 0 || velocity.y != 0)
+            {
+                rotation = velocity.GetRotation() + 180.0f;
+            }
             drawArray[0].SetRotation(rotation);
             drawArray[0].Update();
             drawArray[0].SetAnimationSpeed(60/velocity.GetMagnitude());

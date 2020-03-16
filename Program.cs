@@ -11,10 +11,11 @@ namespace EngineeringCorpsCS
 {
     class Program
     {
+        public static RenderWindow window;
         static void Main(string[] args)
         {
             //Window initialization (all of this stays here I think)
-            RenderWindow window = new RenderWindow(new VideoMode(1280, 720), "Engineering Corps");
+            window = new RenderWindow(new VideoMode(1280, 720), "Engineering Corps");
             window.SetFramerateLimit(60);
             window.Closed += (s, a) => window.Close();
             window.SetActive();
@@ -58,20 +59,22 @@ namespace EngineeringCorpsCS
             }
             foreach(Player p in players)
             {
-                //p.SubscribeToInput(input);
+                p.SubscribeToInput(input);
             }
-            players[15].SubscribeToInput(input);
+            //players[15].SubscribeToInput(input);
             #endregion
             //Menu testing
             MenuPanel test = new MenuPanel(new Vector2f(0,0), new Vector2f(150, 150), new bool[] { true, true });
-            MenuText textTest = new MenuText(new Vector2f(0, 0), new Vector2f(140, 150), new bool[] { true, true }, debugFont, "This is test text intentionally long to test line splitting functionalityaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 32);
-            MenuPanel test2 = new MenuPanel(new Vector2f(300, 300), new Vector2f(200, 200), new bool[] { true, true });
+            MenuText textTest = new MenuText(new Vector2f(0, 0), new Vector2f(140, 150), new bool[] { true, true }, debugFont, "This is test text intentionally long to test line splitting", 32);
             MenuButton menuButton = new MenuButton(new Vector2f(300,300), gameRenderer.ToggleBoundingBoxRendering, new Vector2f(150, 150));
             MenuText buttonTest = new MenuText(new Vector2f(0, 0), new Vector2f(140, 150), new bool[] { false, false }, debugFont, "Toggle Bounding boxes", 24);
-            menuButton.SubscribeToInput(input);
+            MenuButton exitGame = new MenuButton(new Vector2f(300, 100), ExitGame, new Vector2f(150, 100));
+            MenuText exitGameText = new MenuText(new Vector2f(0, 0), new Vector2f(140, 100), new bool[] { false, false }, debugFont, "Exit Game", 24);
+            test.SubscribeToInput(input);
+            test.AttachComponent(exitGame);
+            exitGame.AttachComponent(exitGameText);
             menuButton.AttachComponent(buttonTest);
-            test2.AttachComponent(textTest);
-            test.AttachComponent(test2);
+            test.AttachComponent(menuButton);
             test.AttachComponent(textTest);
             //End menu testing
 
@@ -117,7 +120,6 @@ namespace EngineeringCorpsCS
                     {
                         test.Translate(new Vector2f(input.mouseXdiff, input.mouseYdiff));
                     }
-                    menuButton.Draw(GUI, new Vector2f(0, 0));
                     test.Draw(GUI, new Vector2f(0,0));
                     float fps = 1.0f / clock.ElapsedTime.AsSeconds();
                     clock.Restart();
@@ -156,6 +158,11 @@ namespace EngineeringCorpsCS
 
                 window.Display();
             }
+        }
+
+        public static void ExitGame()
+        {
+            window.Close();
         }
     }
 }

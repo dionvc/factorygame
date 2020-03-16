@@ -57,10 +57,12 @@ namespace EngineeringCorpsCS
                     }
                 }
             }
+            
             for (int i = begPos[0]; i <= endPos[0]; i++)
             {
                 for (int j = begPos[1]; j <= endPos[1]; j++)
                 {
+
                     Chunk chunk = surface.GetChunk(i, j);
                     #region Tile bounding box drawing
                     if (drawBoundingBoxes == true)

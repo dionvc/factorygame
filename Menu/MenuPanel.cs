@@ -8,7 +8,7 @@ using SFML.System;
 
 namespace EngineeringCorpsCS
 {
-    class MenuPanel : MenuComponent
+    class MenuPanel : MenuComponent, IInputSubscriber
     {
         
         public MenuPanel(Vector2f relativePosition, Vector2f componentSize, bool[] sizeScaling)
@@ -16,7 +16,6 @@ namespace EngineeringCorpsCS
             this.position = relativePosition;
             this.size = componentSize;
             this.scale = new Vector2f(1, 1);
-            attachedComponents = new List<MenuComponent>();
             collisionBox = new BoundingBox(this.size);
         }
         override public void Draw(RenderTexture gui, Vector2f origin)
@@ -29,16 +28,6 @@ namespace EngineeringCorpsCS
             {
                 attachedComponents[i].Draw(gui, origin + position);
             }
-        }
-
-        override public void Translate(Vector2f translation)
-        {
-            position += translation;
-        }
-
-        public void AttachComponent(MenuComponent component)
-        {
-            attachedComponents.Add(component);
         }
     }
 }

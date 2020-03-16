@@ -27,11 +27,6 @@ namespace EngineeringCorpsCS
             gui.Draw(textComponent);
         }
 
-        override public void Translate(Vector2f translation)
-        {
-            position += translation;
-        }
-
         /// <summary>
         /// Change the text contained by the menu text component
         /// </summary>

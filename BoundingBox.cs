@@ -199,9 +199,9 @@ namespace EngineeringCorpsCS
                 return false;
             }
             #endregion Circle culling check
-            /*
-            #region SimpleCollisionCheck
 
+            #region SimpleCollisionCheck (Broken)
+            /*
             //2nd check AABB if both have theta = 0
             if (self.rotation == 0 && other.rotation == 0)
             {
@@ -214,7 +214,7 @@ namespace EngineeringCorpsCS
                     float overlapX = self.halfWidth + other.halfWidth - Math.Abs(d.x);
                     if (overlapX < overlapY) //push back along X
                     {
-                        if (posSelf.x < posOther.x)
+                        if (posSelf.x + selfVelocity.x < posOther.x)
                         {
                             overlapX *= -1;
                         }
@@ -222,7 +222,7 @@ namespace EngineeringCorpsCS
                     }
                     else //push back along Y
                     {
-                        if (posSelf.y < posOther.y)
+                        if (posSelf.y + selfVelocity.y < posOther.y)
                         {
                             overlapY *= -1;
                         }
@@ -235,8 +235,9 @@ namespace EngineeringCorpsCS
                     return false;
                 }
             }
-            #endregion
             */
+            #endregion
+
             #region Separating Axis Theorem check (final and most intensive check for accuracy)
             Vector2[] axis1 = self.GetNormals();
             Vector2[] axis2 = other.GetNormals();

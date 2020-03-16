@@ -17,11 +17,13 @@ namespace EngineeringCorpsCS
             Held,
             Released
         }
-
-
         public delegate void ButtonAction();
         ButtonAction action;
         ButtonState buttonState;
+        Color buttonHeld = Color.Green;
+        Color buttonNormal = Color.Yellow;
+        Color buttonHover = Color.Magenta;
+        Color buttonColor = Color.Yellow;
         public MenuButton(Vector2f relativePosition, ButtonAction action, Vector2f componentSize)
         {
             this.position = relativePosition;
@@ -29,57 +31,47 @@ namespace EngineeringCorpsCS
             this.size = componentSize;
             this.buttonState = ButtonState.Normal;
             this.collisionBox = new BoundingBox(this.size);
-            attachedComponents = new List<MenuComponent>();
         }
         override public void Draw(RenderTexture gui, Vector2f origin)
         {
             RectangleShape test = new RectangleShape(size);
             test.Position = origin + position;
-            test.FillColor = Color.Yellow;
+            test.FillColor = buttonColor;
             gui.Draw(test);
             for (int i = 0; i < attachedComponents.Count; i++)
             {
                 attachedComponents[i].Draw(gui, origin + position);
             }
         }
-
-        override public void Translate(Vector2f translation)
+        override public void HandleInput(InputManager input)
         {
-            position += translation;
-        }
-
-        public void AttachComponent(MenuComponent component)
-        {
-            attachedComponents.Add(component);
-        }
-
-        public void SubscribeToInput(InputManager input)
-        {
-            input.AddInputSubscriber(this, false);
-        }
-
-        public void UnsubscribeToInput(InputManager input)
-        {
-            input.RemoveInputSubscriber(this, false);
-        }
-
-        public void HandleInput(InputManager input)
-        {
-            if(buttonState != ButtonState.Held && BoundingBox.CheckPointMenuCollision(input.mouseX, input.mouseY, collisionBox, position))
+            Vector2f origin = new Vector2f(0, 0);
+            MenuComponent bubble = parent;
+            while(bubble != null)
+            {
+                origin += bubble.position;
+                bubble = bubble.parent;
+            }
+            if(buttonState != ButtonState.Held && BoundingBox.CheckPointMenuCollision(input.mouseX, input.mouseY, collisionBox, (position + origin)))
             {
                 buttonState = ButtonState.Hover;
+                buttonColor = buttonHover;
             }
             else if(buttonState != ButtonState.Held)
             {
                 buttonState = ButtonState.Normal;
+                buttonColor = buttonNormal;
             }
             if(buttonState == ButtonState.Hover && input.mouseClick[InputBindings.primary])
             {
                 buttonState = ButtonState.Held;
+                buttonColor = buttonHeld;
             }
             if (buttonState == ButtonState.Held && input.mouseReleased[InputBindings.primary])
             {
                 action();
+                buttonState = ButtonState.Normal;
+                buttonColor = buttonNormal;
             }
         }
     }
