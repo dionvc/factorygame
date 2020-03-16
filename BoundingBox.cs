@@ -199,7 +199,7 @@ namespace EngineeringCorpsCS
                 return false;
             }
             #endregion Circle culling check
-
+            /*
             #region SimpleCollisionCheck
 
             //2nd check AABB if both have theta = 0
@@ -236,7 +236,7 @@ namespace EngineeringCorpsCS
                 }
             }
             #endregion
-
+            */
             #region Separating Axis Theorem check (final and most intensive check for accuracy)
             Vector2[] axis1 = self.GetNormals();
             Vector2[] axis2 = other.GetNormals();

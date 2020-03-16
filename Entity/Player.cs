@@ -15,11 +15,11 @@ namespace EngineeringCorpsCS
         public Player(Vector2 pos, SurfaceContainer surface, TextureContainer textureContainer)
         {
             position = pos;
-            collisionBox = new BoundingBox(24, 24);
+            collisionBox = new BoundingBox(64, 128);
             surface.InitiateEntityInChunks(this);
             velocity = new Vector2(0, 0);
             Texture[] playerTextures = new Texture[] { textureContainer.GetTexture("orcrunning") };
-            drawArray = new Drawable[] { new AnimationRotated(playerTextures, new Vector2i(128, 128), new Vector2f(0,0), new Vector2f(0, -18) , new Vector2f(1,1),8, 8, "Forward", 0.0f) };
+            drawArray = new Drawable[] { new AnimationRotated(playerTextures, new Vector2i(128, 128), new Vector2f(0,0), new Vector2f(0, -48) , new Vector2f(4,4),8, 8, "Forward", 0.0f) };
             collisionMask = CollisionLayer.EntityPhysical | CollisionLayer.TerrainSolid;
         }
         /// <summary>
