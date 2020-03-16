@@ -188,17 +188,20 @@ namespace EngineeringCorpsCS
         /// <param name="posOther"></param>
         /// <param name="pushBackSelf"></param>
         /// <returns>Truth on whether there was a collision</returns>
-        public static bool CheckCollision(BoundingBox self, BoundingBox other, Vector2 posSelf, Vector2 selfVelocity, Vector2 posOther, out Vector2 pushBackSelf) 
+        public static bool CheckCollisionWithPushBack(BoundingBox self, BoundingBox other, Vector2 posSelf, Vector2 selfVelocity, Vector2 posOther, out Vector2 pushBackSelf) 
         {
-            //1st check (circle check)
+            //Push back vector
             pushBackSelf = new Vector2(0,0);
+            #region Circle culling check
             Vector2 d = new Vector2(posOther.x - posSelf.x - selfVelocity.x, posOther.y - posSelf.y - selfVelocity.y);
             if ((self.radiusApproximation + other.radiusApproximation) < d.GetMagnitude())
             {
                 return false;
             }
-            #region broken simple check TODO: check to see if can be fixed
-            /*
+            #endregion Circle culling check
+
+            #region SimpleCollisionCheck
+
             //2nd check AABB if both have theta = 0
             if (self.rotation == 0 && other.rotation == 0)
             {
@@ -209,9 +212,9 @@ namespace EngineeringCorpsCS
                 {
                     float overlapY = self.halfHeight + other.halfHeight - Math.Abs(d.y);
                     float overlapX = self.halfWidth + other.halfWidth - Math.Abs(d.x);
-                    if(overlapX < overlapY) //push back along X
+                    if (overlapX < overlapY) //push back along X
                     {
-                        if(posSelf.x < posOther.x)
+                        if (posSelf.x < posOther.x)
                         {
                             overlapX *= -1;
                         }
@@ -219,7 +222,7 @@ namespace EngineeringCorpsCS
                     }
                     else //push back along Y
                     {
-                        if(posSelf.y < posOther.y)
+                        if (posSelf.y < posOther.y)
                         {
                             overlapY *= -1;
                         }
@@ -231,9 +234,10 @@ namespace EngineeringCorpsCS
                 {
                     return false;
                 }
-            }*/
+            }
             #endregion
-            //Separating Axis Theorem check (final and most intensive check for accuracy)
+
+            #region Separating Axis Theorem check (final and most intensive check for accuracy)
             Vector2[] axis1 = self.GetNormals();
             Vector2[] axis2 = other.GetNormals();
             float overlapAmount = float.MaxValue;
@@ -253,10 +257,6 @@ namespace EngineeringCorpsCS
                     overlapAmount = vP - sP;
                     index = i;
                 }
-                else if(vP - sP <= overlapAmount)
-                {
-                    //A case where there are two potential pushback directions
-                }
             }
             //Checking axis' of box2
             for (int i = 0; i < 2; i++)
@@ -272,20 +272,17 @@ namespace EngineeringCorpsCS
                     overlapAmount = vP - sP;
                     index = i + 2;
                 }
-                else if (vP - sP <= overlapAmount)
-                {
-                    //Need to select correct direction when two possible pushback directions
-                    //1.  The velocity is the going to usually be the same in both the x and y
-                    //2.  Dotting the velocity onto the current axis will give the same result for both x and y then
-                    //3.  Cannot do much without exterior info (is there something above/below versus to the left and right, both is already solved)
-                    //4.  Could pass in a "preferred axis based on neighboring items"
-                    //5. for tiles, preferred axis is easy
-                    //6. for entities, it is much harder.
-                }
             }
             //Minimum translation vector calculation
             //TODO: fix.  As of now we have a list of indices with minimum translations.  Want to pick the one that allows sliding
             //Potential solution, if there are two equal overlap amounts, pick the overlap axis with the least effect on the velocity
+            //Need to select correct direction when two possible pushback directions
+            //1.  The velocity is the going to usually be the same in both the x and y
+            //2.  Dotting the velocity onto the current axis will give the same result for both x and y then
+            //3.  Cannot do much without exterior info (is there something above/below versus to the left and right, both is already solved)
+            //4.  Could pass in a "preferred axis based on neighboring items"
+            //5. for tiles, preferred axis is easy
+            //6. for entities, it is much harder.
             if (index < 2) //push back along box 1 axis
             {
                 pushBackSelf.x += axis1[index].x;
@@ -306,11 +303,18 @@ namespace EngineeringCorpsCS
             {
                 pushBackSelf.x *= -1;
             }
-
-
+            #endregion SAT Check
             return true; //all checks failed, boxes collide
         }
         
+        /// <summary>
+        /// Checks a x,y point for collision with a bounding box at a position.  Specifically for menues (uses graphics vectors)
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="box"></param>
+        /// <param name="pos"></param>
+        /// <returns></returns>
         public static bool CheckPointMenuCollision(float x, float y, BoundingBox box, Vector2f pos)
         {
             if(x <= pos.X + box.width && x >= pos.X &&
@@ -469,7 +473,7 @@ namespace EngineeringCorpsCS
                         if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !collisionList[j].Equals(entity))
                         {
 
-                            if (BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, velocity, collisionList[j].position, out pushBack))
+                            if (BoundingBox.CheckCollisionWithPushBack(entity.collisionBox, collisionList[j].collisionBox, entity.position, velocity, collisionList[j].position, out pushBack))
                             {
                                 velocity.Add(pushBack);
                             }
@@ -486,7 +490,7 @@ namespace EngineeringCorpsCS
                         if ((entity.collisionMask & tile.collisionMask) != 0)
                         {
                             Vector2 tilePos = SurfaceContainer.WorldToTileVector(chunkList[i], tileList[i][j]);
-                            if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, velocity, tilePos, out pushBack))
+                            if (BoundingBox.CheckCollisionWithPushBack(entity.collisionBox, entity.surface.tileBox, entity.position, velocity, tilePos, out pushBack))
                             {
                                 velocity.Add(pushBack);
                             }

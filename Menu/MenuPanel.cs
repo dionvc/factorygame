@@ -10,7 +10,7 @@ namespace EngineeringCorpsCS
 {
     class MenuPanel : MenuComponent
     {
-        List<MenuComponent> attachedComponents;
+        
         public MenuPanel(Vector2f relativePosition, Vector2f componentSize, bool[] sizeScaling)
         {
             this.position = relativePosition;

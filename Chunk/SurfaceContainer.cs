@@ -21,7 +21,7 @@ namespace EngineeringCorpsCS
 
         public SurfaceContainer(TileCollection tileCollection)
         {
-            tileBox = new BoundingBox(-17, -17, 17, 17);
+            tileBox = new BoundingBox(-16, -16, 16, 16);
             this.tileCollection = tileCollection;
             chunks = new Chunk[Props.worldSize * Props.worldSize];
             Random r = new Random(DateTime.Now.Second);

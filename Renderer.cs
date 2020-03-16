@@ -169,5 +169,10 @@ namespace EngineeringCorpsCS
                 drawBoundingBoxes = !drawBoundingBoxes;
             }
         }
+
+        public void ToggleBoundingBoxRendering()
+        {
+            drawBoundingBoxes = !drawBoundingBoxes;
+        }
     }
 }

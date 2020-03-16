@@ -52,20 +52,24 @@ namespace EngineeringCorpsCS
             #region test entities
             List<Player> players = new List<Player>();
             Random random = new Random();
-            for (int i = 0; i < 2048; i++)
+            for (int i = 0; i < 16; i++)
             {
                 players.Add(new Player(new Vector2(1024 + 48 * i, 1024 + 48 * i), surfaceContainer, textureManager));
             }
             foreach(Player p in players)
             {
-                p.SubscribeToInput(input);
+                //p.SubscribeToInput(input);
             }
-            //players[15].SubscribeToInput(input);
+            players[15].SubscribeToInput(input);
             #endregion
             //Menu testing
             MenuPanel test = new MenuPanel(new Vector2f(0,0), new Vector2f(150, 150), new bool[] { true, true });
             MenuText textTest = new MenuText(new Vector2f(0, 0), new Vector2f(140, 150), new bool[] { true, true }, debugFont, "This is test text intentionally long to test line splitting functionalityaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 32);
             MenuPanel test2 = new MenuPanel(new Vector2f(300, 300), new Vector2f(200, 200), new bool[] { true, true });
+            MenuButton menuButton = new MenuButton(new Vector2f(300,300), gameRenderer.ToggleBoundingBoxRendering, new Vector2f(150, 150));
+            MenuText buttonTest = new MenuText(new Vector2f(0, 0), new Vector2f(140, 150), new bool[] { false, false }, debugFont, "Toggle Bounding boxes", 24);
+            menuButton.SubscribeToInput(input);
+            menuButton.AttachComponent(buttonTest);
             test2.AttachComponent(textTest);
             test.AttachComponent(test2);
             test.AttachComponent(textTest);
@@ -113,6 +117,7 @@ namespace EngineeringCorpsCS
                     {
                         test.Translate(new Vector2f(input.mouseXdiff, input.mouseYdiff));
                     }
+                    menuButton.Draw(GUI, new Vector2f(0, 0));
                     test.Draw(GUI, new Vector2f(0,0));
                     float fps = 1.0f / clock.ElapsedTime.AsSeconds();
                     clock.Restart();

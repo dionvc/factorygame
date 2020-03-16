@@ -10,14 +10,42 @@ namespace EngineeringCorpsCS
     class InputManager
     {
         Window window;
+        /// <summary>
+        /// Stores whether the specific key was pressed this frame
+        /// </summary>
         public Dictionary<Keyboard.Key, bool> keyPressed { get; protected set; }
+        /// <summary>
+        /// Stores whether the specific key is currently held
+        /// </summary>
         public Dictionary<Keyboard.Key, bool> keyHeld { get; protected set; }
+        /// <summary>
+        /// Stores whether the specific key was released this frame
+        /// </summary>
         public Dictionary<Keyboard.Key, bool> keyReleased { get; protected set; }
+        /// <summary>
+        /// Stores the number of times the specific key has been pressed in the last second
+        /// </summary>
         public Dictionary<Keyboard.Key, byte> keyAccumulator { get; protected set; }
+        /// <summary>
+        /// Stores whether the mouse button is currently held down
+        /// </summary>
         public Dictionary<Mouse.Button, bool> mouseButton { get; protected set; }
+        /// <summary>
+        /// Stores whether the mouse was clicked this frame
+        /// </summary>
         public Dictionary<Mouse.Button, bool> mouseClick { get; protected set; }
-
-        public float mouseScrollDelta;
+        /// <summary>
+        /// Stores the number of times the mouse has been clicked in the last second
+        /// </summary>
+        public Dictionary<Mouse.Button, byte> mouseAccumulator { get; protected set; }
+        /// <summary>
+        /// Stores whether a mouse button was released this frame
+        /// </summary>
+        public Dictionary<Mouse.Button, bool> mouseReleased { get; protected set; }
+        /// <summary>
+        /// Stores the change in mouse scroll this frame
+        /// </summary>
+        public float mouseScrollDelta { get; protected set; }
 
         public int mouseX;
         public int mouseY;
@@ -44,6 +72,8 @@ namespace EngineeringCorpsCS
             keyAccumulator = new Dictionary<Keyboard.Key, byte>();
             mouseButton = new Dictionary<Mouse.Button, bool>();
             mouseClick = new Dictionary<Mouse.Button, bool>();
+            mouseAccumulator = new Dictionary<Mouse.Button, byte>();
+            mouseReleased = new Dictionary<Mouse.Button, bool>();
             foreach (Keyboard.Key key in Enum.GetValues(typeof(Keyboard.Key)))
             {
                 keyPressed[key] = false;
@@ -55,6 +85,8 @@ namespace EngineeringCorpsCS
             {
                 mouseButton[mb] = false;
                 mouseClick[mb] = false;
+                mouseAccumulator[mb] = 0;
+                mouseReleased[mb] = false;
             }
             subscriberList = new List<IInputSubscriber>();
             subscriberMenuList = new List<IInputSubscriber>();
@@ -81,6 +113,7 @@ namespace EngineeringCorpsCS
             foreach (Mouse.Button mb in Enum.GetValues(typeof(Mouse.Button)))
             {
                 mouseClick[mb] = false;
+                mouseReleased[mb] = false;
             }
             if (tickAccumulator > keyResetInterval)
             {
@@ -88,6 +121,10 @@ namespace EngineeringCorpsCS
                 foreach (Keyboard.Key key in Enum.GetValues(typeof(Keyboard.Key)))
                 {
                     keyAccumulator[key] = 0;
+                }
+                foreach (Mouse.Button mb in Enum.GetValues(typeof(Mouse.Button)))
+                {
+                    mouseAccumulator[mb] = 0;
                 }
             }
             mouseScrollDelta = 0.0f;
@@ -98,10 +135,12 @@ namespace EngineeringCorpsCS
         {
             mouseButton[e.Button] = true;
             mouseClick[e.Button] = true;
+            mouseAccumulator[e.Button]++;
         }
         private void HandleMouseRelease(object sender, MouseButtonEventArgs e)
         {
             mouseButton[e.Button] = false;
+            mouseReleased[e.Button] = true;
         }
 
         private void HandleMouseWheel(object sender, MouseWheelScrollEventArgs e)

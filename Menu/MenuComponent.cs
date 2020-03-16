@@ -16,6 +16,7 @@ namespace EngineeringCorpsCS
         public bool fixedHeight = false;
         protected Vector2f scale;
         public BoundingBox collisionBox { get; protected set; }
+        public List<MenuComponent> attachedComponents { get; protected set; }
 
         abstract public void Draw(RenderTexture gui, Vector2f origin);
         abstract public void Translate(Vector2f translation);
