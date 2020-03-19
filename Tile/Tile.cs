@@ -13,8 +13,12 @@ namespace EngineeringCorpsCS
         public Texture tileSheet { get; protected set; } //texture with terrain tiles
         public byte tileType { get; protected set; } //number specifying the type of the tile (corresponding to the type in the terrain array and tileCollection collection)
         public CollisionLayer collisionMask { get; protected set; } //Whatever layers are set here is what will determine its collision type
+        public float frictionModifier { get; protected set; } = 1.0f; //modifier for speed of entities on this tile
 
-        float frictionModifier; //modifier for speed of entities on this tile
+        float moistureAffinity;
+        float elevationAffinity;
+        float temperatureAffinity;
+
         Color shade; //Apply a color to the tile
         Color mapColor; //Color that will be represented in minimap
         

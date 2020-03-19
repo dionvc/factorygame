@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{7E57B0D1-719E-4C0A-BBAF-0C09C1387060}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>EngineeringCorpsCS</RootNamespace>
     <AssemblyName>EngineeringCorpsCS</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -93,6 +93,9 @@
     <Compile Include="Chunk\Chunk.cs" />
     <Compile Include="Chunk\SurfaceContainer.cs" />
     <Compile Include="Entity\Entity.cs" />
+    <Compile Include="Chunk\MapGenerator.cs" />
+    <Compile Include="Menu\MenuFactory.cs" />
+    <Compile Include="Menu\MenuContainer.cs" />
     <Compile Include="Menu\MenuButton.cs" />
     <Compile Include="Menu\MenuComponent.cs" />
     <Compile Include="Menu\MenuPanel.cs" />
@@ -108,6 +111,7 @@
     <Compile Include="Tile\Tile.cs" />
     <Compile Include="Tile\TileFactory.cs" />
     <Compile Include="Tile\TileCollection.cs" />
+    <Compile Include="Tree.cs" />
     <Compile Include="Vector2.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +158,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\DebugTextures\orc_archer_0.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\DebugTextures\Tree01.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\DebugTextures\WavesAlpha.png">

@@ -22,12 +22,26 @@ namespace EngineeringCorpsCS
         Vector2i size; //stores x (width), y (height) of sprite to capture from texture
         Vector2i texturePos; //position on texture
         Vector2i textureSize;
-        Vector2i offset; //offset of sprite from center of entity in pixels 
+        Vector2i offset; //TODO: offset of selection location in texture (for selecting a subsection of the texture) 
         int incrementAmount = 1;
         int frames = 1;
         int currentFrame = 0;
         float animationSpeed = 0; //ticks per frame of animation (eg. 1 is 1 tick per frame, 2 is 2 ticks per frame
         float tickAccumulator = 0;
+
+        public Animation(Texture[] textureRefs, Vector2i frameSize, Vector2f textureOffset, Vector2f drawOffset, Vector2f scale, int framesPerState, string behavior, float animationSpeed)
+        {
+            this.animationFrame = new Sprite();
+            this.size = frameSize;
+            this.textureRefs = textureRefs;
+            this.textureSize = new Vector2i((int)this.textureRefs[0].Size.X, (int)this.textureRefs[0].Size.Y);
+            this.frames = framesPerState;
+            this.animationSpeed = animationSpeed;
+            this.drawOffset = drawOffset;
+            animationFrame.Origin = new Vector2f(frameSize.X / 2 + textureOffset.X, frameSize.Y / 2 + textureOffset.Y);
+            animationFrame.Scale = scale;
+            SetBehavior(behavior);
+        }
 
         public Animation(Texture[] textureRefs, Vector2i frameSize, int frames, string behavior, float animationSpeed, Vector2i offset)
         {

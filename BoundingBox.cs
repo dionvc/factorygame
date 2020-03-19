@@ -451,6 +451,8 @@ namespace EngineeringCorpsCS
         /// <param name="velocity"></param>
         public static void ApplyPhysicalCollision(Entity entity, Vector2 totalVelocity)
         {
+            float speedModifier = entity.surface.tileCollection.GetTerrainTile(entity.surface.GetTileFromWorld(entity.position)).frictionModifier;
+            totalVelocity.Scale(speedModifier);
             int intervals = (int)Math.Ceiling(totalVelocity.GetMagnitude() / Props.maxVelocity);
             Vector2 scaledVelocity = totalVelocity.Copy();
             scaledVelocity.Scale(1.0f / intervals);

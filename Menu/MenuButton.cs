@@ -45,6 +45,7 @@ namespace EngineeringCorpsCS
         }
         override public void HandleInput(InputManager input)
         {
+            //TODO: move to translate and store absolute position of component precomputed?
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
             while(bubble != null)

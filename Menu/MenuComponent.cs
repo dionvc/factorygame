@@ -18,6 +18,7 @@ namespace EngineeringCorpsCS
         protected Vector2f scale;
         public BoundingBox collisionBox { get; protected set; }
         public List<MenuComponent> attachedComponents { get; protected set; } = new List<MenuComponent>();
+        public MenuContainer container { get; set; }
 
         virtual public void Draw(RenderTexture gui, Vector2f origin)
         {
@@ -52,12 +53,12 @@ namespace EngineeringCorpsCS
 
         public void SubscribeToInput(InputManager input)
         {
-            input.AddInputSubscriber(this, false);
+            input.AddInputSubscriber(this, true);
         }
 
         public void UnsubscribeToInput(InputManager input)
         {
-            input.RemoveInputSubscriber(this, false);
+            input.RemoveInputSubscriber(this, true);
         }
     }
 }

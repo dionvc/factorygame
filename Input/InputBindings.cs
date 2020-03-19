@@ -19,6 +19,7 @@ namespace EngineeringCorpsCS
         public static Mouse.Button tertiary = Mouse.Button.Middle;
         public static float scrollSensitivity = 2.0f;
 
-        public static Keyboard.Key showBoundingBoxes = Keyboard.Key.F3;
+        public static Keyboard.Key showDebugMenu = Keyboard.Key.F3;
+        public static Keyboard.Key showPauseMenu = Keyboard.Key.Q;
     }
 }

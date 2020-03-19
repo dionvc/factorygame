@@ -12,23 +12,30 @@ namespace EngineeringCorpsCS
     class Camera : IInputSubscriber
     {
         public Entity focusedEntity { get; set; }
-        View view;
+        View gameView;
+        View guiView;
         float viewScale;
         public Camera()
         {
-            view = new View(new FloatRect(0, 0, 2 * 1280, 2 * 720));
+            gameView = new View(new FloatRect(0, 0, 2 * 1280, 2 * 720));
+            guiView = new View(new Vector2f(640, 360), new Vector2f(1280, 720));
             viewScale = 1.0f;
         }
         public void Update()
         {
             if (focusedEntity != null)
             {
-                view.Center = new Vector2f(focusedEntity.position.x, focusedEntity.position.y);
+                gameView.Center = new Vector2f(focusedEntity.position.x, focusedEntity.position.y);
             }
         }
-        public View GetView()
+        public View GetGameView()
         {
-            return view;
+            return gameView;
+        }
+
+        public View GetGUIView()
+        {
+            return guiView;
         }
 
         public void SubscribeToInput(InputManager input)
@@ -54,7 +61,7 @@ namespace EngineeringCorpsCS
                     viewScale = 8.0f;
                 }
 
-                view.Size = new SFML.System.Vector2f(viewScale * 1280, viewScale * 720);
+                gameView.Size = new SFML.System.Vector2f(viewScale * 1280, viewScale * 720);
             }
             //Handle clicking on things that are in view here with consideration to focusedentity
         }

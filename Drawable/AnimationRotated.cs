@@ -29,7 +29,7 @@ namespace EngineeringCorpsCS
         int incrementAmount = 1;
         AnimationBehavior behavior;
 
-        //TODO: add shadow, color
+        //TODO: add color
         
         /// <summary>
         /// Creates a rotated animation

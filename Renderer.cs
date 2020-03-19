@@ -5,27 +5,42 @@ using System.Text;
 using System.Threading.Tasks;
 using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
 
 namespace EngineeringCorpsCS
 {
     class Renderer: IInputSubscriber
     {
-        Dictionary<int, VertexArray[]> terrainVertexArrays; //can be cached
-        VertexArray boundingBoxArray; //must be reconstructed every frame
+        //Graphics variables
+        VertexArray boundingBoxArray; //must be reconstructed every frame TODO: split terrain bounding box array into cachable set
         Texture[] terrainTilesheets;
+        RenderTexture GUI;
         RenderStates[] terrainRenderStates;
+        List<Entity> drawList;
+
+        //Collections
+        Dictionary<int, VertexArray[]> terrainVertexArrays;
         TileCollection tileCollection;
         SurfaceContainer surface;
+        MenuContainer menuContainer;
+
+        //Control variables
         bool drawBoundingBoxes = true;
 
-        public Renderer(TileCollection tileCollection, SurfaceContainer chunkManager)
+        public Renderer( Window window, MenuContainer menuContainer)
         {
+            this.menuContainer = menuContainer;
+            GUI = new RenderTexture(window.Size.X, window.Size.Y);
+        }
+        public void InitializeForGame(SurfaceContainer chunkManager, TileCollection tileCollection)
+        {
+            this.surface = chunkManager;
+            this.tileCollection = tileCollection;
             terrainVertexArrays = new Dictionary<int, VertexArray[]>(); //terrain cache //TODO: clear periodically
             boundingBoxArray = new VertexArray(PrimitiveType.Lines);
             terrainTilesheets = tileCollection.GetTerrainTilesheets();
             terrainRenderStates = new RenderStates[terrainTilesheets.Length];
-            this.surface = chunkManager;
-            this.tileCollection = tileCollection;
+            drawList = new List<Entity>();
             for (int i = 0; i < terrainTilesheets.Length; i++)
             {
                 terrainRenderStates[i] = new RenderStates(terrainTilesheets[i]);
@@ -33,8 +48,9 @@ namespace EngineeringCorpsCS
         }
         public void RenderWorld(RenderWindow window, Camera camera)
         {
-            Vector2f origin = window.MapPixelToCoords(new Vector2i(0, 0), camera.GetView());
-            Vector2f extent = window.MapPixelToCoords(new Vector2i((int)window.Size.X, (int)window.Size.Y), camera.GetView());
+            window.SetView(camera.GetGameView()); //Set view
+            Vector2f origin = window.MapPixelToCoords(new Vector2i(0, 0), camera.GetGameView());
+            Vector2f extent = window.MapPixelToCoords(new Vector2i((int)window.Size.X, (int)window.Size.Y), camera.GetGameView());
             int[] begPos = SurfaceContainer.WorldToChunkCoords(origin.X, origin.Y);
             int[] endPos = SurfaceContainer.WorldToChunkCoords(extent.X, extent.Y);
             for (int i = begPos[0]; i <= endPos[0]; i++)
@@ -92,20 +108,13 @@ namespace EngineeringCorpsCS
                     }
                     #endregion Tile bounding box drawing
                     List<Entity> entityList = chunk.entityList;
-                    entityList.Sort(delegate (Entity a, Entity b)
-                    {
-                        int ydiff = a.position.y.CompareTo(b.position.y);
-                        if (ydiff != 0) return ydiff;
-                        else return a.position.x.CompareTo(b.position.x);
-                    });
                     for (int k = 0; k < entityList.Count; k++)
                     {
+                        //TODO: More elegant clipping method needed (or even just an approximation method)
                         if (entityList[k].position.x > origin.X && entityList[k].position.x < extent.X
                             && entityList[k].position.y > origin.Y && entityList[k].position.y < extent.Y)
                         {
-                            Sprite drawSprite = entityList[k].drawArray[0].GetSprite();
-                            drawSprite.Position = new Vector2f(entityList[k].position.x, entityList[k].position.y) + entityList[k].drawArray[0].drawOffset; //TODO: insert offset addition
-                            window.Draw(drawSprite);
+                            drawList.Add(entityList[k]);
                             #region Entity bounding box drawing
                             if (drawBoundingBoxes == true)
                             {
@@ -126,6 +135,35 @@ namespace EngineeringCorpsCS
                     boundingBoxArray.Clear();
                 }
             }
+            drawList.Sort(delegate (Entity a, Entity b)
+            {
+                int ydiff = a.position.y.CompareTo(b.position.y);
+                if (ydiff != 0)
+                {
+                    return ydiff;
+                }
+                else
+                {
+                    return a.position.x.CompareTo(b.position.x);
+                }
+            });
+            foreach (Entity e in drawList)
+            {
+                Sprite drawSprite = e.drawArray[0].GetSprite();
+                drawSprite.Position = new Vector2f(e.position.x, e.position.y) + e.drawArray[0].drawOffset;
+                window.Draw(drawSprite);
+            }
+            drawList.Clear();
+        }
+
+        public void RenderGUI(RenderWindow window, Camera camera)
+        {
+            window.SetView(camera.GetGUIView());
+            GUI.Clear(Color.Transparent);
+            menuContainer.RenderMenus(GUI);
+            GUI.Display();
+            Sprite GUISprite = new Sprite(GUI.Texture);
+            window.Draw(GUISprite);
         }
 
         /// <summary>
@@ -156,6 +194,12 @@ namespace EngineeringCorpsCS
             //TODO: Finish culling algorithm
         }
 
+        public void DetachGameWorld()
+        {
+            tileCollection = null;
+            surface = null;
+        }
+
         public void SubscribeToInput(InputManager input)
         {
             input.AddInputSubscriber(this, false);
@@ -166,9 +210,9 @@ namespace EngineeringCorpsCS
         }
         public void HandleInput(InputManager input)
         {
-            if(input.keyPressed[InputBindings.showBoundingBoxes])
+            if(input.keyPressed[InputBindings.showDebugMenu])
             {
-                drawBoundingBoxes = !drawBoundingBoxes;
+                input.menuFactory.CreateDebugMenu(this);
             }
         }
 

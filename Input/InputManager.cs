@@ -46,6 +46,10 @@ namespace EngineeringCorpsCS
         /// Stores the change in mouse scroll this frame
         /// </summary>
         public float mouseScrollDelta { get; protected set; }
+        /// <summary>
+        /// This client's menuFactory.  Menu's are created by input, so they are closely coupled.
+        /// </summary>
+        public MenuFactory menuFactory { get; set; }
 
         public int mouseX;
         public int mouseY;
@@ -57,6 +61,7 @@ namespace EngineeringCorpsCS
         private List<IInputSubscriber> subscriberMenuList;
         private List<IInputSubscriber> subscriberList;
         private Camera subscribedCamera;
+        
         public InputManager(Window window) 
         {
             this.window = window;
@@ -174,11 +179,13 @@ namespace EngineeringCorpsCS
         /// <param name="menu"></param>
         public void AddInputSubscriber(IInputSubscriber subscriber, bool menu)
         {
-            subscriberList.Insert(0, subscriber);
             if (menu)
             {
                 subscriberMenuList.Insert(0, subscriber);
+                return;
             }
+            subscriberList.Insert(0, subscriber);
+            
         }
 
         /// <summary>
@@ -188,7 +195,17 @@ namespace EngineeringCorpsCS
         /// <param name="menu"></param>
         public void RemoveInputSubscriber(IInputSubscriber subscriber, bool menu)
         {
-            subscriberList.Insert(0, subscriber);
+            if(menu)
+            {
+                subscriberMenuList.Remove(subscriber);
+                return;
+            }
+            subscriberList.Remove(subscriber);
+        }
+
+        public void ClearGameSubscribers()
+        {
+            subscriberList.Clear();
         }
 
         public void ChangeCamera(Camera camera)
@@ -218,6 +235,21 @@ namespace EngineeringCorpsCS
             {
                 subscribedCamera.HandleInput(this);
             }
+        }
+
+        /// <summary>
+        /// Consumes the specified key input and returns true.  If the input was not there, then the function returns false.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool ConsumeKeyPress(Keyboard.Key key)
+        {
+            if(keyPressed[key])
+            {
+                keyPressed[key] = false;
+                return true;
+            }
+            return false;
         }
     }
 }
