@@ -12,8 +12,10 @@ namespace EngineeringCorpsCS
     {
         //Two options: have the minimap itself fetch and cache the minimap drawing
         //or have the renderer take care of rendering the minimap to a view this component passes.
-        List<Texture> textureList;
-        View minimapView;
+        List<VertexArray> vertexArrays;
+        RenderTexture textureMinimap;
+        RenderStates transformState;
+        Transform transform;
         Renderer renderer;
         Camera camera;
         int refreshCounter = 60;
@@ -25,8 +27,10 @@ namespace EngineeringCorpsCS
             this.camera = camera;
             this.renderer = renderer;
 
-            minimapView = new View(new FloatRect(relativePosition, componentSize));
-            textureList = new List<Texture>();
+            transform = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            transformState = new RenderStates(transform);
+            textureMinimap = new RenderTexture((uint)size.X, (uint)size.Y);
+            vertexArrays = new List<VertexArray>();
         }
 
         public override void Draw(RenderTexture gui, Vector2f origin)
@@ -34,14 +38,21 @@ namespace EngineeringCorpsCS
             refreshCounter++;
             if(refreshCounter >= refreshRate)
             {
-                renderer.GenerateMinimapTextures(camera.focusedEntity.surface, camera.focusedEntity.position, 2, 2, textureList);
+                renderer.GenerateMinimapTextures(camera.focusedEntity.surface, camera.focusedEntity.position, 4, 4, vertexArrays);
             }
-            for (int i = 0; i < textureList.Count; i++)
+            Transform transform = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            Vector2f translation = new Vector2f(size.X/2 -(camera.focusedEntity.position.x / Props.tileSize), size.Y/2 -(camera.focusedEntity.position.y / Props.tileSize));
+            transform.Translate(translation);
+            transformState.Transform = transform;
+            for (int i = 0; i < vertexArrays.Count; i++)
             {
-                Sprite s = new Sprite(textureList[i]);
-                s.Position = position + new Vector2f((i / 5) * 32, (i % 5) * 32);
-                gui.Draw(s);
+                textureMinimap.Draw(vertexArrays[i], transformState);
             }
+            textureMinimap.Display();
+            Sprite minimap = new Sprite(textureMinimap.Texture);
+            minimap.Position = position;
+            gui.Draw(minimap);
+            textureMinimap.Clear();
         }
     }
 }

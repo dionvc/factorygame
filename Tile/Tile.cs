@@ -20,7 +20,7 @@ namespace EngineeringCorpsCS
         float temperatureAffinity;
 
         Color shade; //Apply a color to the tile
-        Color mapColor; //Color that will be represented in minimap
+        public Color mapColor { get; protected set; } //Color that will be represented in minimap
         
 
         public Tile(Texture tileSheet, byte tileType, string name, float frictionModifier, Color shade, Color mapColor, CollisionLayer collisionMask)
@@ -311,25 +311,5 @@ namespace EngineeringCorpsCS
                 }
             }
         }
-
-        public void GenerateMinimapImage(Image minimapImage, SurfaceContainer surface, int chunkIndex)
-        {
-            Chunk chunk = surface.GetChunk(chunkIndex);
-            if(chunk == null)
-            {
-                return;
-            }
-            for (int i = 0; i < Props.chunkSize; i++)
-            {
-                for (int j = 0; j < Props.chunkSize; j++)
-                {
-                    if (chunk.GetTile(i, j) == this.tileType)
-                    {
-                        minimapImage.SetPixel((uint)i, (uint)j, mapColor);
-                    }
-                }
-            }
-        }
-
     }
 }

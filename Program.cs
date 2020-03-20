@@ -60,7 +60,7 @@ namespace EngineeringCorpsCS
             camera = new Camera();
             camera.SubscribeToInput(input);
             renderer = new Renderer(window, menuContainer);
-            renderer.SubscribeToInput(input);
+            
             
             //menuContainer.menuFactory.CreateDebugMenu(renderer);
 
@@ -69,6 +69,7 @@ namespace EngineeringCorpsCS
         public void StartMenu()
         {
             //TODO: double check this menu creation
+            renderer.SubscribeToInput(input);
             menuFactory.CreateMainMenu(this);
             while (window.IsOpen && gameState == GameState.mainMenu)
             {
@@ -117,6 +118,7 @@ namespace EngineeringCorpsCS
         public void FinalizeGame()
         {
             //TODO: change to entitysystem clear
+            menuContainer.RemoveAllMenus();
             players.Clear();
             this.UnsubscribeToInput(input);
             camera.focusedEntity = null;

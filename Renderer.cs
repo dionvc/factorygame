@@ -20,7 +20,7 @@ namespace EngineeringCorpsCS
 
         //Collections
         Dictionary<int, VertexArray[]> terrainVertexArrays; //TODO: need to change these for multi-surface support
-        Dictionary<int, Image> minimapImages; //TODO: need to change these for multi-surface support
+        Dictionary<int, VertexArray> minimapVertexArrays; //TODO: need to change these for multi-surface support
         TileCollection tileCollection;
         SurfaceContainer surface;
         MenuContainer menuContainer;
@@ -41,7 +41,7 @@ namespace EngineeringCorpsCS
             this.surface = chunkManager;
             this.tileCollection = tileCollection;
             terrainVertexArrays = new Dictionary<int, VertexArray[]>(); //terrain cache //TODO: clear periodically
-            minimapImages = new Dictionary<int, Image>();
+            minimapVertexArrays = new Dictionary<int, VertexArray>();
             boundingBoxArray = new VertexArray(PrimitiveType.Lines);
             terrainTilesheets = tileCollection.GetTerrainTilesheets();
             terrainRenderStates = new RenderStates[terrainTilesheets.Length];
@@ -167,23 +167,30 @@ namespace EngineeringCorpsCS
         /// <param name="surface"></param>
         /// <param name="position"></param>
         /// <param name="ranges"></param>
-        public List<Texture> GenerateMinimapTextures(SurfaceContainer surface, Vector2 position, int xRange, int yRange, List<Texture> textureList)
+        public void GenerateMinimapTextures(SurfaceContainer surface, Vector2 position, int xRange, int yRange, List<VertexArray> vertexArrays)
         {
             int[] chunkIndices = SurfaceContainer.WorldToChunkCoords(position);
-            textureList.Clear();
+            vertexArrays.Clear();
             for(int i = chunkIndices[0] - xRange ; i <= chunkIndices[0] + xRange; i++)
             {
                 for(int j = chunkIndices[1] - yRange; j <= chunkIndices[1] + yRange; j++)
                 {
                     if(i < 0 || j < 0 || i > Props.worldSize || j > Props.worldSize)
                     {
-                        textureList.Add(voidMinimap);
                         continue;
                     }
-                    Image terrainImage = tileCollection.GenerateTerrainMinimap(surface, (i * Props.worldSize) + j);
+                    VertexArray vA;
+                    if (!minimapVertexArrays.TryGetValue(i * Props.worldSize + j, out vA)) {
+                        vA = tileCollection.GenerateTerrainMinimap(surface, (i * Props.worldSize) + j);
+                        minimapVertexArrays.Add(i * Props.worldSize + j, vA);
+                    }
                     List<Entity> entityList = surface.GetChunk((i * Props.worldSize) + j).entityList;
                     foreach(Entity e in entityList)
                     {
+                        int[] pos = SurfaceContainer.WorldToTileCoords(e.position.x, e.position.y);
+
+                        //terrainImage.SetPixel((uint)pos[2], (uint)pos[3], e.mapColor);
+                        /*
                         float[] pointList = e.collisionBox.GetPoints();
                         int[] min = SurfaceContainer.WorldToTileCoords(pointList[0] + e.position.x, pointList[1] + e.position.y);
                         int[] max = SurfaceContainer.WorldToTileCoords(pointList[4] + e.position.x, pointList[5] + e.position.y);
@@ -198,13 +205,12 @@ namespace EngineeringCorpsCS
                                 terrainImage.SetPixel((uint)k, (uint)l, e.mapColor);
                             }
                         }
+                        */
                     }
                     
-                    textureList.Add(new Texture(terrainImage));
+                    vertexArrays.Add(vA);
                 }
             }
-            return textureList;
-            
         }
 
         public void RenderGUI(RenderWindow window, Camera camera)

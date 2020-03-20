@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SFML.Graphics;
+using SFML.System;
 
 namespace EngineeringCorpsCS
 {
@@ -46,14 +47,38 @@ namespace EngineeringCorpsCS
             return terrainVertexArray;
         }
 
-        public Image GenerateTerrainMinimap(SurfaceContainer surface, int chunkIndex)
+        public VertexArray GenerateTerrainMinimap(SurfaceContainer surface, int chunkIndex)
         {
-            Image minimapImage = new Image(32, 32, Color.Black);
-            for (int i = 1; i < terrainTiles.Count; i++)
+            VertexArray vertexArray = new VertexArray(PrimitiveType.Triangles);
+            Chunk chunk = surface.GetChunk(chunkIndex);
+            if (chunk == null)
             {
-                terrainTiles[i].GenerateMinimapImage(minimapImage, surface, chunkIndex);
+                return vertexArray;
             }
-            return minimapImage;
+            int oX = (chunkIndex / Props.worldSize) * Props.chunkSize;
+            int oY = (chunkIndex % Props.worldSize) * Props.chunkSize;
+            for (int i = 0; i < Props.chunkSize; i++)
+            {
+                for (int j = 0; j < Props.chunkSize; j++)
+                {
+                    byte tile = chunk.GetTile(i, j);
+                    
+                    if(tile >= terrainTiles.Count || tile < 0)
+                    {
+                        continue;
+                    }
+                    Color mapColor = terrainTiles[tile].mapColor;
+                    vertexArray.Append(new Vertex(new Vector2f(oX + i, oY + j), mapColor));
+                    vertexArray.Append(new Vertex(new Vector2f(oX + i + 1, oY + j), mapColor));
+                    vertexArray.Append(new Vertex(new Vector2f(oX + i, oY + j + 1), mapColor));
+
+                    vertexArray.Append(new Vertex(new Vector2f(oX + i + 1, oY + j), mapColor));
+                    vertexArray.Append(new Vertex(new Vector2f(oX + i + 1, oY + j + 1), mapColor));
+                    vertexArray.Append(new Vertex(new Vector2f(oX + i, oY + j + 1), mapColor));
+                }
+            }
+
+            return vertexArray;
         }
 
         /// <summary>
