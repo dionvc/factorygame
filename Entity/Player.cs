@@ -20,7 +20,7 @@ namespace EngineeringCorpsCS
             velocity = new Vector2(0, 0);
             Texture[] playerTextures = new Texture[] { textureContainer.GetTexture("orcrunning") };
             drawArray = new Drawable[] { new AnimationRotated(playerTextures, new Vector2i(128, 128), new Vector2f(0,0), new Vector2f(0, -48) , new Vector2f(4,4),8, 8, "Forward", 0.0f) };
-            collisionMask = CollisionLayer.EntityPhysical | CollisionLayer.TerrainSolid;
+            collisionMask = CollisionLayer.None;//CollisionLayer.EntityPhysical | CollisionLayer.TerrainSolid;
             mapColor = Color.Magenta;
         }
         /// <summary>
@@ -56,19 +56,19 @@ namespace EngineeringCorpsCS
         {
             if (input.keyHeld[InputBindings.moveUp])
             {
-                velocity.Add(0, -8);
+                velocity.Add(0, -64);
             }
             if (input.keyHeld[InputBindings.moveDown])
             {
-                velocity.Add(0, 8);
+                velocity.Add(0, 64);
             }
             if (input.keyHeld[InputBindings.moveLeft])
             {
-                velocity.Add(-8, 0);
+                velocity.Add(-64, 0);
             }
             if(input.keyHeld[InputBindings.moveRight])
             {
-                velocity.Add(8, 0);
+                velocity.Add(64, 0);
             }
         }
     }

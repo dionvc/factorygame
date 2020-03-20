@@ -20,7 +20,7 @@ namespace EngineeringCorpsCS
         {
             entityList = new List<Entity>();
             entityCollisionList = new List<Entity>();
-            terrain = new byte[32 * 32];
+            terrain = new byte[Props.chunkSize * Props.chunkSize];
         }
 
         public void Update()

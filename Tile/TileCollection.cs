@@ -47,10 +47,15 @@ namespace EngineeringCorpsCS
             return terrainVertexArray;
         }
 
-        public VertexArray GenerateTerrainMinimap(SurfaceContainer surface, int chunkIndex)
+        /// <summary>
+        /// Generates the minimap vertexarray for a given chunk
+        /// </summary>
+        /// <param name="chunk"></param>
+        /// <param name="chunkIndex"></param>
+        /// <returns></returns>
+        public VertexArray GenerateTerrainMinimap(Chunk chunk, int chunkIndex)
         {
             VertexArray vertexArray = new VertexArray(PrimitiveType.Triangles);
-            Chunk chunk = surface.GetChunk(chunkIndex);
             if (chunk == null)
             {
                 return vertexArray;
@@ -78,6 +83,35 @@ namespace EngineeringCorpsCS
                 }
             }
 
+            return vertexArray;
+        }
+
+        /// <summary>
+        /// Generates the bounding box vertex array for a terrain using the map colors of the tile.
+        /// </summary>
+        /// <param name="chunk"></param>
+        /// <param name="chunkIndex"></param>
+        /// <param name="pointsTile"></param>
+        /// <returns></returns>
+        public VertexArray GenerateTerrainBoundingBoxArray(Chunk chunk, int chunkIndex, float[] pointsTile)
+        {
+            VertexArray vertexArray = new VertexArray(PrimitiveType.Lines);
+            for (int k = 0; k < Props.chunkSize; k++)
+            {
+                for (int l = 0; l < Props.chunkSize; l++)
+                {
+                    Tile tile = GetTerrainTile(chunk.GetTile(k, l));
+                    if ((tile.collisionMask & Base.CollisionLayer.TerrainSolid) != 0)
+                    {
+                        Vector2 position = SurfaceContainer.WorldToTileVector(chunkIndex, k * Props.chunkSize + l);
+                        for (int x = 0; x < pointsTile.Length; x += 2)
+                        {
+                            vertexArray.Append(new Vertex(new Vector2f(pointsTile[x] + position.x, pointsTile[x + 1] + position.y), tile.mapColor));
+                            vertexArray.Append(new Vertex(new Vector2f(pointsTile[(x + 2) % 8] + position.x, pointsTile[(x + 3) % 8] + position.y), tile.mapColor));
+                        }
+                    }
+                }
+            }
             return vertexArray;
         }
 

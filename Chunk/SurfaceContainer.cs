@@ -84,13 +84,13 @@ namespace EngineeringCorpsCS
             }
         }
 
-        public Chunk GetChunk(int chunkIndex)
+        public Chunk GetChunk(int chunkIndex, bool generate)
         {
             if(chunkIndex < 0 || chunkIndex > (Props.worldSize * Props.worldSize))
             {
                 return null;
             }
-            if (chunks[chunkIndex] != null)
+            if (chunks[chunkIndex] != null || generate == false)
             {
                 return chunks[chunkIndex];
             }
@@ -116,11 +116,11 @@ namespace EngineeringCorpsCS
             int chunkIndex = WorldToChunkIndex(entity.position);
             entity.centeredChunk = chunkIndex;
             entity.surface = this;
-            GetChunk(chunkIndex).AddEntityToChunk(entity);
+            GetChunk(chunkIndex, true).AddEntityToChunk(entity);
             int[] newCollisionChunks = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
             foreach (int x in newCollisionChunks)
             {
-                GetChunk(x).AddEntityCollisionCheck(entity);
+                GetChunk(x, true).AddEntityCollisionCheck(entity);
             }
             entity.collisionChunks = newCollisionChunks;
         }
@@ -140,9 +140,9 @@ namespace EngineeringCorpsCS
             int newChunkIndex = WorldToChunkIndex(newPos);
             if (entity.centeredChunk != newChunkIndex)
             {
-                GetChunk(entity.centeredChunk).RemoveEntityFromChunk(entity);
+                GetChunk(entity.centeredChunk, false).RemoveEntityFromChunk(entity);
                 entity.centeredChunk = newChunkIndex;
-                GetChunk(newChunkIndex).AddEntityToChunk(entity);
+                GetChunk(newChunkIndex, true).AddEntityToChunk(entity);
             }
             //Now, the entity's collision chunks are computed
             int[] newCollisionChunks  = BoundingBox.GetChunkBounds(entity.collisionBox, newPos);
@@ -150,14 +150,14 @@ namespace EngineeringCorpsCS
             {
                 if(!entity.collisionChunks.Contains(x))
                 {
-                    GetChunk(x).AddEntityCollisionCheck(entity);
+                    GetChunk(x, true).AddEntityCollisionCheck(entity);
                 }
             }
             foreach (int x in entity.collisionChunks)
             {
                 if(!newCollisionChunks.Contains(x))
                 {
-                    GetChunk(x).RemoveEntityCollisionCheck(entity);
+                    GetChunk(x, false).RemoveEntityCollisionCheck(entity);
                 }
             }
             entity.collisionChunks = newCollisionChunks;
@@ -170,10 +170,10 @@ namespace EngineeringCorpsCS
         /// <param name="entity"></param>
         public void RemoveEntity(Entity entity)
         {
-            GetChunk(entity.centeredChunk).RemoveEntityFromChunk(entity);
+            GetChunk(entity.centeredChunk, false).RemoveEntityFromChunk(entity);
             foreach (int x in entity.collisionChunks)
             {
-                GetChunk(x).RemoveEntityCollisionCheck(entity);
+                GetChunk(x, false).RemoveEntityCollisionCheck(entity);
             }
         }
 
@@ -221,7 +221,7 @@ namespace EngineeringCorpsCS
         }
 
         /// <summary>
-        /// Returns the top left corner world coordinates of a specified chunk by index
+        /// Returns the top left corner chunk coordinates of a specified chunk by index
         /// </summary>
         /// <param name="chunkIndex"></param>
         /// <returns></returns>
@@ -285,7 +285,7 @@ namespace EngineeringCorpsCS
         {
             int chunkIndex = WorldToChunkIndex(pos);
             int tileIndex = WorldToTileIndex(pos);
-            return GetChunk(chunkIndex).GetTile(tileIndex);
+            return GetChunk(chunkIndex, true).GetTile(tileIndex);
         }
 
         public byte GetTileFromWorldInt(int[] cXY, int i, int j)

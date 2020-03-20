@@ -451,8 +451,11 @@ namespace EngineeringCorpsCS
         /// <param name="velocity"></param>
         public static void ApplyPhysicalCollision(Entity entity, Vector2 totalVelocity)
         {
-            float speedModifier = entity.surface.tileCollection.GetTerrainTile(entity.surface.GetTileFromWorld(entity.position)).frictionModifier;
-            totalVelocity.Scale(speedModifier);
+            if ((entity.collisionMask & Base.CollisionLayer.TerrainSolid) != 0)
+            {
+                float speedModifier = entity.surface.tileCollection.GetTerrainTile(entity.surface.GetTileFromWorld(entity.position)).frictionModifier;
+                totalVelocity.Scale(speedModifier);
+            }
             int intervals = (int)Math.Ceiling(totalVelocity.GetMagnitude() / Props.maxVelocity);
             Vector2 scaledVelocity = totalVelocity.Copy();
             scaledVelocity.Scale(1.0f / intervals);
@@ -466,7 +469,7 @@ namespace EngineeringCorpsCS
                 //Checks collisions with entities and tiles
                 for (int i = 0; i < chunkList.Length; i++)
                 {
-                    Chunk chunk = entity.surface.GetChunk(chunkList[i]);
+                    Chunk chunk = entity.surface.GetChunk(chunkList[i], false);
                     Vector2 pushBack;
 
                     //entity collision checks
