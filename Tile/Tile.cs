@@ -227,6 +227,7 @@ namespace EngineeringCorpsCS
                     else if (((value & 1) + (value & 10)) == 1)
                     {
                         //outside corner topleft
+                        //TODO: Finish
                     }
                     if ((value & 18) == 18)
                     {
@@ -310,5 +311,25 @@ namespace EngineeringCorpsCS
                 }
             }
         }
+
+        public void GenerateMinimapImage(Image minimapImage, SurfaceContainer surface, int chunkIndex)
+        {
+            Chunk chunk = surface.GetChunk(chunkIndex);
+            if(chunk == null)
+            {
+                return;
+            }
+            for (int i = 0; i < Props.chunkSize; i++)
+            {
+                for (int j = 0; j < Props.chunkSize; j++)
+                {
+                    if (chunk.GetTile(i, j) == this.tileType)
+                    {
+                        minimapImage.SetPixel((uint)i, (uint)j, mapColor);
+                    }
+                }
+            }
+        }
+
     }
 }

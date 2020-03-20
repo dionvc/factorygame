@@ -102,15 +102,16 @@ namespace EngineeringCorpsCS
             }
             foreach (Player p in players)
             {
-                p.SubscribeToInput(input);
+                //p.SubscribeToInput(input);
             }
             for(int i = 0; i < 16; i++) {
                 tree.Add(new Tree(new Vector2(2064 + (256) * i, 2064), surfaceContainer, textureContainer));
             }
-            //players[15].SubscribeToInput(input);
+            players[15].SubscribeToInput(input);
             #endregion
             //Attaching the camera to something!
             camera.focusedEntity = players[15];
+            menuFactory.CreateMinimap(renderer, camera);
         }
 
         public void FinalizeGame()
@@ -125,7 +126,7 @@ namespace EngineeringCorpsCS
 
         public void RunGame()
         {
-            while(window.IsOpen && gameState == GameState.inGame)
+            while (window.IsOpen && gameState == GameState.inGame)
             {
                 //prepare for drawing and dispatch window events
                 window.Clear();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SFML.Graphics;
 
 namespace EngineeringCorpsCS
 {
@@ -24,13 +25,23 @@ namespace EngineeringCorpsCS
         /// Entity collision mask
         /// </summary>
         public CollisionLayer collisionMask { get; set; }
+        /// <summary>
+        /// TODO: What is this??
+        /// </summary>
+        public string type { get; protected set; }
+        /// <summary>
+        /// The collision mask representing the entity physically.
+        /// </summary>
+        public BoundingBox collisionBox { get; protected set; }
+        /// <summary>
+        /// Array of drawables to be drawn representing the entity
+        /// </summary>
+        public Drawable[] drawArray { get; protected set; }
+        /// <summary>
+        /// Color of entity on the map
+        /// </summary>
+        public Color mapColor { get; protected set; }
 
-
-        public string type { get; }
-        public BoundingBox collisionBox { get; set; }
-
-        public Drawable[] drawArray;
-        
         public Vector2 position { get; protected set; }
         //Consider what should be passed to entity by chunk (perhaps the chunk coordinates?)
         /// <summary>

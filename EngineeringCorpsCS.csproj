@@ -94,6 +94,7 @@
     <Compile Include="Chunk\SurfaceContainer.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="Chunk\MapGenerator.cs" />
+    <Compile Include="MenuWorldMap.cs" />
     <Compile Include="Menu\MenuFactory.cs" />
     <Compile Include="Menu\MenuContainer.cs" />
     <Compile Include="Menu\MenuButton.cs" />

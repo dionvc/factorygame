@@ -46,5 +46,11 @@ namespace EngineeringCorpsCS
             debugMenu.closePanelKey = InputBindings.showDebugMenu;
             menuContainer.AttachMenu(debugMenu);
         }
+
+        public void CreateMinimap(Renderer renderer, Camera camera)
+        {
+            MenuWorldMap minimap = new MenuWorldMap(camera, renderer, new Vector2f(250, 250), new Vector2f(500, 500), new bool[] { true, true });
+            menuContainer.AttachMenu(minimap);
+        }
     }
 }

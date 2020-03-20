@@ -15,6 +15,7 @@ namespace EngineeringCorpsCS
         View gameView;
         View guiView;
         float viewScale;
+        SurfaceContainer viewedSurface;
         public Camera()
         {
             gameView = new View(new FloatRect(0, 0, 2 * 1280, 2 * 720));
@@ -26,6 +27,7 @@ namespace EngineeringCorpsCS
             if (focusedEntity != null)
             {
                 gameView.Center = new Vector2f(focusedEntity.position.x, focusedEntity.position.y);
+                viewedSurface = focusedEntity.surface;
             }
         }
         public View GetGameView()

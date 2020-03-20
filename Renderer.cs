@@ -9,7 +9,7 @@ using SFML.Window;
 
 namespace EngineeringCorpsCS
 {
-    class Renderer: IInputSubscriber
+    class Renderer : IInputSubscriber
     {
         //Graphics variables
         VertexArray boundingBoxArray; //must be reconstructed every frame TODO: split terrain bounding box array into cachable set
@@ -19,7 +19,8 @@ namespace EngineeringCorpsCS
         List<Entity> drawList;
 
         //Collections
-        Dictionary<int, VertexArray[]> terrainVertexArrays;
+        Dictionary<int, VertexArray[]> terrainVertexArrays; //TODO: need to change these for multi-surface support
+        Dictionary<int, Image> minimapImages; //TODO: need to change these for multi-surface support
         TileCollection tileCollection;
         SurfaceContainer surface;
         MenuContainer menuContainer;
@@ -27,7 +28,10 @@ namespace EngineeringCorpsCS
         //Control variables
         bool drawBoundingBoxes = true;
 
-        public Renderer( Window window, MenuContainer menuContainer)
+        //TODO: Move to textureContainer
+        Texture voidMinimap = new Texture(new Image(32, 32, Color.Black));
+
+        public Renderer(Window window, MenuContainer menuContainer)
         {
             this.menuContainer = menuContainer;
             GUI = new RenderTexture(window.Size.X, window.Size.Y);
@@ -37,6 +41,7 @@ namespace EngineeringCorpsCS
             this.surface = chunkManager;
             this.tileCollection = tileCollection;
             terrainVertexArrays = new Dictionary<int, VertexArray[]>(); //terrain cache //TODO: clear periodically
+            minimapImages = new Dictionary<int, Image>();
             boundingBoxArray = new VertexArray(PrimitiveType.Lines);
             terrainTilesheets = tileCollection.GetTerrainTilesheets();
             terrainRenderStates = new RenderStates[terrainTilesheets.Length];
@@ -73,7 +78,7 @@ namespace EngineeringCorpsCS
                     }
                 }
             }
-            
+
             for (int i = begPos[0]; i <= endPos[0]; i++)
             {
                 for (int j = begPos[1]; j <= endPos[1]; j++)
@@ -154,6 +159,52 @@ namespace EngineeringCorpsCS
                 window.Draw(drawSprite);
             }
             drawList.Clear();
+        }
+
+        /// <summary>
+        /// Gets minimap textures for a specified surface.  The position is the centered location. The range is the number of chunks x/y away from center to get.
+        /// </summary>
+        /// <param name="surface"></param>
+        /// <param name="position"></param>
+        /// <param name="ranges"></param>
+        public List<Texture> GenerateMinimapTextures(SurfaceContainer surface, Vector2 position, int xRange, int yRange, List<Texture> textureList)
+        {
+            int[] chunkIndices = SurfaceContainer.WorldToChunkCoords(position);
+            textureList.Clear();
+            for(int i = chunkIndices[0] - xRange ; i <= chunkIndices[0] + xRange; i++)
+            {
+                for(int j = chunkIndices[1] - yRange; j <= chunkIndices[1] + yRange; j++)
+                {
+                    if(i < 0 || j < 0 || i > Props.worldSize || j > Props.worldSize)
+                    {
+                        textureList.Add(voidMinimap);
+                        continue;
+                    }
+                    Image terrainImage = tileCollection.GenerateTerrainMinimap(surface, (i * Props.worldSize) + j);
+                    List<Entity> entityList = surface.GetChunk((i * Props.worldSize) + j).entityList;
+                    foreach(Entity e in entityList)
+                    {
+                        float[] pointList = e.collisionBox.GetPoints();
+                        int[] min = SurfaceContainer.WorldToTileCoords(pointList[0] + e.position.x, pointList[1] + e.position.y);
+                        int[] max = SurfaceContainer.WorldToTileCoords(pointList[4] + e.position.x, pointList[5] + e.position.y);
+                        for(int k = min[2]; k <= max[2]; k++)
+                        {
+                            for(int l = min[3]; l <= max[3]; l++)
+                            {
+                                if (k < 0 || l < 0 || k > Props.chunkSize || l > Props.chunkSize)
+                                {
+                                    continue;
+                                }
+                                terrainImage.SetPixel((uint)k, (uint)l, e.mapColor);
+                            }
+                        }
+                    }
+                    
+                    textureList.Add(new Texture(terrainImage));
+                }
+            }
+            return textureList;
+            
         }
 
         public void RenderGUI(RenderWindow window, Camera camera)

@@ -34,16 +34,26 @@ namespace EngineeringCorpsCS
         /// <param name="chunk"></param>
         /// <param name="cXY"></param>
         /// <returns></returns>
-        public VertexArray[] GenerateTerrainVertexArray(SurfaceContainer chunkManager, int[] cXY)
+        public VertexArray[] GenerateTerrainVertexArray(SurfaceContainer surface, int[] cXY)
         {
             VertexArray[] terrainVertexArray = new VertexArray[terrainTiles.Count];
             //Iterate over every tile type starting with the lowest layer (0)
             for(int i = 1; i < terrainTiles.Count; i++)
             {
                 terrainVertexArray[i] = new VertexArray(PrimitiveType.Triangles);
-                terrainTiles[i].AppendTerrainVertices(terrainVertexArray[i], chunkManager, cXY, impassableTileTypes);
+                terrainTiles[i].AppendTerrainVertices(terrainVertexArray[i], surface, cXY, impassableTileTypes);
             }
             return terrainVertexArray;
+        }
+
+        public Image GenerateTerrainMinimap(SurfaceContainer surface, int chunkIndex)
+        {
+            Image minimapImage = new Image(32, 32, Color.Black);
+            for (int i = 1; i < terrainTiles.Count; i++)
+            {
+                terrainTiles[i].GenerateMinimapImage(minimapImage, surface, chunkIndex);
+            }
+            return minimapImage;
         }
 
         /// <summary>
@@ -67,6 +77,7 @@ namespace EngineeringCorpsCS
         /// <returns></returns>
         public string GetTerrainTileName(byte tileType)
         {
+            //TODO: should not be needed in properly generated world, remove when map generator is functional to cut down on processing
             if(tileType >= terrainTiles.Count)
             {
                 return "Undefined";
@@ -76,6 +87,7 @@ namespace EngineeringCorpsCS
 
         public Tile GetTerrainTile(byte tileType)
         {
+            //TODO: should not be needed in properly generated world, remove when map generator is functional to cut down on processing
             if (tileType >= terrainTiles.Count)
             {
                 return terrainTiles[0]; //return void in case of invalid terrain tile type

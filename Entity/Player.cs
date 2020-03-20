@@ -21,6 +21,7 @@ namespace EngineeringCorpsCS
             Texture[] playerTextures = new Texture[] { textureContainer.GetTexture("orcrunning") };
             drawArray = new Drawable[] { new AnimationRotated(playerTextures, new Vector2i(128, 128), new Vector2f(0,0), new Vector2f(0, -48) , new Vector2f(4,4),8, 8, "Forward", 0.0f) };
             collisionMask = CollisionLayer.EntityPhysical | CollisionLayer.TerrainSolid;
+            mapColor = Color.Magenta;
         }
         /// <summary>
         /// TODO: Add inheritance structure

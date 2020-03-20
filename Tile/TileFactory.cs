@@ -35,31 +35,31 @@ namespace EngineeringCorpsCS
         public Tile CreateDeepWater(byte index)
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.TerrainSolid;
-            return new Tile(textureManager.GetTexture("watersquare"), index, "Deep Water", 0, defaultShade, new Color(), collisionMask);
+            return new Tile(textureManager.GetTexture("watersquare"), index, "Deep Water", 0, defaultShade, new Color(0,0,255), collisionMask);
         }
 
         public Tile CreateBeachSand(byte index)
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Terrain;
-            return new Tile(textureManager.GetTexture("tileTransitionTest"), index, "Beach Sand", 0.75f, defaultShade, new Color(), collisionMask);
+            return new Tile(textureManager.GetTexture("tileTransitionTest"), index, "Beach Sand", 0.75f, defaultShade, new Color(96,64,0), collisionMask);
         }
 
         public Tile CreateDesert(byte index)
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Terrain;
-            return new Tile(textureManager.GetTexture("desertTilesheet"), index, "Desert", 0.5f, defaultShade, new Color(), collisionMask);
+            return new Tile(textureManager.GetTexture("desertTilesheet"), index, "Desert", 0.5f, defaultShade, new Color(160,64,0), collisionMask);
         }
 
         public Tile CreateVoid(byte index)
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Void & Base.CollisionLayer.TerrainSolid;
-            return new Tile(textureManager.GetTexture(""), index, "Void", 0, defaultShade, new Color(), collisionMask);
+            return new Tile(textureManager.GetTexture(""), index, "Void", 0, defaultShade, new Color(0,0,0), collisionMask);
         }
 
         public Tile CreateGrass(byte index)
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Terrain;
-            return new Tile(textureManager.GetTexture("grassTilesheet"), index, "Grass", 1.2f, defaultShade, new Color(), collisionMask);
+            return new Tile(textureManager.GetTexture("grassTilesheet"), index, "Grass", 1.2f, defaultShade, new Color(0,255,0), collisionMask);
         }
     }
 }

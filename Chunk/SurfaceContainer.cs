@@ -253,13 +253,6 @@ namespace EngineeringCorpsCS
             int yR = (int)Math.Floor(y/Props.tileSize);
             return new int[] { xR/Props.chunkSize, yR/Props.chunkSize, xR % Props.chunkSize, yR % Props.chunkSize };
         }
-
-        public static int[] WorldToAbsoluteTileCoords(float x, float y)
-        {
-            int xR = (int)Math.Floor(x / Props.tileSize);
-            int yR = (int)Math.Floor(y / Props.tileSize);
-            return new int[] { xR, yR };
-        }
         
         public static Vector2 WorldToTileVector(int chunkIndex, int tileIndex)
         {
