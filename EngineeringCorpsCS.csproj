@@ -83,6 +83,7 @@
     <Compile Include="Entity\Base.cs" />
     <Compile Include="Drawable\Drawable.cs" />
     <Compile Include="Entity\EntityPhysical.cs" />
+    <Compile Include="Entity\TestTilePlacer.cs" />
     <Compile Include="FontContainer.cs" />
     <Compile Include="Input\IInputSubscriber.cs" />
     <Compile Include="Input\InputBindings.cs" />
@@ -94,7 +95,7 @@
     <Compile Include="Chunk\SurfaceContainer.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="Chunk\MapGenerator.cs" />
-    <Compile Include="MenuWorldMap.cs" />
+    <Compile Include="Menu\MenuWorldMap.cs" />
     <Compile Include="Menu\MenuFactory.cs" />
     <Compile Include="Menu\MenuContainer.cs" />
     <Compile Include="Menu\MenuButton.cs" />
@@ -112,7 +113,7 @@
     <Compile Include="Tile\Tile.cs" />
     <Compile Include="Tile\TileFactory.cs" />
     <Compile Include="Tile\TileCollection.cs" />
-    <Compile Include="Tree.cs" />
+    <Compile Include="Entity\Tree.cs" />
     <Compile Include="Vector2.cs" />
   </ItemGroup>
   <ItemGroup>

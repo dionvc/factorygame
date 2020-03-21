@@ -17,7 +17,7 @@ namespace EngineeringCorpsCS
             this.menuContainer = menuContainer;
         }
 
-        public void CreateMainMenu(Program program)
+        public void CreateMainMenu(Program program, Camera camera)
         {
             MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 150), new bool[] { true, true });
             MenuButton startGameButton = new MenuButton(new Vector2f(25, 25), program.BeginGame, new Vector2f(100, 100));
@@ -33,6 +33,9 @@ namespace EngineeringCorpsCS
             mainMenu.AttachComponent(quitGameButton);
             quitGameButton.AttachComponent(quitGameText);
             mainMenu.closePanelKey = InputBindings.showPauseMenu;
+            mainMenu.pivot1 = "center";
+            mainMenu.pivot2 = "center";
+            mainMenu.SetInitialPosition(camera.GetGUIView());
             menuContainer.AttachMenu(mainMenu);
         }
 
@@ -53,6 +56,10 @@ namespace EngineeringCorpsCS
             MenuWorldMap minimap = new MenuWorldMap(camera, renderer, new Vector2f(25, 25), new Vector2f(250, 250), new bool[] { true, true });
             minimapPanel.AttachComponent(minimap);
             minimapPanel.closePanelKey = InputBindings.showMinimap;
+            minimapPanel.pivot1 = "top";
+            minimapPanel.pivot2 = "left";
+            minimapPanel.SetInitialPosition(camera.GetGUIView());
+            minimapPanel.lockedPosition = true;
             menuContainer.AttachMenu(minimapPanel);
         }
     }

@@ -15,12 +15,12 @@ namespace EngineeringCorpsCS
         public Player(Vector2 pos, SurfaceContainer surface, TextureContainer textureContainer)
         {
             position = pos;
-            collisionBox = new BoundingBox(64, 128);
+            collisionBox = new BoundingBox(16, 16);
             surface.InitiateEntityInChunks(this);
             velocity = new Vector2(0, 0);
             Texture[] playerTextures = new Texture[] { textureContainer.GetTexture("orcrunning") };
-            drawArray = new Drawable[] { new AnimationRotated(playerTextures, new Vector2i(128, 128), new Vector2f(0,0), new Vector2f(0, -48) , new Vector2f(4,4),8, 8, "Forward", 0.0f) };
-            collisionMask = CollisionLayer.None;//CollisionLayer.EntityPhysical | CollisionLayer.TerrainSolid;
+            drawArray = new Drawable[] { new AnimationRotated(playerTextures, new Vector2i(128, 128), new Vector2f(0,0), new Vector2f(0, -28) , new Vector2f(1,1),8, 8, "Forward", 0.0f) };
+            collisionMask = CollisionLayer.EntityPhysical | CollisionLayer.TerrainSolid;
             mapColor = Color.Magenta;
         }
         /// <summary>
@@ -56,19 +56,19 @@ namespace EngineeringCorpsCS
         {
             if (input.keyHeld[InputBindings.moveUp])
             {
-                velocity.Add(0, -64);
+                velocity.Add(0, -8);
             }
             if (input.keyHeld[InputBindings.moveDown])
             {
-                velocity.Add(0, 64);
+                velocity.Add(0, 8);
             }
             if (input.keyHeld[InputBindings.moveLeft])
             {
-                velocity.Add(-64, 0);
+                velocity.Add(-8, 0);
             }
             if(input.keyHeld[InputBindings.moveRight])
             {
-                velocity.Add(64, 0);
+                velocity.Add(8, 0);
             }
         }
     }

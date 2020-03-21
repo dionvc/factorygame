@@ -134,17 +134,14 @@ namespace EngineeringCorpsCS
             renderer = new Renderer(window, menuContainer);
             window.Resized += camera.HandleResize;
             window.Resized += renderer.ResizeGUI;
-
-
-            //menuContainer.menuFactory.CreateDebugMenu(renderer);
-
+            window.Resized += menuContainer.RepositionMenus;
         }
 
         public void StartMenu()
         {
             //TODO: double check this menu creation
             renderer.SubscribeToInput(input);
-            menuFactory.CreateMainMenu(this);
+            menuFactory.CreateMainMenu(this, camera);
             while (window.IsOpen && gameState == GameState.mainMenu)
             {
                 window.Clear();
@@ -256,7 +253,7 @@ namespace EngineeringCorpsCS
         {
             if (input.ConsumeKeyPress(InputBindings.showPauseMenu))
             {
-                menuFactory.CreateMainMenu(this);
+                menuFactory.CreateMainMenu(this, camera);
             }
         }
     }

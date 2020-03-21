@@ -270,9 +270,39 @@ namespace EngineeringCorpsCS
         /// </summary>
         public void ClearVertexCache()
         {
+            foreach(int key in terrainVertexArrays.Keys)
+            {
+                VertexArray[] vA;
+                if(terrainVertexArrays.TryGetValue(key, out vA))
+                {
+                    foreach(VertexArray v in vA)
+                    {
+                        v.Dispose();
+                    }
+                }
+            }
             terrainVertexArrays.Clear();
+            foreach(int key in tileBoundingBoxVertexArray.Keys)
+            {
+                VertexArray vA;
+                if(tileBoundingBoxVertexArray.TryGetValue(key, out vA))
+                {
+                    vA.Dispose();
+                }
+            }
             tileBoundingBoxVertexArray.Clear();
+            foreach (int key in minimapVertexArrays.Keys)
+            {
+                VertexArray vA;
+                if (tileBoundingBoxVertexArray.TryGetValue(key, out vA))
+                {
+                    vA.Dispose();
+                }
+            }
             minimapVertexArrays.Clear();
+
+            entityBoundingBoxArray.Dispose();
+            entityBoundingBoxArray.Clear();
         }
         
         /// <summary>
@@ -281,17 +311,36 @@ namespace EngineeringCorpsCS
         /// <param name="chunkIndex"></param>
         public void RemoveCachedVertexArray(int chunkIndex)
         {
+            
             if(terrainVertexArrays.ContainsKey(chunkIndex))
             {
-                terrainVertexArrays.Remove(chunkIndex);
+                VertexArray[] vA;
+                if(terrainVertexArrays.TryGetValue(chunkIndex, out vA))
+                {
+                    foreach(VertexArray v in vA)
+                    {
+                        v.Dispose();
+                    }
+                    terrainVertexArrays.Remove(chunkIndex);
+                }
             }
             if(tileBoundingBoxVertexArray.ContainsKey(chunkIndex))
             {
-                tileBoundingBoxVertexArray.Remove(chunkIndex);
+                VertexArray vA;
+                if(tileBoundingBoxVertexArray.TryGetValue(chunkIndex, out vA))
+                {
+                    vA.Dispose();
+                    tileBoundingBoxVertexArray.Remove(chunkIndex);
+                }
             }
             if(minimapVertexArrays.ContainsKey(chunkIndex))
             {
-                minimapVertexArrays.Remove(chunkIndex);
+                VertexArray vA;
+                if(minimapVertexArrays.TryGetValue(chunkIndex, out vA))
+                {
+                    vA.Dispose();
+                    minimapVertexArrays.Remove(chunkIndex);
+                }
             }
         }
 
@@ -314,6 +363,14 @@ namespace EngineeringCorpsCS
             }
             foreach(int key in keysToRemove)
             {
+                VertexArray[] vA;
+                if(terrainVertexArrays.TryGetValue(key, out vA))
+                {
+                    foreach(VertexArray v in vA)
+                    {
+                        v.Dispose();
+                    }
+                }
                 terrainVertexArrays.Remove(key);
             }
             keysToRemove.Clear();
@@ -329,6 +386,11 @@ namespace EngineeringCorpsCS
             }
             foreach (int key in keysToRemove)
             {
+                VertexArray vA;
+                if(tileBoundingBoxVertexArray.TryGetValue(key, out vA))
+                {
+                    vA.Dispose();
+                }
                 tileBoundingBoxVertexArray.Remove(key);
             }
             keysToRemove.Clear();
@@ -347,6 +409,11 @@ namespace EngineeringCorpsCS
             }
             foreach (int key in keysToRemove)
             {
+                VertexArray vA;
+                if (minimapVertexArrays.TryGetValue(key, out vA))
+                {
+                    vA.Dispose();
+                }
                 minimapVertexArrays.Remove(key);
             }
         }

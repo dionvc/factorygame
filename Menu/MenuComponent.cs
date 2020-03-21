@@ -13,12 +13,18 @@ namespace EngineeringCorpsCS
         public Vector2f position { get; protected set; }
         public Vector2f size { get; protected set; }
         public MenuComponent parent { get; protected set; }
-        public bool fixedWidth = true;
-        public bool fixedHeight = false;
-        protected Vector2f scale;
+        
         public BoundingBox collisionBox { get; protected set; }
         public List<MenuComponent> attachedComponents { get; protected set; } = new List<MenuComponent>();
         public MenuContainer container { get; set; }
+
+        //unused for now
+        public bool fixedWidth = true;
+        public bool fixedHeight = false;
+        public bool lockedPosition = false;
+        public string pivot1 = "center";
+        public string pivot2 = "center";
+        protected Vector2f scale;
 
         virtual public void Draw(RenderTexture gui, Vector2f origin)
         {
@@ -29,7 +35,31 @@ namespace EngineeringCorpsCS
         }
         public void Translate(Vector2f translation)
         {
-            position += translation;
+            if (!lockedPosition)
+            {
+                position += translation;
+            }
+        }
+
+        public void SetInitialPosition(View GUIView)
+        {
+            position = new Vector2f(GUIView.Size.X / 2 - size.X / 2, GUIView.Size.Y / 2 - size.Y / 2);
+            if(pivot1 == "top" || pivot2 == "top")
+            {
+                position += new Vector2f(0, -GUIView.Size.Y / 2 + size.Y/2);
+            }
+            if (pivot1 == "bottom" || pivot2 == "bottom")
+            {
+                position += new Vector2f(0, GUIView.Size.Y / 2 - size.Y/2);
+            }
+            if (pivot1 == "left" || pivot2 == "left")
+            {
+                position += new Vector2f(-GUIView.Size.X / 2 + size.X/2, 0);
+            }
+            if(pivot1 == "right" || pivot2 == "right")
+            {
+                position += new Vector2f(GUIView.Size.X / 2 - size.X/2, 0);
+            }
         }
 
         public void AttachComponent(MenuComponent component)

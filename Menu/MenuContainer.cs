@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
 
 namespace EngineeringCorpsCS
 {
@@ -43,6 +44,14 @@ namespace EngineeringCorpsCS
                 menu.UnsubscribeToInput(input);
             }
             menus.Clear();
+        }
+
+        public void RepositionMenus(Object s, SizeEventArgs e)
+        {
+            foreach(MenuComponent menu in menus)
+            {
+                menu.SetInitialPosition(input.GetCamera().GetGUIView());
+            }
         }
     }
 }

@@ -219,6 +219,11 @@ namespace EngineeringCorpsCS
             }
         }
 
+        public Camera GetCamera()
+        {
+            return subscribedCamera;
+        }
+
         public void HandleInput()
         {
             for(int i = 0; i < subscriberMenuList.Count; i++)
