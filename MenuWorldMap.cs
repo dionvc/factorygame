@@ -20,6 +20,11 @@ namespace EngineeringCorpsCS
         Camera camera;
         int refreshCounter = 60;
         int refreshRate = 60;
+        int tX = 0;
+        int tY = 0;
+        float mapScale = 1.0f;
+        public bool controllable { get; set; } = false;
+        public int controlSpeed { get; set; } = 4;
         public MenuWorldMap(Camera camera, Renderer renderer, Vector2f relativePosition, Vector2f componentSize, bool[] sizeScaling)
         {
             this.position = relativePosition;
@@ -41,18 +46,52 @@ namespace EngineeringCorpsCS
                 renderer.GenerateMinimapTextures(camera.focusedEntity.surface, camera.focusedEntity.position, 4, 4, vertexArrays);
             }
             Transform transform = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
-            Vector2f translation = new Vector2f(size.X/2 -(camera.focusedEntity.position.x / Props.tileSize), size.Y/2 -(camera.focusedEntity.position.y / Props.tileSize));
+            Vector2f translation = new Vector2f(size.X/2 -(camera.focusedEntity.position.x / Props.tileSize) + tX, size.Y/2 -(camera.focusedEntity.position.y / Props.tileSize) + tY);
             transform.Translate(translation);
+            transform.Scale(mapScale, mapScale);
             transformState.Transform = transform;
             for (int i = 0; i < vertexArrays.Count; i++)
             {
-                textureMinimap.Draw(vertexArrays[i], transformState);
+                if (vertexArrays[i] != null)
+                {
+                    textureMinimap.Draw(vertexArrays[i], transformState);
+                }
             }
             textureMinimap.Display();
             Sprite minimap = new Sprite(textureMinimap.Texture);
-            minimap.Position = position;
+            minimap.Position = origin + position;
             gui.Draw(minimap);
             textureMinimap.Clear();
+        }
+
+        public override void HandleInput(InputManager input)
+        {
+            base.HandleInput(input);
+            if (controllable)
+            {
+                if (input.keyHeld[InputBindings.moveLeft])
+                {
+                    tX += controlSpeed;
+                }
+                if (input.keyHeld[InputBindings.moveRight])
+                {
+                    tX -= controlSpeed;
+                }
+                if (input.keyHeld[InputBindings.moveUp])
+                {
+                    tY += controlSpeed;
+                }
+                if (input.keyHeld[InputBindings.moveDown])
+                {
+                    tY -= controlSpeed;
+                }
+                if (input.mouseScrollDelta != 0)
+                {
+                    mapScale += (input.mouseScrollDelta / InputBindings.scrollSensitivity);
+                    mapScale = mapScale < 0.5f ? 0.5f : mapScale;
+                    mapScale = mapScale > 8.0f ? 8.0f : mapScale;
+                }
+            }
         }
     }
 }

@@ -48,12 +48,13 @@ namespace EngineeringCorpsCS
             //TODO: move to translate and store absolute position of component precomputed?
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
+            Vector2f mousePos = input.GetMousePosition();
             while(bubble != null)
             {
                 origin += bubble.position;
                 bubble = bubble.parent;
             }
-            if(buttonState != ButtonState.Held && BoundingBox.CheckPointMenuCollision(input.mouseX, input.mouseY, collisionBox, (position + origin)))
+            if(buttonState != ButtonState.Held && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, (position + origin)))
             {
                 buttonState = ButtonState.Hover;
                 buttonColor = buttonHover;

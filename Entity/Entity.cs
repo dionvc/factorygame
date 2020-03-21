@@ -42,6 +42,9 @@ namespace EngineeringCorpsCS
         /// </summary>
         public Color mapColor { get; protected set; }
 
+        public int tileWidth { get; protected set; } = 2;
+        public int tileHeight { get; protected set; } = 2;
+
         public Vector2 position { get; protected set; }
         //Consider what should be passed to entity by chunk (perhaps the chunk coordinates?)
         /// <summary>

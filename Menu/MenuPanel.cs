@@ -51,6 +51,7 @@ namespace EngineeringCorpsCS
             //TODO: move to translate and store absolute position of component precomputed?
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
+            Vector2f mousePos = input.GetMousePosition();
             while (bubble != null)
             {
                 origin += bubble.position;
@@ -60,14 +61,14 @@ namespace EngineeringCorpsCS
             {
                 panelState = PanelState.Normal;
             }
-            if (panelState == PanelState.Normal && input.mouseClick[InputBindings.primary] && BoundingBox.CheckPointMenuCollision(input.mouseX, input.mouseY, collisionBox, position + origin))
+            if (panelState == PanelState.Normal && input.mouseClick[InputBindings.primary] && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, position + origin))
             {
                 panelState = PanelState.Dragging;
-                this.Translate(new Vector2f(input.mouseXdiff, input.mouseYdiff));
+                this.Translate(input.GetMouseDiff());
             }
             if (panelState == PanelState.Dragging)
             {
-                this.Translate(new Vector2f(input.mouseXdiff, input.mouseYdiff));
+                this.Translate(input.GetMouseDiff());
             }
         }
     }

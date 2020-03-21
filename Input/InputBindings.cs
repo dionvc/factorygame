@@ -21,5 +21,7 @@ namespace EngineeringCorpsCS
 
         public static Keyboard.Key showDebugMenu = Keyboard.Key.F3;
         public static Keyboard.Key showPauseMenu = Keyboard.Key.Q;
+
+        public static Keyboard.Key showMinimap = Keyboard.Key.N;
     }
 }

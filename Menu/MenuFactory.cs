@@ -49,8 +49,11 @@ namespace EngineeringCorpsCS
 
         public void CreateMinimap(Renderer renderer, Camera camera)
         {
-            MenuWorldMap minimap = new MenuWorldMap(camera, renderer, new Vector2f(250, 250), new Vector2f(250, 250), new bool[] { true, true });
-            menuContainer.AttachMenu(minimap);
+            MenuPanel minimapPanel = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 300), new bool[] { false, false });
+            MenuWorldMap minimap = new MenuWorldMap(camera, renderer, new Vector2f(25, 25), new Vector2f(250, 250), new bool[] { true, true });
+            minimapPanel.AttachComponent(minimap);
+            minimapPanel.closePanelKey = InputBindings.showMinimap;
+            menuContainer.AttachMenu(minimapPanel);
         }
     }
 }

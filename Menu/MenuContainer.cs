@@ -38,6 +38,10 @@ namespace EngineeringCorpsCS
 
         public void RemoveAllMenus()
         {
+            foreach(MenuComponent menu in menus)
+            {
+                menu.UnsubscribeToInput(input);
+            }
             menus.Clear();
         }
     }

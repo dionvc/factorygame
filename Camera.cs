@@ -40,6 +40,13 @@ namespace EngineeringCorpsCS
             return guiView;
         }
 
+        public void HandleResize(Object s, SizeEventArgs e)
+        {
+            gameView.Size = new Vector2f(e.Width, e.Height);
+            guiView.Size = new Vector2f(e.Width, e.Height);
+            guiView.Center = new Vector2f(e.Width / 2, e.Height / 2);
+        }
+
         public void SubscribeToInput(InputManager input)
         {
             input.ChangeCamera(this);

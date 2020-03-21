@@ -199,29 +199,51 @@ namespace EngineeringCorpsCS
                             minimapVertexArrays.Add(i * Props.worldSize + j, vA);
                         }
                         vertexArrays.Add(vA);
+                        //next get entities
+                        List<Entity> entityList = chunk.entityList;
+                        VertexArray entityArray = new VertexArray(PrimitiveType.Triangles);
+                        int oX = i * Props.chunkSize;
+                        int oY = j * Props.chunkSize;
+                        foreach (Entity e in entityList)
+                        {
+                            int[] pos = SurfaceContainer.WorldToAbsoluteTileCoords(e.position.x, e.position.y);
+                            float halfWidth = e.tileWidth / 2;
+                            float halfHeight = e.tileHeight / 2;
+                            entityArray.Append(new Vertex(new Vector2f(pos[0] - halfWidth , pos[1] - halfHeight), e.mapColor));
+                            entityArray.Append(new Vertex(new Vector2f(pos[0] + halfWidth, pos[1] - halfHeight), e.mapColor));
+                            entityArray.Append(new Vertex(new Vector2f(pos[0] - halfWidth, pos[1] + halfHeight), e.mapColor));
+
+                            entityArray.Append(new Vertex(new Vector2f(pos[0] + halfWidth, pos[1] - halfHeight), e.mapColor));
+                            entityArray.Append(new Vertex(new Vector2f(pos[0] + halfWidth, pos[1] + halfHeight), e.mapColor));
+                            entityArray.Append(new Vertex(new Vector2f(pos[0] - halfWidth, pos[1] + halfHeight), e.mapColor));
+                        }
+                        if(entityArray.VertexCount > 0)
+                        {
+                            vertexArrays.Add(entityArray);
+                        }
                     }
-                    //List<Entity> entityList = .entityList;
+                    //
                     //foreach(Entity e in entityList)
                     //{
-                        //int[] pos = SurfaceContainer.WorldToTileCoords(e.position.x, e.position.y);
+                    //int[] pos = SurfaceContainer.WorldToTileCoords(e.position.x, e.position.y);
 
-                        //terrainImage.SetPixel((uint)pos[2], (uint)pos[3], e.mapColor);
-                        /*
-                        float[] pointList = e.collisionBox.GetPoints();
-                        int[] min = SurfaceContainer.WorldToTileCoords(pointList[0] + e.position.x, pointList[1] + e.position.y);
-                        int[] max = SurfaceContainer.WorldToTileCoords(pointList[4] + e.position.x, pointList[5] + e.position.y);
-                        for(int k = min[2]; k <= max[2]; k++)
+                    //terrainImage.SetPixel((uint)pos[2], (uint)pos[3], e.mapColor);
+                    /*
+                    float[] pointList = e.collisionBox.GetPoints();
+                    int[] min = SurfaceContainer.WorldToTileCoords(pointList[0] + e.position.x, pointList[1] + e.position.y);
+                    int[] max = SurfaceContainer.WorldToTileCoords(pointList[4] + e.position.x, pointList[5] + e.position.y);
+                    for(int k = min[2]; k <= max[2]; k++)
+                    {
+                        for(int l = min[3]; l <= max[3]; l++)
                         {
-                            for(int l = min[3]; l <= max[3]; l++)
+                            if (k < 0 || l < 0 || k > Props.chunkSize || l > Props.chunkSize)
                             {
-                                if (k < 0 || l < 0 || k > Props.chunkSize || l > Props.chunkSize)
-                                {
-                                    continue;
-                                }
-                                terrainImage.SetPixel((uint)k, (uint)l, e.mapColor);
+                                continue;
                             }
+                            terrainImage.SetPixel((uint)k, (uint)l, e.mapColor);
                         }
-                        */
+                    }
+                    */
                     //}
                 }
             }
@@ -235,6 +257,12 @@ namespace EngineeringCorpsCS
             GUI.Display();
             Sprite GUISprite = new Sprite(GUI.Texture);
             window.Draw(GUISprite);
+        }
+
+        public void ResizeGUI(Object s, SizeEventArgs e)
+        {
+            GUI.Dispose();
+            GUI = new RenderTexture(e.Width, e.Height);
         }
 
         /// <summary>

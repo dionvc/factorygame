@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SFML.Window;
+using SFML.Graphics;
+using SFML.System;
 
 namespace EngineeringCorpsCS
 {
     class InputManager
     {
-        Window window;
+        RenderWindow window;
         /// <summary>
         /// Stores whether the specific key was pressed this frame
         /// </summary>
@@ -51,10 +53,8 @@ namespace EngineeringCorpsCS
         /// </summary>
         public MenuFactory menuFactory { get; set; }
 
-        public int mouseX;
-        public int mouseY;
-        public int mouseXdiff;
-        public int mouseYdiff;
+        public Vector2i mousePos { get; protected set; }
+        public Vector2i mouseDiff { get; protected set; }
 
         private int tickAccumulator = 0;
         private int keyResetInterval = 60;
@@ -62,7 +62,7 @@ namespace EngineeringCorpsCS
         private List<IInputSubscriber> subscriberList;
         private Camera subscribedCamera;
         
-        public InputManager(Window window) 
+        public InputManager(RenderWindow window) 
         {
             this.window = window;
             window.SetKeyRepeatEnabled(false);
@@ -99,10 +99,8 @@ namespace EngineeringCorpsCS
         public void Update()
         {
             //reconsider updating in an event
-            mouseXdiff = Mouse.GetPosition(window).X - mouseX;
-            mouseYdiff = Mouse.GetPosition(window).Y - mouseY;
-            mouseX = Mouse.GetPosition(window).X;
-            mouseY = Mouse.GetPosition(window).Y;
+            mouseDiff = mousePos;
+            mousePos = Mouse.GetPosition(window);
 
             //essentials
             HandleInput();
@@ -250,6 +248,16 @@ namespace EngineeringCorpsCS
                 return true;
             }
             return false;
+        }
+
+        public Vector2f GetMousePosition()
+        {
+            return window.MapPixelToCoords(mousePos);
+        }
+
+        public Vector2f GetMouseDiff()
+        {
+            return window.MapPixelToCoords(mousePos) - window.MapPixelToCoords(mouseDiff);
         }
     }
 }
