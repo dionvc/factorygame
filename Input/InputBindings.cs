@@ -23,5 +23,8 @@ namespace EngineeringCorpsCS
         public static Keyboard.Key showPauseMenu = Keyboard.Key.Q;
 
         public static Keyboard.Key showMinimap = Keyboard.Key.N;
+
+        public static Keyboard.Key increasePlacementSize = Keyboard.Key.Add;
+        public static Keyboard.Key decreasePlacementSize = Keyboard.Key.Subtract;
     }
 }

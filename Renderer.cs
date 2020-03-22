@@ -23,7 +23,6 @@ namespace EngineeringCorpsCS
         Dictionary<int, VertexArray> minimapVertexArrays; //TODO: need to change these for multi-surface support
         Dictionary<int, VertexArray> tileBoundingBoxVertexArray;
         TileCollection tileCollection;
-        SurfaceContainer surface;
         MenuContainer menuContainer;
 
         //Control variables
@@ -31,6 +30,11 @@ namespace EngineeringCorpsCS
         bool cullMinimap = true;
         int cullCounter = 0;
         int cullRate = 60;
+
+        /// <summary>
+        /// Indicates whether the internal vertex arrays have been modified.  Necessary to avoid protected memory access violations.
+        /// </summary>
+        public bool modifiedVertexArrays { get; protected set; } = false;
 
         //TODO: Move to textureContainer
         Texture voidMinimap = new Texture(new Image(Props.chunkSize, Props.chunkSize, Color.Black));
@@ -40,15 +44,20 @@ namespace EngineeringCorpsCS
             this.menuContainer = menuContainer;
             GUI = new RenderTexture(window.Size.X, window.Size.Y);
         }
-        public void InitializeForGame(SurfaceContainer chunkManager, TileCollection tileCollection)
+        public void InitializeForGame(TileCollection tileCollection)
         {
-            this.surface = chunkManager;
-            this.tileCollection = tileCollection;
-            terrainVertexArrays = new Dictionary<int, VertexArray[]>(); //terrain cache //TODO: clear periodically
+            //Vertex array caches
+            terrainVertexArrays = new Dictionary<int, VertexArray[]>();
             minimapVertexArrays = new Dictionary<int, VertexArray>();
             tileBoundingBoxVertexArray = new Dictionary<int, VertexArray>();
+
+            //dynamic vertex array
             entityBoundingBoxArray = new VertexArray(PrimitiveType.Lines);
+
+            //internal references (tile collection is a single time instantiated array of reusable objects.
+            this.tileCollection = tileCollection;
             terrainTilesheets = tileCollection.GetTerrainTilesheets();
+            //Creation of renderstates for terrain drawing
             terrainRenderStates = new RenderStates[terrainTilesheets.Length];
             drawList = new List<Entity>();
             for (int i = 0; i < terrainTilesheets.Length; i++)
@@ -56,7 +65,7 @@ namespace EngineeringCorpsCS
                 terrainRenderStates[i] = new RenderStates(terrainTilesheets[i]);
             }
         }
-        public void RenderWorld(RenderWindow window, Camera camera)
+        public void RenderWorld(RenderWindow window, Camera camera, SurfaceContainer surface)
         {
             window.SetView(camera.GetGameView()); //Set view
             Vector2f origin = window.MapPixelToCoords(new Vector2i(0, 0), camera.GetGameView());
@@ -222,29 +231,6 @@ namespace EngineeringCorpsCS
                             vertexArrays.Add(entityArray);
                         }
                     }
-                    //
-                    //foreach(Entity e in entityList)
-                    //{
-                    //int[] pos = SurfaceContainer.WorldToTileCoords(e.position.x, e.position.y);
-
-                    //terrainImage.SetPixel((uint)pos[2], (uint)pos[3], e.mapColor);
-                    /*
-                    float[] pointList = e.collisionBox.GetPoints();
-                    int[] min = SurfaceContainer.WorldToTileCoords(pointList[0] + e.position.x, pointList[1] + e.position.y);
-                    int[] max = SurfaceContainer.WorldToTileCoords(pointList[4] + e.position.x, pointList[5] + e.position.y);
-                    for(int k = min[2]; k <= max[2]; k++)
-                    {
-                        for(int l = min[3]; l <= max[3]; l++)
-                        {
-                            if (k < 0 || l < 0 || k > Props.chunkSize || l > Props.chunkSize)
-                            {
-                                continue;
-                            }
-                            terrainImage.SetPixel((uint)k, (uint)l, e.mapColor);
-                        }
-                    }
-                    */
-                    //}
                 }
             }
         }
@@ -257,6 +243,7 @@ namespace EngineeringCorpsCS
             GUI.Display();
             Sprite GUISprite = new Sprite(GUI.Texture);
             window.Draw(GUISprite);
+            modifiedVertexArrays = false;
         }
 
         public void ResizeGUI(Object s, SizeEventArgs e)
@@ -300,7 +287,6 @@ namespace EngineeringCorpsCS
                 }
             }
             minimapVertexArrays.Clear();
-
             entityBoundingBoxArray.Dispose();
             entityBoundingBoxArray.Clear();
         }
@@ -319,7 +305,10 @@ namespace EngineeringCorpsCS
                 {
                     foreach(VertexArray v in vA)
                     {
-                        v.Dispose();
+                        if (v != null)
+                        {
+                            v.Dispose();
+                        }
                     }
                     terrainVertexArrays.Remove(chunkIndex);
                 }
@@ -341,6 +330,7 @@ namespace EngineeringCorpsCS
                     vA.Dispose();
                     minimapVertexArrays.Remove(chunkIndex);
                 }
+                modifiedVertexArrays = true;
             }
         }
 
@@ -406,22 +396,21 @@ namespace EngineeringCorpsCS
                         keysToRemove.Add(key); 
                     }
                 }
-            }
-            foreach (int key in keysToRemove)
-            {
-                VertexArray vA;
-                if (minimapVertexArrays.TryGetValue(key, out vA))
+                foreach (int key in keysToRemove)
                 {
-                    vA.Dispose();
+                    VertexArray vA;
+                    if (minimapVertexArrays.TryGetValue(key, out vA))
+                    {
+                        vA.Dispose();
+                    }
+                    minimapVertexArrays.Remove(key);
                 }
-                minimapVertexArrays.Remove(key);
             }
         }
 
         public void DetachGameWorld()
         {
             tileCollection = null;
-            surface = null;
         }
 
         public void SubscribeToInput(InputManager input)

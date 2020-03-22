@@ -67,6 +67,11 @@ namespace EngineeringCorpsCS
         {
             terrain[x * Props.chunkSize + y] = tile;
         }
+
+        public void SetTile(int tileIndex, byte tile)
+        {
+            terrain[tileIndex] = tile;
+        }
         public byte GetTile(int x, int y)
         {
             return terrain[x * Props.chunkSize + y];

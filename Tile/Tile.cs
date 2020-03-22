@@ -15,9 +15,9 @@ namespace EngineeringCorpsCS
         public CollisionLayer collisionMask { get; protected set; } //Whatever layers are set here is what will determine its collision type
         public float frictionModifier { get; protected set; } = 1.0f; //modifier for speed of entities on this tile
 
-        float moistureAffinity;
-        float elevationAffinity;
-        float temperatureAffinity;
+        float moistureAffinity = 1.0f;
+        float elevationAffinity = 0.7f;
+        float temperatureAffinity = 0.1f;
 
         Color shade; //Apply a color to the tile
         public Color mapColor { get; protected set; } //Color that will be represented in minimap

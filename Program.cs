@@ -98,6 +98,9 @@ namespace EngineeringCorpsCS
         private MenuFactory menuFactory; //the client;s menufactory
         private Renderer renderer;
         private GameState gameState;
+        //ingame variables
+        SurfaceContainer surfaceContainer;
+        TileCollection tileCollection;
         //Debug variable
         private List<Player> players;
         private List<Tree> tree;
@@ -136,7 +139,6 @@ namespace EngineeringCorpsCS
             window.Resized += renderer.ResizeGUI;
             window.Resized += menuContainer.RepositionMenus;
         }
-
         public void StartMenu()
         {
             //TODO: double check this menu creation
@@ -162,9 +164,9 @@ namespace EngineeringCorpsCS
             menuContainer.RemoveAllMenus();
             this.SubscribeToInput(input);
             //Game systems intialization
-            TileCollection tileCollection = new TileCollection(textureContainer);
-            SurfaceContainer surfaceContainer = new SurfaceContainer(tileCollection);
-            renderer.InitializeForGame(surfaceContainer, tileCollection);
+            tileCollection = new TileCollection(textureContainer);
+            surfaceContainer = new SurfaceContainer(tileCollection);
+            renderer.InitializeForGame(tileCollection);
             #region test entities
             players = new List<Player>();
             tree = new List<Tree>();
@@ -184,6 +186,8 @@ namespace EngineeringCorpsCS
             //Attaching the camera to something!
             camera.focusedEntity = players[15];
             menuFactory.CreateMinimap(renderer, camera);
+            TestTilePlacer tilePlacer = new TestTilePlacer(surfaceContainer, renderer);
+            tilePlacer.SubscribeToInput(input);
         }
 
         public void FinalizeGame()
@@ -215,7 +219,7 @@ namespace EngineeringCorpsCS
                 //update camera
                 camera.Update();
                 //drawing game world (terrain, entities)
-                renderer.RenderWorld(window, camera);
+                renderer.RenderWorld(window, camera, surfaceContainer);
                 //drawing menus (main menu, pause, ingame, etc)
                 renderer.RenderGUI(window, camera);
                 window.Display();

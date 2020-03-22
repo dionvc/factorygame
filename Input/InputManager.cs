@@ -226,11 +226,13 @@ namespace EngineeringCorpsCS
 
         public void HandleInput()
         {
+            window.SetView(subscribedCamera.GetGUIView());
             for(int i = 0; i < subscriberMenuList.Count; i++)
             {
                 subscriberMenuList[i].HandleInput(this);
             }
-            for(int i = 0; i < subscriberList.Count; i ++)
+            window.SetView(subscribedCamera.GetGameView());
+            for (int i = 0; i < subscriberList.Count; i++)
             {
                 subscriberList[i].HandleInput(this);
             }
@@ -258,6 +260,11 @@ namespace EngineeringCorpsCS
         public Vector2f GetMousePosition()
         {
             return window.MapPixelToCoords(mousePos);
+        }
+
+        public float[] GetMousePositionAsFloat()
+        {
+            return new float[] { window.MapPixelToCoords(mousePos).X, window.MapPixelToCoords(mousePos).Y };
         }
 
         public Vector2f GetMouseDiff()

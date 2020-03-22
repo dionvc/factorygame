@@ -22,7 +22,7 @@ namespace EngineeringCorpsCS
         int refreshRate = 30;
         int tX = 0;
         int tY = 0;
-        float mapScale = 0.5f;
+        float mapScale = 1.0f;
         int minimapXRange = 5;
         int minimapYRange = 5;
         public bool controllable { get; set; } = false;
@@ -43,7 +43,7 @@ namespace EngineeringCorpsCS
         public override void Draw(RenderTexture gui, Vector2f origin)
         {
             refreshCounter++;
-            if(refreshCounter >= refreshRate)
+            if(refreshCounter >= refreshRate || renderer.modifiedVertexArrays == true)
             {
                 renderer.GenerateMinimapTextures(camera.focusedEntity.surface, camera.focusedEntity.position, minimapXRange, minimapYRange, vertexArrays);
                 refreshCounter = 0;
