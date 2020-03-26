@@ -11,7 +11,7 @@ namespace EngineeringCorpsCS
     //store pollution data
     class Chunk
     {
-
+        public float pollutionValue { get; protected set; } = 1.0f;
         private byte[] terrain;
         public List<Entity> entityList { get; protected set; } //Collection of entities for drawing (entities will be dynamically sorted)
         public List<Entity> entityCollisionList { get; protected set; } //Collection of entities for collision (2+ different chunks may contain the same entity)
@@ -25,7 +25,7 @@ namespace EngineeringCorpsCS
 
         public void Update()
         {
-
+            incrementPollution();
         }
         public void GenerateTerrain(int x, int y, SurfaceGenerator surfaceGenerator)
         {
@@ -77,6 +77,15 @@ namespace EngineeringCorpsCS
         public void RemoveEntityCollisionCheck(Entity entity)
         {
             entityCollisionList.Remove(entity);
+        }
+
+        public void incrementPollution()
+        {
+            foreach(Entity e in entityList)
+            {
+                pollutionValue += 0.1f;// e.pollutionEmission;
+            }
+            pollutionValue = pollutionValue > Props.maxPollution ? Props.maxPollution - 1 : pollutionValue;
         }
     }
 }

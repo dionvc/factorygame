@@ -507,7 +507,7 @@ namespace EngineeringCorpsCS
             }
             //TODO: need to add total failure check, where the end result of the overall collision ends up inside of a colliding body, and in such a case set velocity to 0
             
-            entity.surface.UpdateEntityInChunks(entity, totalVelocity);
+            entity.surface.UpdateEntityInChunks(entity, new Vector2(0,0));
         }
 
         public static bool CheckForCollision(Entity entity)
@@ -523,7 +523,7 @@ namespace EngineeringCorpsCS
                 List<Entity> collisionList = chunk.entityCollisionList;
                 for (int j = 0; j < collisionList.Count; j++)
                 {
-                    if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !collisionList[j].Equals(entity))
+                    if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !ReferenceEquals(collisionList[j],entity))
                     {
 
                         if (BoundingBox.CheckCollisionWithPushBack(entity.collisionBox, collisionList[j].collisionBox, entity.position, new Vector2(0,0), collisionList[j].position, out pushBack))

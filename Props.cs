@@ -13,6 +13,7 @@ namespace EngineeringCorpsCS
         public const int tileSize = 32; //tilesize in pixels
         public const int tileScaleFactor = 2;
         public const int vertexArrayCullingDistance = 32;
+        public const int maxPollution = 255;
 
         public static int startingSize = 8;
         public static float maxVelocity = 8.0f;

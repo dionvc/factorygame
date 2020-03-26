@@ -25,6 +25,7 @@ namespace EngineeringCorpsCS
         float mapScale = 1.0f;
         int minimapXRange = 5;
         int minimapYRange = 5;
+        bool getPollution = true;
         public bool controllable { get; set; } = false;
         public int controlSpeed { get; set; } = 4;
         public MenuWorldMap(Camera camera, Renderer renderer, Vector2f relativePosition, Vector2f componentSize, bool[] sizeScaling)
@@ -43,13 +44,18 @@ namespace EngineeringCorpsCS
         public override void Draw(RenderTexture gui, Vector2f origin)
         {
             refreshCounter++;
-            if(refreshCounter >= refreshRate || renderer.modifiedVertexArrays == true)
+            if (refreshCounter >= refreshRate || renderer.modifiedVertexArrays == true)
             {
                 renderer.GenerateMinimapTextures(camera.focusedEntity.surface, camera.focusedEntity.position, minimapXRange, minimapYRange, vertexArrays);
                 refreshCounter = 0;
+                if(getPollution == true)
+                {
+                    vertexArrays.Add(new VertexArray(PrimitiveType.Triangles));
+                    renderer.GeneratePollutionVertexArray(camera.focusedEntity.surface, camera.focusedEntity.position, minimapXRange, minimapYRange, vertexArrays[vertexArrays.Count - 1]);
+                }
             }
             Transform transform = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
-            Vector2f translation = new Vector2f(size.X/2 -(camera.focusedEntity.position.x * mapScale / Props.tileSize) + tX, size.Y/2 -(camera.focusedEntity.position.y * mapScale / Props.tileSize) + tY);
+            Vector2f translation = new Vector2f(size.X / 2 - (camera.focusedEntity.position.x * mapScale / Props.tileSize) + tX, size.Y / 2 - (camera.focusedEntity.position.y * mapScale / Props.tileSize) + tY);
             transform.Translate(translation);
             transform.Scale(mapScale, mapScale);
             transformState.Transform = transform;
@@ -95,6 +101,11 @@ namespace EngineeringCorpsCS
                     mapScale = mapScale > 8.0f ? 8.0f : mapScale;
                 }
             }
+        }
+
+        public void TogglePollution()
+        {
+            getPollution = !getPollution;
         }
     }
 }

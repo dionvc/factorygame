@@ -216,6 +216,7 @@ namespace EngineeringCorpsCS
                 {
                     p.Update();
                 }
+                surfaceContainer.Update();
                 //update camera
                 camera.Update();
                 //drawing game world (terrain, entities)

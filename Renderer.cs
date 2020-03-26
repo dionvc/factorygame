@@ -209,6 +209,7 @@ namespace EngineeringCorpsCS
                         }
                         vertexArrays.Add(vA);
                         //next get entities
+                        //This is very dynamic so there is no point caching it
                         List<Entity> entityList = chunk.entityList;
                         VertexArray entityArray = new VertexArray(PrimitiveType.Triangles);
                         int oX = i * Props.chunkSize;
@@ -231,6 +232,34 @@ namespace EngineeringCorpsCS
                             vertexArrays.Add(entityArray);
                         }
                     }
+                }
+            }
+        }
+
+        public void GeneratePollutionVertexArray(SurfaceContainer surface, Vector2 position, int xRange, int yRange, VertexArray vA)
+        {
+            int[] chunkIndices = SurfaceContainer.WorldToChunkCoords(position);
+            vA.Clear();
+            for (int i = chunkIndices[0] - xRange; i <= chunkIndices[0] + xRange; i++)
+            {
+                for (int j = chunkIndices[1] - yRange; j <= chunkIndices[1] + yRange; j++)
+                {
+                    byte val = Convert.ToByte(surface.GetInterpolatedPollution(i, j) * 255 / Props.maxPollution);
+                    Color topLeft = new Color(val, 0, 0, val);
+                    val = Convert.ToByte(surface.GetInterpolatedPollution(i + 1, j) * 255 / Props.maxPollution);
+                    Color topRight = new Color(val, 0, 0, val);
+                    val = Convert.ToByte(surface.GetInterpolatedPollution(i, j + 1) * 255 / Props.maxPollution);
+                    Color botLeft = new Color(val, 0, 0, val);
+                    val = Convert.ToByte(surface.GetInterpolatedPollution(i + 1, j + 1) * 255 / Props.maxPollution);
+                    Color botRight = new Color(val, 0, 0, val);
+                    int oX = i * Props.chunkSize;
+                    int oY = j * Props.chunkSize;
+                    vA.Append(new Vertex(new Vector2f(oX, oY), topLeft));
+                    vA.Append(new Vertex(new Vector2f(oX + Props.chunkSize, oY), topRight));
+                    vA.Append(new Vertex(new Vector2f(oX, oY + Props.chunkSize), botLeft));
+                    vA.Append(new Vertex(new Vector2f(oX + Props.chunkSize, oY), topRight));
+                    vA.Append(new Vertex(new Vector2f(oX + Props.chunkSize, oY + Props.chunkSize), botRight));
+                    vA.Append(new Vertex(new Vector2f(oX, oY + Props.chunkSize), botLeft));
                 }
             }
         }

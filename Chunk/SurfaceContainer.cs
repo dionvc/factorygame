@@ -23,6 +23,7 @@ namespace EngineeringCorpsCS
             this.tileCollection = tileCollection;
             chunks = new Chunk[Props.worldSize * Props.worldSize];
             surfaceGenerator = new SurfaceGenerator(0, tileCollection);
+            activeChunks = new List<Chunk>();
         }
 
         public void Update()
@@ -37,6 +38,7 @@ namespace EngineeringCorpsCS
             Chunk chunk = new Chunk();
             chunk.GenerateTerrain((x) * Props.chunkSize, (y) * Props.chunkSize, surfaceGenerator);
             SetChunk(x, y, chunk);
+            activeChunks.Add(chunk);
         }
         public Chunk GetChunk(int x, int y)
         {
@@ -164,7 +166,40 @@ namespace EngineeringCorpsCS
             }
         }
 
-        
+        public float GetInterpolatedPollution(int cX, int cY)
+        {
+            Chunk chunk = GetChunk(cX * Props.worldSize + cY, false);
+            float interpPollution = 0;
+            int chunkCounter = 0;
+            if(chunk != null)
+            {
+                interpPollution += chunk.pollutionValue;
+                chunkCounter++;
+            }
+            chunk = GetChunk((cX - 1) * Props.worldSize + cY, false);
+            if(chunk != null)
+            {
+                interpPollution += chunk.pollutionValue;
+                chunkCounter++;
+            }
+            chunk = GetChunk(cX * Props.worldSize + cY, false);
+            if(chunk != null)
+            {
+                interpPollution += chunk.pollutionValue;
+                chunkCounter++;
+            }
+            chunk = GetChunk(cX * Props.worldSize + cY, false);
+            if(chunk!= null)
+            {
+                interpPollution += chunk.pollutionValue;
+                chunkCounter++;
+            }
+            if(chunkCounter == 0)
+            {
+                return 0;
+            }
+            return interpPollution / chunkCounter;
+        }
 
         #region Coordinate conversions TODO: Cull this section down to "index" type functions
         /// <summary>
