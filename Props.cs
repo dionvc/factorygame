@@ -11,6 +11,7 @@ namespace EngineeringCorpsCS
         public const int chunkSize = 32; //size of chunk in tiles
         public const int worldSize = 2048; //size of world in chunks
         public const int tileSize = 32; //tilesize in pixels
+        public const int tileScaleFactor = 2;
         public const int vertexArrayCullingDistance = 32;
 
         public static int startingSize = 8;

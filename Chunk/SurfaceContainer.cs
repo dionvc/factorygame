@@ -13,9 +13,7 @@ namespace EngineeringCorpsCS
     {
         Chunk[] chunks;
         List<Chunk> activeChunks;
-        FastNoise elevationNoise;
-        FastNoise moistureNoise;
-        FastNoise temperatureNoise;
+        SurfaceGenerator surfaceGenerator;
         public BoundingBox tileBox { get; protected set; }
         public TileCollection tileCollection { get; protected set; }
 
@@ -24,18 +22,7 @@ namespace EngineeringCorpsCS
             tileBox = new BoundingBox(-16, -16, 16, 16);
             this.tileCollection = tileCollection;
             chunks = new Chunk[Props.worldSize * Props.worldSize];
-            Random r = new Random(DateTime.Now.Second);
-            elevationNoise = new FastNoise();
-            elevationNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
-            elevationNoise.SetSeed(r.Next(0, 10000));
-
-            moistureNoise = new FastNoise();
-            moistureNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
-            moistureNoise.SetSeed(r.Next(0, 10000));
-
-            temperatureNoise = new FastNoise();
-            temperatureNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
-            temperatureNoise.SetSeed(r.Next(0, 10000));
+            surfaceGenerator = new SurfaceGenerator(0, tileCollection);
         }
 
         public void Update()
@@ -48,7 +35,7 @@ namespace EngineeringCorpsCS
         public void GenerateTerrain(int x, int y)
         {
             Chunk chunk = new Chunk();
-            chunk.GenerateTerrain((x) * Props.chunkSize, (y) * Props.chunkSize, elevationNoise, moistureNoise, temperatureNoise);
+            chunk.GenerateTerrain((x) * Props.chunkSize, (y) * Props.chunkSize, surfaceGenerator);
             SetChunk(x, y, chunk);
         }
         public Chunk GetChunk(int x, int y)

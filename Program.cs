@@ -186,7 +186,7 @@ namespace EngineeringCorpsCS
             //Attaching the camera to something!
             camera.focusedEntity = players[15];
             menuFactory.CreateMinimap(renderer, camera);
-            TestTilePlacer tilePlacer = new TestTilePlacer(surfaceContainer, renderer);
+            TestTilePlacer tilePlacer = new TestTilePlacer(surfaceContainer, renderer, textureContainer);
             tilePlacer.SubscribeToInput(input);
         }
 

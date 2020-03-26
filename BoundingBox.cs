@@ -509,5 +509,48 @@ namespace EngineeringCorpsCS
             
             entity.surface.UpdateEntityInChunks(entity, totalVelocity);
         }
+
+        public static bool CheckForCollision(Entity entity)
+        {
+            int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
+            int[][] tileList = BoundingBox.GetTileBounds(entity.collisionBox, entity.position);
+            for (int i = 0; i < chunkList.Length; i++)
+            {
+                Chunk chunk = entity.surface.GetChunk(chunkList[i], false);
+                Vector2 pushBack;
+
+                //entity collision checks
+                List<Entity> collisionList = chunk.entityCollisionList;
+                for (int j = 0; j < collisionList.Count; j++)
+                {
+                    if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !collisionList[j].Equals(entity))
+                    {
+
+                        if (BoundingBox.CheckCollisionWithPushBack(entity.collisionBox, collisionList[j].collisionBox, entity.position, new Vector2(0,0), collisionList[j].position, out pushBack))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                //tile collision checks
+                //Perhaps switch to continually checking whether the player is colliding with a tile at his position until he isnt colliding with a tile?
+                //Would fix the situation where getting stuck in water still allows movement within
+                //TODO: try solution outline above
+                for (int j = 0; j < tileList[i].Length; j++)
+                {
+                    Tile tile = entity.surface.tileCollection.GetTerrainTile(chunk.GetTile(tileList[i][j]));
+                    if ((entity.collisionMask & tile.collisionMask) != 0)
+                    {
+                        Vector2 tilePos = SurfaceContainer.WorldToTileVector(chunkList[i], tileList[i][j]);
+                        if (BoundingBox.CheckCollisionWithPushBack(entity.collisionBox, entity.surface.tileBox, entity.position, new Vector2(0,0), tilePos, out pushBack))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
     }
 }

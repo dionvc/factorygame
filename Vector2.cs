@@ -16,7 +16,7 @@ namespace EngineeringCorpsCS
             this.y = y;
         }
 
-        public Vector2(int[] xy)
+        public Vector2(float[] xy)
         {
             this.x = xy[0];
             this.y = xy[1];

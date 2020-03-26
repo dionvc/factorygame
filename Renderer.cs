@@ -80,12 +80,12 @@ namespace EngineeringCorpsCS
                     int key = (i) * Props.worldSize + j;
                     if (terrainVertexArrays.TryGetValue(key, out _) == false)
                     {
-                        terrainVertexArrays.Add(key, tileCollection.GenerateTerrainVertexArray(surface, new int[] { i, j }));
+                        terrainVertexArrays.Add(key, tileCollection.GenerateTerrainVertices(surface, new int[] { i, j }));
                     }
                     VertexArray[] vArr;
                     if (terrainVertexArrays.TryGetValue(key, out vArr))
                     {
-                        for (int k = 1; k < vArr.Length; k++)
+                        for (int k = 0; k < vArr.Length; k++)
                         {
                             window.Draw(vArr[k], terrainRenderStates[k]);
 

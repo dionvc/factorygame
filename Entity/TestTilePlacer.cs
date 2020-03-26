@@ -11,13 +11,15 @@ namespace EngineeringCorpsCS
         private SurfaceContainer surface;
         private Renderer renderer;
         int placementSize = 0;
+        private TextureContainer textureContainer;
         /// <summary>
         /// This is a test entity!!!
         /// </summary>
-        public TestTilePlacer(SurfaceContainer surface, Renderer renderer)
+        public TestTilePlacer(SurfaceContainer surface, Renderer renderer, TextureContainer textureContainer)
         {
             this.surface = surface;
             this.renderer = renderer;
+            this.textureContainer = textureContainer;
         }
 
         public void SubscribeToInput(InputManager input)
@@ -64,6 +66,18 @@ namespace EngineeringCorpsCS
                     }
                 }
                     
+            }
+
+            if(input.mouseButton[InputBindings.secondary])
+            {
+                float[] mousePos = input.GetMousePositionAsFloat();
+                int[] tileAligned = new int[] {(int) (mousePos[0] - mousePos[0] % Props.tileSize),(int) ( mousePos[1] - mousePos[1] % Props.tileSize) };
+                BoundingBox box = new BoundingBox(32, 32);
+                EntityGhost entityGhost = new EntityGhost(box, new Vector2(tileAligned[0], tileAligned[1]), surface);
+                if (!BoundingBox.CheckForCollision(entityGhost))
+                {
+                    new Player(new Vector2(tileAligned[0], tileAligned[1]), surface, textureContainer);
+                }
             }
         }
     }

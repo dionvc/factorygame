@@ -82,6 +82,7 @@
     <Compile Include="Drawable\Animation.cs" />
     <Compile Include="Entity\Base.cs" />
     <Compile Include="Drawable\Drawable.cs" />
+    <Compile Include="Entity\EntityGhost.cs" />
     <Compile Include="Entity\EntityPhysical.cs" />
     <Compile Include="Entity\TestTilePlacer.cs" />
     <Compile Include="FontContainer.cs" />
@@ -94,7 +95,7 @@
     <Compile Include="Chunk\Chunk.cs" />
     <Compile Include="Chunk\SurfaceContainer.cs" />
     <Compile Include="Entity\Entity.cs" />
-    <Compile Include="Chunk\MapGenerator.cs" />
+    <Compile Include="Chunk\SurfaceGenerator.cs" />
     <Compile Include="Menu\MenuWorldMap.cs" />
     <Compile Include="Menu\MenuFactory.cs" />
     <Compile Include="Menu\MenuContainer.cs" />
@@ -186,6 +187,18 @@
     <Content Include="Graphics\snowsquare.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\Terrain\snowTilesheet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\terrainSandTest.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Terrain\cliffTilesheet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Terrain\lavaTilesheet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Graphics\tileTransitionTest.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -217,5 +230,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
