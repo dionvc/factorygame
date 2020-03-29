@@ -15,12 +15,13 @@ namespace EngineeringCorpsCS
         private byte[] terrain;
         public List<Entity> entityList { get; protected set; } //Collection of entities for drawing (entities will be dynamically sorted)
         public List<Entity> entityCollisionList { get; protected set; } //Collection of entities for collision (2+ different chunks may contain the same entity)
-
+        public List<LightSource> lightSources { get; protected set; }
         public Chunk()
         {
             entityList = new List<Entity>();
             entityCollisionList = new List<Entity>();
             terrain = new byte[Props.chunkSize * Props.chunkSize];
+            lightSources = new List<LightSource>();
         }
 
         public void Update()
@@ -77,6 +78,16 @@ namespace EngineeringCorpsCS
         public void RemoveEntityCollisionCheck(Entity entity)
         {
             entityCollisionList.Remove(entity);
+        }
+
+        public void AddLightSource(LightSource lightSource)
+        {
+            lightSources.Add(lightSource);
+        }
+
+        public void RemoveLightSource(LightSource lightSource)
+        {
+            lightSources.Remove(lightSource);
         }
 
         public void incrementPollution()

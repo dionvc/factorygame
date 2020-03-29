@@ -166,6 +166,23 @@ namespace EngineeringCorpsCS
             }
         }
 
+
+        public void UpdateLightSource(LightSource lightSource)
+        {
+            int chunkIndex = WorldToChunkIndex(lightSource.position);
+            if(chunkIndex != lightSource.centeredChunk)
+            {
+                //GetChunk(lightSource.centeredChunk, false).RemoveLightSource(lightSource);
+                lightSource.centeredChunk = chunkIndex;
+                GetChunk(lightSource.centeredChunk, true).AddLightSource(lightSource);
+            }
+        }
+        /// <summary>
+        /// Interpolates the pollution for the four surrounding chunks of cX, cY
+        /// </summary>
+        /// <param name="cX"></param>
+        /// <param name="cY"></param>
+        /// <returns></returns>
         public float GetInterpolatedPollution(int cX, int cY)
         {
             Chunk chunk = GetChunk(cX * Props.worldSize + cY, false);

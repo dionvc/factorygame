@@ -168,6 +168,8 @@ namespace EngineeringCorpsCS
             surfaceContainer = new SurfaceContainer(tileCollection);
             renderer.InitializeForGame(tileCollection);
             #region test entities
+            LightSource testLightSource1 = new LightSource(new Vector2(1024, 1024), surfaceContainer, 2000.0f, textureContainer.GetTexture("lightsource"));
+            LightSource testLightSource2 = new LightSource(new Vector2(2048, 2048), surfaceContainer, 2000.0f, textureContainer.GetTexture("lightsource"));
             players = new List<Player>();
             tree = new List<Tree>();
             for (int i = 0; i < 16; i++)

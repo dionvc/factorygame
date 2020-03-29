@@ -96,6 +96,7 @@
     <Compile Include="Chunk\SurfaceContainer.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="Chunk\SurfaceGenerator.cs" />
+    <Compile Include="LightSource.cs" />
     <Compile Include="Menu\MenuWorldMap.cs" />
     <Compile Include="Menu\MenuFactory.cs" />
     <Compile Include="Menu\MenuContainer.cs" />
@@ -152,6 +153,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\DebugTextures\4.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\DebugTextures\lightsource.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\DebugTextures\NullTexture.png">

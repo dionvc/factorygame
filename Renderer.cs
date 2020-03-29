@@ -15,6 +15,8 @@ namespace EngineeringCorpsCS
         VertexArray entityBoundingBoxArray; //must be reconstructed every frame TODO: split terrain bounding box array into cachable set
         Texture[] terrainTilesheets;
         RenderTexture GUI;
+        RenderTexture lighting;
+        RenderStates lightingState;
         RenderStates[] terrainRenderStates;
         List<Entity> drawList;
 
@@ -43,6 +45,10 @@ namespace EngineeringCorpsCS
         {
             this.menuContainer = menuContainer;
             GUI = new RenderTexture(window.Size.X, window.Size.Y);
+
+            lighting = new RenderTexture(window.Size.X, window.Size.Y);
+            BlendMode lightingMode = BlendMode.Multiply;//new BlendMode(BlendMode.Factor.One, BlendMode.Factor.One, BlendMode.Equation.ReverseSubtract);
+            lightingState = new RenderStates(lightingMode);
         }
         public void InitializeForGame(TileCollection tileCollection)
         {
@@ -136,8 +142,30 @@ namespace EngineeringCorpsCS
             drawList.Clear();
             #endregion entity drawing
 
+            #region shadow drawing
+            lighting.Clear(new Color(0, 0, 0, 128));
+            lighting.SetView(camera.GetGameView());
+            for (int i = begPos[0]; i <= endPos[0]; i++)
+            {
+                for (int j = begPos[1]; j <= endPos[1]; j++)
+                {
+                    Chunk chunk = surface.GetChunk(i, j);
+                    List<LightSource> lightSources = chunk.lightSources;
+                    for (int k = 0; k < lightSources.Count; k++)
+                    {
+                        lighting.Draw(lightSources[k].light, lightingState);
+                    }
+                }
+            }
+            lighting.Display();
+            Sprite lightingSprite = new Sprite(lighting.Texture);
+            window.SetView(camera.GetGUIView());
+            window.Draw(lightingSprite);
+            window.SetView(camera.GetGameView());
+            #endregion
+
             #region bounding box drawing
-            if (drawBoundingBoxes == true)
+                    if (drawBoundingBoxes == true)
             {
                 for (int i = begPos[0]; i <= endPos[0]; i++)
                 {
