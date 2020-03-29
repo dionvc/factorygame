@@ -143,7 +143,7 @@ namespace EngineeringCorpsCS
             #endregion entity drawing
 
             #region shadow drawing
-            lighting.Clear(new Color(0, 0, 0, 128));
+            lighting.Clear(new Color(0, 0, 0, 255));
             lighting.SetView(camera.GetGameView());
             for (int i = begPos[0]; i <= endPos[0]; i++)
             {

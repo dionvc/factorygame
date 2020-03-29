@@ -172,7 +172,10 @@ namespace EngineeringCorpsCS
             int chunkIndex = WorldToChunkIndex(lightSource.position);
             if(chunkIndex != lightSource.centeredChunk)
             {
-                //GetChunk(lightSource.centeredChunk, false).RemoveLightSource(lightSource);
+                Chunk removeChunk = GetChunk(lightSource.centeredChunk, false);
+                if (removeChunk != null) {
+                    removeChunk.RemoveLightSource(lightSource);
+                }
                 lightSource.centeredChunk = chunkIndex;
                 GetChunk(lightSource.centeredChunk, true).AddLightSource(lightSource);
             }
