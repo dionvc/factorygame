@@ -18,6 +18,7 @@ namespace EngineeringCorpsCS
             Texture[] treeTextures = new Texture[] { textureContainer.GetTexture("Tree01") };
             drawArray = new Drawable[] { new Animation(treeTextures, new Vector2i(256, 256), new Vector2f(0, 0), new Vector2f(0, -112), new Vector2f(1, 1), 1, "Forward", 0.0f) };
             collisionMask = CollisionLayer.EntityPhysical;
+            mapColor = new Color(0, 255, 0);
         }
     }
 }

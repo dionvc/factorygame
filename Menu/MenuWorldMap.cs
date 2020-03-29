@@ -51,7 +51,7 @@ namespace EngineeringCorpsCS
                 if(getPollution == true)
                 {
                     vertexArrays.Add(new VertexArray(PrimitiveType.Triangles));
-                    renderer.GeneratePollutionVertexArray(camera.focusedEntity.surface, camera.focusedEntity.position, minimapXRange, minimapYRange, vertexArrays[vertexArrays.Count - 1]);
+                    renderer.GeneratePollutionVertexArray(camera.focusedEntity.surface, camera.focusedEntity.position, minimapXRange, minimapYRange, vertexArrays[vertexArrays.Count-1]);
                 }
             }
             Transform transform = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
@@ -65,6 +65,7 @@ namespace EngineeringCorpsCS
                 {
                     textureMinimap.Draw(vertexArrays[i], transformState);
                 }
+                
             }
             textureMinimap.Display();
             Sprite minimap = new Sprite(textureMinimap.Texture);
@@ -106,6 +107,7 @@ namespace EngineeringCorpsCS
         public void TogglePollution()
         {
             getPollution = !getPollution;
+            refreshCounter = refreshRate;
         }
     }
 }

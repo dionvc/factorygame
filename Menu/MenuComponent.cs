@@ -13,7 +13,6 @@ namespace EngineeringCorpsCS
         public Vector2f position { get; protected set; }
         public Vector2f size { get; protected set; }
         public MenuComponent parent { get; protected set; }
-        
         public BoundingBox collisionBox { get; protected set; }
         public List<MenuComponent> attachedComponents { get; protected set; } = new List<MenuComponent>();
         public MenuContainer container { get; set; }
@@ -43,22 +42,44 @@ namespace EngineeringCorpsCS
 
         public void SetInitialPosition(View GUIView)
         {
-            position = new Vector2f(GUIView.Size.X / 2 - size.X / 2, GUIView.Size.Y / 2 - size.Y / 2);
-            if(pivot1 == "top" || pivot2 == "top")
-            {
-                position += new Vector2f(0, -GUIView.Size.Y / 2 + size.Y/2);
+            if(parent == null) {
+                position = new Vector2f(GUIView.Size.X / 2 - size.X / 2, GUIView.Size.Y / 2 - size.Y / 2);
+                if (pivot1 == "top" || pivot2 == "top")
+                {
+                    position += new Vector2f(0, -GUIView.Size.Y / 2 + size.Y / 2);
+                }
+                if (pivot1 == "bottom" || pivot2 == "bottom")
+                {
+                    position += new Vector2f(0, GUIView.Size.Y / 2 - size.Y / 2);
+                }
+                if (pivot1 == "left" || pivot2 == "left")
+                {
+                    position += new Vector2f(-GUIView.Size.X / 2 + size.X / 2, 0);
+                }
+                if (pivot1 == "right" || pivot2 == "right")
+                {
+                    position += new Vector2f(GUIView.Size.X / 2 - size.X / 2, 0);
+                }
             }
-            if (pivot1 == "bottom" || pivot2 == "bottom")
+            else
             {
-                position += new Vector2f(0, GUIView.Size.Y / 2 - size.Y/2);
-            }
-            if (pivot1 == "left" || pivot2 == "left")
-            {
-                position += new Vector2f(-GUIView.Size.X / 2 + size.X/2, 0);
-            }
-            if(pivot1 == "right" || pivot2 == "right")
-            {
-                position += new Vector2f(GUIView.Size.X / 2 - size.X/2, 0);
+                position = new Vector2f(parent.position.X, parent.position.Y);
+                if (pivot1 == "top" || pivot2 == "top")
+                {
+                    position += new Vector2f(0, - size.Y);
+                }
+                if (pivot1 == "bottom" || pivot2 == "bottom")
+                {
+                    position += new Vector2f(0, parent.size.Y);
+                }
+                if (pivot1 == "left" || pivot2 == "left")
+                {
+                    position += new Vector2f(-size.X, 0);
+                }
+                if (pivot1 == "right" || pivot2 == "right")
+                {
+                    position += new Vector2f(parent.size.X, 0);
+                }
             }
         }
 

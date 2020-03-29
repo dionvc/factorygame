@@ -11,6 +11,7 @@ namespace EngineeringCorpsCS
         private SurfaceContainer surface;
         private Renderer renderer;
         int placementSize = 0;
+        byte tilePlace = 0;
         private TextureContainer textureContainer;
         /// <summary>
         /// This is a test entity!!!
@@ -36,11 +37,11 @@ namespace EngineeringCorpsCS
         {
             if(input.keyPressed[InputBindings.increasePlacementSize])
             {
-                placementSize += 1;
+                tilePlace += 1;
             }
             if(input.keyPressed[InputBindings.decreasePlacementSize])
             {
-                placementSize -= 1;
+                tilePlace -= 1;
             }
             if(input.mouseButton[InputBindings.primary])
             {
@@ -57,10 +58,7 @@ namespace EngineeringCorpsCS
                     {
                         for (int j = 0; j < tileBounds[i].Length; j++)
                         {
-                            if (chunk.GetTile(tileBounds[i][j]) <= 1)
-                            {
-                                chunk.SetTile(tileBounds[i][j], 2);
-                            }
+                            chunk.SetTile(tileBounds[i][j], tilePlace);
                         }
                         renderer.RemoveCachedVertexArray(chunkBounds[i]);
                     }

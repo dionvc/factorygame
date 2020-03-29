@@ -54,10 +54,14 @@ namespace EngineeringCorpsCS
         {
             MenuPanel minimapPanel = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 300), new bool[] { false, false });
             MenuWorldMap minimap = new MenuWorldMap(camera, renderer, new Vector2f(25, 25), new Vector2f(250, 250), new bool[] { true, true });
+            MenuButton minimapPollutionToggle = new MenuButton(new Vector2f(25, 275), minimap.TogglePollution, new Vector2f(50, 50));
             minimapPanel.AttachComponent(minimap);
+            minimapPanel.AttachComponent(minimapPollutionToggle);
+            minimapPollutionToggle.pivot1 = "left";
+            minimapPollutionToggle.SetInitialPosition(camera.GetGUIView());
             minimapPanel.closePanelKey = InputBindings.showMinimap;
             minimapPanel.pivot1 = "top";
-            minimapPanel.pivot2 = "left";
+            minimapPanel.pivot2 = "right";
             minimapPanel.SetInitialPosition(camera.GetGUIView());
             minimapPanel.lockedPosition = true;
             menuContainer.AttachMenu(minimapPanel);
