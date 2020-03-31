@@ -14,20 +14,33 @@ namespace EngineeringCorpsCS
         Chunk[] chunks;
         List<Chunk> activeChunks;
         SurfaceGenerator surfaceGenerator;
+        //note: the clock is modeled with midday being 0:00 so that a bell curve can be easily modeled around midnight
+        //midnight is assumed to be at halfway through the day
+        private int timeOfDay;
+        private int timeOfMidday; //when the clock rolls over
+        private int lengthOfNight; //the total length of night as one standard deviation
+        private byte levelOfDarkness; //the maximum byte value for darkness
         public BoundingBox tileBox { get; protected set; }
         public TileCollection tileCollection { get; protected set; }
 
-        public SurfaceContainer(TileCollection tileCollection)
+        public SurfaceContainer(TileCollection tileCollection, int timeOfMidday, int lengthOfNight, byte levelOfDarkness)
         {
             tileBox = new BoundingBox(-16, -16, 16, 16);
             this.tileCollection = tileCollection;
             chunks = new Chunk[Props.worldSize * Props.worldSize];
             surfaceGenerator = new SurfaceGenerator(0, tileCollection);
             activeChunks = new List<Chunk>();
+
+            this.timeOfMidday = timeOfMidday;
+            this.lengthOfNight = lengthOfNight;
+            this.levelOfDarkness = levelOfDarkness;
+            timeOfDay = 1000;
         }
 
         public void Update()
         {
+            timeOfDay++;
+            timeOfDay %= timeOfMidday;
             for(int i = 0; i < activeChunks.Count; i++)
             {
                 activeChunks[i].Update();
@@ -122,11 +135,10 @@ namespace EngineeringCorpsCS
         /// <param name="transPos"></param>
         /// <param name="centeredChunk"></param>
         /// <param name="collisionChunks"></param>
-        public void UpdateEntityInChunks(Entity entity, Vector2 transPos)
+        public void UpdateEntityInChunks(Entity entity)
         {
             //The entity's draw/main chunk is updated first
-            Vector2 newPos = entity.position.VAdd(transPos);
-            int newChunkIndex = WorldToChunkIndex(newPos);
+            int newChunkIndex = WorldToChunkIndex(entity.position);
             if (entity.centeredChunk != newChunkIndex)
             {
                 GetChunk(entity.centeredChunk, false).RemoveEntityFromChunk(entity);
@@ -134,7 +146,7 @@ namespace EngineeringCorpsCS
                 GetChunk(newChunkIndex, true).AddEntityToChunk(entity);
             }
             //Now, the entity's collision chunks are computed
-            int[] newCollisionChunks  = BoundingBox.GetChunkBounds(entity.collisionBox, newPos);
+            int[] newCollisionChunks  = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
             foreach (int x in newCollisionChunks)
             {
                 if(!entity.collisionChunks.Contains(x))
@@ -166,7 +178,10 @@ namespace EngineeringCorpsCS
             }
         }
 
-
+        /// <summary>
+        /// Updates a light source into a chunk
+        /// </summary>
+        /// <param name="lightSource"></param>
         public void UpdateLightSource(LightSource lightSource)
         {
             int chunkIndex = WorldToChunkIndex(lightSource.position);
@@ -180,6 +195,16 @@ namespace EngineeringCorpsCS
                 GetChunk(lightSource.centeredChunk, true).AddLightSource(lightSource);
             }
         }
+
+        /// <summary>
+        /// Removes a light source from a chunk
+        /// </summary>
+        /// <param name="lightSource"></param>
+        public void RemoveLightSource(LightSource lightSource)
+        {
+            GetChunk(WorldToChunkIndex(lightSource.position), false).RemoveLightSource(lightSource);
+        }
+        
         /// <summary>
         /// Interpolates the pollution for the four surrounding chunks of cX, cY
         /// </summary>
@@ -219,6 +244,19 @@ namespace EngineeringCorpsCS
                 return 0;
             }
             return interpPollution / chunkCounter;
+        }
+
+        /// <summary>
+        /// Gets the value of darkness as a drawable byte.
+        /// </summary>
+        /// <returns></returns>
+        public byte GetDarkness()
+        {
+            double a = timeOfDay - (timeOfMidday / 2);
+            double b = (2 * lengthOfNight * lengthOfNight);
+            double c = - a * a / b;
+            double darkness = levelOfDarkness * Math.Exp(c) - 1;
+            return Convert.ToByte(darkness);
         }
 
         #region Coordinate conversions TODO: Cull this section down to "index" type functions

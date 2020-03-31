@@ -79,25 +79,25 @@ namespace EngineeringCorpsCS
             base.HandleInput(input);
             if (controllable)
             {
-                if (input.keyHeld[InputBindings.moveLeft])
+                if (input.GetKeyHeld(InputBindings.moveLeft, true))
                 {
                     tX += controlSpeed;
                 }
-                if (input.keyHeld[InputBindings.moveRight])
+                if (input.GetKeyHeld(InputBindings.moveRight, true))
                 {
                     tX -= controlSpeed;
                 }
-                if (input.keyHeld[InputBindings.moveUp])
+                if (input.GetKeyHeld(InputBindings.moveUp, true))
                 {
                     tY += controlSpeed;
                 }
-                if (input.keyHeld[InputBindings.moveDown])
+                if (input.GetKeyHeld(InputBindings.moveDown, true))
                 {
                     tY -= controlSpeed;
                 }
-                if (input.mouseScrollDelta != 0)
+                if (input.GetMouseScrollDelta(false) != 0)
                 {
-                    mapScale += (input.mouseScrollDelta / InputBindings.scrollSensitivity);
+                    mapScale += (input.GetMouseScrollDelta(true) / InputBindings.scrollSensitivity);
                     mapScale = mapScale < 0.5f ? 0.5f : mapScale;
                     mapScale = mapScale > 8.0f ? 8.0f : mapScale;
                 }

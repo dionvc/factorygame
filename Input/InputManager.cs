@@ -12,56 +12,43 @@ namespace EngineeringCorpsCS
     class InputManager
     {
         RenderWindow window;
-        /// <summary>
+        #region key and mouse dictionaries
         /// Stores whether the specific key was pressed this frame
-        /// </summary>
-        public Dictionary<Keyboard.Key, bool> keyPressed { get; protected set; }
-        /// <summary>
+        private Dictionary<Keyboard.Key, bool> keyPressed;
         /// Stores whether the specific key is currently held
-        /// </summary>
-        public Dictionary<Keyboard.Key, bool> keyHeld { get; protected set; }
-        /// <summary>
+        private Dictionary<Keyboard.Key, bool> keyHeld;
         /// Stores whether the specific key was released this frame
-        /// </summary>
-        public Dictionary<Keyboard.Key, bool> keyReleased { get; protected set; }
-        /// <summary>
+        private Dictionary<Keyboard.Key, bool> keyReleased;
         /// Stores the number of times the specific key has been pressed in the last second
-        /// </summary>
-        public Dictionary<Keyboard.Key, byte> keyAccumulator { get; protected set; }
-        /// <summary>
+        private Dictionary<Keyboard.Key, byte> keyAccumulator;
         /// Stores whether the mouse button is currently held down
-        /// </summary>
-        public Dictionary<Mouse.Button, bool> mouseButton { get; protected set; }
-        /// <summary>
+        private Dictionary<Mouse.Button, bool> mouseButton;
         /// Stores whether the mouse was clicked this frame
-        /// </summary>
-        public Dictionary<Mouse.Button, bool> mouseClick { get; protected set; }
-        /// <summary>
+        private Dictionary<Mouse.Button, bool> mouseClick;
         /// Stores the number of times the mouse has been clicked in the last second
-        /// </summary>
-        public Dictionary<Mouse.Button, byte> mouseAccumulator { get; protected set; }
-        /// <summary>
+        private Dictionary<Mouse.Button, byte> mouseAccumulator;
         /// Stores whether a mouse button was released this frame
-        /// </summary>
-        public Dictionary<Mouse.Button, bool> mouseReleased { get; protected set; }
-        /// <summary>
+        private Dictionary<Mouse.Button, bool> mouseReleased;
+        #endregion key and mouse dictionaries
+
         /// Stores the change in mouse scroll this frame
-        /// </summary>
-        public float mouseScrollDelta { get; protected set; }
-        /// <summary>
+        private float mouseScrollDelta;
+        // Stores the mouse position in screen coordinates
+        private Vector2i mousePos;
+        /// Stores the difference in the new and old mouse positions.  Useful for dragging items.
+        private Vector2i mouseDiff;
         /// This client's menuFactory.  Menu's are created by input, so they are closely coupled.
-        /// </summary>
         public MenuFactory menuFactory { get; set; }
 
-        public Vector2i mousePos { get; protected set; }
-        public Vector2i mouseDiff { get; protected set; }
 
         private int tickAccumulator = 0;
         private int keyResetInterval = 60;
         private List<IInputSubscriber> subscriberMenuList;
         private List<IInputSubscriber> subscriberList;
         private Camera subscribedCamera;
-        
+        private List<Keyboard.Key> keyConsumedForFrame; //Stores if a key has been consumed this frame, if so, doesn't allow it to be used
+        private List<Mouse.Button> mouseButtonConsumedForFrame;
+        private bool mouseScrollConsumedForFrame = false;
         public InputManager(RenderWindow window) 
         {
             this.window = window;
@@ -79,6 +66,8 @@ namespace EngineeringCorpsCS
             mouseClick = new Dictionary<Mouse.Button, bool>();
             mouseAccumulator = new Dictionary<Mouse.Button, byte>();
             mouseReleased = new Dictionary<Mouse.Button, bool>();
+            keyConsumedForFrame = new List<Keyboard.Key>();
+            mouseButtonConsumedForFrame = new List<Mouse.Button>();
             foreach (Keyboard.Key key in Enum.GetValues(typeof(Keyboard.Key)))
             {
                 keyPressed[key] = false;
@@ -130,6 +119,9 @@ namespace EngineeringCorpsCS
                     mouseAccumulator[mb] = 0;
                 }
             }
+            keyConsumedForFrame.Clear();
+            mouseButtonConsumedForFrame.Clear();
+            mouseScrollConsumedForFrame = false;
             mouseScrollDelta = 0.0f;
             tickAccumulator++;
         }
@@ -242,19 +234,133 @@ namespace EngineeringCorpsCS
             }
         }
 
+        //Note: Consumed keys mean that the key cannot be accessed as true for the rest of the frame
+
         /// <summary>
-        /// Consumes the specified key input and returns true.  If the input was not there, then the function returns false.
+        /// Gets whether a key was pressed this frame and can optionally consume it.
         /// </summary>
         /// <param name="key"></param>
+        /// <param name="consume"></param>
         /// <returns></returns>
-        public bool ConsumeKeyPress(Keyboard.Key key)
+        public bool GetKeyPressed(Keyboard.Key key, bool consume)
         {
-            if(keyPressed[key])
+            if(keyPressed[key] && !keyConsumedForFrame.Contains(key))
             {
-                keyPressed[key] = false;
+                if (consume)
+                {
+                    keyConsumedForFrame.Add(key);
+                }
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Gets whether a key was held for this frame and optionally consumes it for the frame.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="consume"></param>
+        /// <returns></returns>
+        public bool GetKeyHeld(Keyboard.Key key, bool consume)
+        {
+            if(keyHeld[key] && !keyConsumedForFrame.Contains(key))
+            {
+                if (consume)
+                {
+                    keyConsumedForFrame.Add(key);
+                }
+                return true;
+            }
+            return false;
+        }
+        
+        /// <summary>
+        /// Gets whether a key was released this frame and optionally consumes it for the frame.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="consume"></param>
+        /// <returns></returns>
+        public bool GetKeyReleased(Keyboard.Key key, bool consume)
+        {
+            if (keyReleased[key] && !keyConsumedForFrame.Contains(key))
+            {
+                if (consume)
+                {
+                    keyConsumedForFrame.Add(key);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Gets whether the mouse button was clicked this frame and optionally consumes it for the frame.
+        /// </summary>
+        /// <param name="mb"></param>
+        /// <param name="consume"></param>
+        /// <returns></returns>
+        public bool GetMouseClicked(Mouse.Button mb, bool consume)
+        {
+            if(mouseClick[mb] && !mouseButtonConsumedForFrame.Contains(mb))
+            {
+                if(consume)
+                {
+                    mouseButtonConsumedForFrame.Add(mb);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Gets if the mouse button was held for this frame and optionally consumes it.
+        /// </summary>
+        /// <param name="mb"></param>
+        /// <param name="consume"></param>
+        /// <returns></returns>
+        public bool GetMouseHeld(Mouse.Button mb, bool consume)
+        {
+            if (mouseButton[mb] && !mouseButtonConsumedForFrame.Contains(mb))
+            {
+                if (consume)
+                {
+                    mouseButtonConsumedForFrame.Add(mb);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Gets if the mouse button was released this frame and optionally consumes it.
+        /// </summary>
+        /// <param name="mb"></param>
+        /// <param name="consume"></param>
+        /// <returns></returns>
+        public bool GetMouseReleased(Mouse.Button mb, bool consume)
+        {
+            if (mouseReleased[mb] && !mouseButtonConsumedForFrame.Contains(mb))
+            {
+                if (consume)
+                {
+                    mouseButtonConsumedForFrame.Add(mb);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public float GetMouseScrollDelta(bool consume)
+        {
+            if (!mouseScrollConsumedForFrame)
+            {
+                if(consume)
+                {
+                    mouseScrollConsumedForFrame = true;
+                }
+                return mouseScrollDelta;
+            }
+            return 0.0f;
         }
 
         public Vector2f GetMousePosition()

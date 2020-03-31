@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Chunk\Alliance.cs" />
     <Compile Include="Drawable\Animation.cs" />
     <Compile Include="Entity\Base.cs" />
     <Compile Include="Drawable\Drawable.cs" />

@@ -20,7 +20,7 @@ namespace EngineeringCorpsCS
         /// <summary>
         /// Key which closes the menu panel.  Defaults to none.
         /// </summary>
-        public Keyboard.Key closePanelKey { get; set; }
+        public Keyboard.Key closePanelKey { get; set; } = Keyboard.Key.F15;
         public MenuPanel(Vector2f relativePosition, Vector2f componentSize, bool[] sizeScaling)
         {
             this.position = relativePosition;
@@ -43,7 +43,7 @@ namespace EngineeringCorpsCS
         public override void HandleInput(InputManager input)
         {
             base.HandleInput(input);
-            if(input.ConsumeKeyPress(closePanelKey))
+            if(input.GetKeyPressed(closePanelKey, true))
             {
                 container.RemoveMenu(this);
                 return;
@@ -57,12 +57,13 @@ namespace EngineeringCorpsCS
                 origin += bubble.position;
                 bubble = bubble.parent;
             }
-            if (panelState == PanelState.Dragging && input.mouseReleased[InputBindings.primary])
+            if (panelState == PanelState.Dragging && input.GetMouseReleased(InputBindings.primary, false))
             {
                 panelState = PanelState.Normal;
             }
-            if (panelState == PanelState.Normal && input.mouseClick[InputBindings.primary] && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, position + origin))
+            if (panelState == PanelState.Normal && input.GetMouseClicked(InputBindings.primary, false) && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, position + origin))
             {
+                input.GetMouseClicked(InputBindings.primary, true);
                 panelState = PanelState.Dragging;
                 this.Translate(input.GetMouseDiff());
             }

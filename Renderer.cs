@@ -47,8 +47,7 @@ namespace EngineeringCorpsCS
             GUI = new RenderTexture(window.Size.X, window.Size.Y);
 
             lighting = new RenderTexture(window.Size.X, window.Size.Y);
-            BlendMode lightingMode = BlendMode.Multiply;//new BlendMode(BlendMode.Factor.One, BlendMode.Factor.One, BlendMode.Equation.ReverseSubtract);
-            lightingState = new RenderStates(lightingMode);
+            lightingState = new RenderStates(BlendMode.Multiply);
         }
         public void InitializeForGame(TileCollection tileCollection)
         {
@@ -142,8 +141,8 @@ namespace EngineeringCorpsCS
             drawList.Clear();
             #endregion entity drawing
 
-            #region shadow drawing
-            lighting.Clear(new Color(0, 0, 0, 255));
+            #region lighting drawing
+            lighting.Clear(new Color(0, 0, 0, surface.GetDarkness()));
             lighting.SetView(camera.GetGameView());
             for (int i = begPos[0]; i <= endPos[0]; i++)
             {
@@ -480,7 +479,7 @@ namespace EngineeringCorpsCS
         }
         public void HandleInput(InputManager input)
         {
-            if(input.keyPressed[InputBindings.showDebugMenu])
+            if(input.GetKeyPressed(InputBindings.showDebugMenu, true))
             {
                 input.menuFactory.CreateDebugMenu(this);
             }

@@ -64,12 +64,12 @@ namespace EngineeringCorpsCS
                 buttonState = ButtonState.Normal;
                 buttonColor = buttonNormal;
             }
-            if(buttonState == ButtonState.Hover && input.mouseClick[InputBindings.primary])
+            if(buttonState == ButtonState.Hover && input.GetMouseClicked(InputBindings.primary, true))
             {
                 buttonState = ButtonState.Held;
                 buttonColor = buttonHeld;
             }
-            if (buttonState == ButtonState.Held && input.mouseReleased[InputBindings.primary])
+            if (buttonState == ButtonState.Held && input.GetMouseReleased(InputBindings.primary, false))
             {
                 action();
                 buttonState = ButtonState.Normal;

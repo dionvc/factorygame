@@ -58,9 +58,9 @@ namespace EngineeringCorpsCS
         public void HandleInput(InputManager input)
         {
             //Handle zooming
-            if (input.mouseScrollDelta != 0)
+            if (input.GetMouseScrollDelta(false) != 0)
             {
-                viewScale -= (input.mouseScrollDelta/InputBindings.scrollSensitivity);
+                viewScale -= (input.GetMouseScrollDelta(true)/InputBindings.scrollSensitivity);
                 if (viewScale < 0.5)
                 {
                     viewScale = 0.5f;

@@ -54,19 +54,19 @@ namespace EngineeringCorpsCS
         }
         public void HandleInput(InputManager input)
         {
-            if (input.keyHeld[InputBindings.moveUp])
+            if (input.GetKeyHeld(InputBindings.moveUp, false))
             {
                 velocity.Add(0, -8);
             }
-            if (input.keyHeld[InputBindings.moveDown])
+            if (input.GetKeyHeld(InputBindings.moveDown, false))
             {
                 velocity.Add(0, 8);
             }
-            if (input.keyHeld[InputBindings.moveLeft])
+            if (input.GetKeyHeld(InputBindings.moveLeft, false))
             {
                 velocity.Add(-8, 0);
             }
-            if(input.keyHeld[InputBindings.moveRight])
+            if(input.GetKeyHeld(InputBindings.moveRight, false))
             {
                 velocity.Add(8, 0);
             }

@@ -166,7 +166,7 @@ namespace EngineeringCorpsCS
             this.SubscribeToInput(input);
             //Game systems intialization
             tileCollection = new TileCollection(textureContainer);
-            surfaceContainer = new SurfaceContainer(tileCollection);
+            surfaceContainer = new SurfaceContainer(tileCollection, 3000, 1000, 196);
             renderer.InitializeForGame(tileCollection);
             #region test entities
             players = new List<Player>();
@@ -219,6 +219,7 @@ namespace EngineeringCorpsCS
                 {
                     p.Update();
                 }
+                List<Player> test = BoundingBox.GetCollisionListOfType<Player>(players[15]);
                 testLightSource1.Update();
                 surfaceContainer.Update();
                 //update camera
@@ -260,7 +261,7 @@ namespace EngineeringCorpsCS
 
         public void HandleInput(InputManager input)
         {
-            if (input.ConsumeKeyPress(InputBindings.showPauseMenu))
+            if (input.GetKeyPressed(InputBindings.showPauseMenu, true))
             {
                 menuFactory.CreateMainMenu(this, camera);
             }

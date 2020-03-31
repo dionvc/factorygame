@@ -307,7 +307,95 @@ namespace EngineeringCorpsCS
             #endregion SAT Check
             return true; //all checks failed, boxes collide
         }
-        
+
+        /// <summary>
+        /// Returns whether a collision between two collision boxes has occurred.
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="posSelf"></param>
+        /// <param name="posOther"></param>
+        /// <returns>Truth on whether there was a collision</returns>
+        public static bool CheckCollision(BoundingBox self, BoundingBox other, Vector2 posSelf, Vector2 selfVelocity, Vector2 posOther)
+        {
+
+            #region Circle culling check
+            Vector2 d = new Vector2(posOther.x - posSelf.x - selfVelocity.x, posOther.y - posSelf.y - selfVelocity.y);
+            if ((self.radiusApproximation + other.radiusApproximation) < d.GetMagnitude())
+            {
+                return false;
+            }
+            #endregion Circle culling check
+
+            #region SimpleCollisionCheck (Broken)
+            /*
+            //2nd check AABB if both have theta = 0
+            if (self.rotation == 0 && other.rotation == 0)
+            {
+                if (posSelf.x + selfVelocity.x < posOther.x + other.width &&
+                    posSelf.x + selfVelocity.x + self.width > posOther.x &&
+                    posSelf.y + selfVelocity.y < posOther.y + other.height &&
+                    posSelf.y + selfVelocity.y + self.height > posOther.y)
+                {
+                    float overlapY = self.halfHeight + other.halfHeight - Math.Abs(d.y);
+                    float overlapX = self.halfWidth + other.halfWidth - Math.Abs(d.x);
+                    if (overlapX < overlapY) //push back along X
+                    {
+                        if (posSelf.x + selfVelocity.x < posOther.x)
+                        {
+                            overlapX *= -1;
+                        }
+                        pushBackSelf.x = overlapX;
+                    }
+                    else //push back along Y
+                    {
+                        if (posSelf.y + selfVelocity.y < posOther.y)
+                        {
+                            overlapY *= -1;
+                        }
+                        pushBackSelf.y = overlapY;
+                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            */
+            #endregion
+
+            #region Separating Axis Theorem check (final and most intensive check for accuracy)
+            Vector2[] axis1 = self.GetNormals();
+            Vector2[] axis2 = other.GetNormals();
+
+            //Checking axis' of box1
+            for (int i = 0; i < 2; i++)
+            {
+                //Project half vectors onto normal vector
+                float sP = Math.Abs(d.Dot(axis1[i]));
+                float vP = Math.Abs(self.halfWidth * axis1[0].Dot(axis1[i])) + Math.Abs(self.halfHeight * axis1[1].Dot(axis1[i])) + Math.Abs(other.halfWidth * axis2[0].Dot(axis1[i])) + Math.Abs(other.halfHeight * axis2[1].Dot(axis1[i]));
+                if (sP > vP)
+                {
+                    return false; //if the projection doesnt overlap then there is no collision
+                }
+            }
+            //Checking axis' of box2
+            for (int i = 0; i < 2; i++)
+            {
+                //Project half vectors onto normal vector
+                float sP = Math.Abs(d.Dot(axis2[i]));
+                float vP = Math.Abs(self.halfWidth * axis1[0].Dot(axis2[i])) + Math.Abs(self.halfHeight * axis1[1].Dot(axis2[i])) + Math.Abs(other.halfWidth * axis2[0].Dot(axis2[i])) + Math.Abs(other.halfHeight * axis2[1].Dot(axis2[i]));
+                if (sP > vP)
+                {
+                    return false; //if the projection doesnt overlap then there is no collision
+                }
+            }
+            //No need for push back calculations.  Yay :)
+            #endregion SAT Check
+            return true; //all checks failed, boxes collide
+        }
+
         /// <summary>
         /// Checks a x,y point for collision with a bounding box at a position.  Specifically for menues (uses graphics vectors)
         /// </summary>
@@ -507,9 +595,14 @@ namespace EngineeringCorpsCS
             }
             //TODO: need to add total failure check, where the end result of the overall collision ends up inside of a colliding body, and in such a case set velocity to 0
             
-            entity.surface.UpdateEntityInChunks(entity, new Vector2(0,0));
+            entity.surface.UpdateEntityInChunks(entity);
         }
 
+        /// <summary>
+        /// Simply checks whether there was a collision for an entity, based on its collision masks
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public static bool CheckForCollision(Entity entity)
         {
             int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
@@ -517,16 +610,13 @@ namespace EngineeringCorpsCS
             for (int i = 0; i < chunkList.Length; i++)
             {
                 Chunk chunk = entity.surface.GetChunk(chunkList[i], false);
-                Vector2 pushBack;
-
                 //entity collision checks
                 List<Entity> collisionList = chunk.entityCollisionList;
                 for (int j = 0; j < collisionList.Count; j++)
                 {
                     if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !ReferenceEquals(collisionList[j],entity))
                     {
-
-                        if (BoundingBox.CheckCollisionWithPushBack(entity.collisionBox, collisionList[j].collisionBox, entity.position, new Vector2(0,0), collisionList[j].position, out pushBack))
+                        if (BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, new Vector2(0,0), collisionList[j].position))
                         {
                             return true;
                         }
@@ -543,7 +633,7 @@ namespace EngineeringCorpsCS
                     if ((entity.collisionMask & tile.collisionMask) != 0)
                     {
                         Vector2 tilePos = SurfaceContainer.WorldToTileVector(chunkList[i], tileList[i][j]);
-                        if (BoundingBox.CheckCollisionWithPushBack(entity.collisionBox, entity.surface.tileBox, entity.position, new Vector2(0,0), tilePos, out pushBack))
+                        if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, new Vector2(0,0), tilePos))
                         {
                             return true;
                         }
@@ -551,6 +641,84 @@ namespace EngineeringCorpsCS
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Gets full list of all entities colliding with entity.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public static bool GetCollisionList(Entity entity, out List<Entity> entities, out List<int> tileIndices)
+        {
+            //lists to keep track of collided entities
+            entities = new List<Entity>();
+            tileIndices = new List<int>();
+            //list of chunks where collisions may have happened + tiles
+            int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
+            int[][] tileList = BoundingBox.GetTileBounds(entity.collisionBox, entity.position);
+            for (int i = 0; i < chunkList.Length; i++)
+            {
+                Chunk chunk = entity.surface.GetChunk(chunkList[i], false);
+                //entity collision checks
+                List<Entity> collisionList = chunk.entityCollisionList;
+                for (int j = 0; j < collisionList.Count; j++)
+                {
+                    if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !ReferenceEquals(collisionList[j], entity))
+                    {
+                        if (BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, new Vector2(0, 0), collisionList[j].position))
+                        {
+                            entities.Add(collisionList[j]);
+                        }
+                    }
+                }
+
+                //tile collision checks
+                for (int j = 0; j < tileList[i].Length; j++)
+                {
+                    Tile tile = entity.surface.tileCollection.GetTerrainTile(chunk.GetTile(tileList[i][j]));
+                    if ((entity.collisionMask & tile.collisionMask) != 0)
+                    {
+                        Vector2 tilePos = SurfaceContainer.WorldToTileVector(chunkList[i], tileList[i][j]);
+                        if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, new Vector2(0, 0), tilePos))
+                        {
+                            tileIndices.Add(tileList[i][j]);
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Only checks against entities with viable collision mask.  Returns list of cast entities.
+        /// </summary>
+        /// <typeparam name="TypeToTest"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="check"></param>
+        /// <returns></returns>
+        public static List<TypeToTest> GetCollisionListOfType<TypeToTest>(Entity entity) where TypeToTest: Entity
+        {
+            //lists to keep track of collided entities
+            List<TypeToTest> list = new List<TypeToTest>();
+            //list of chunks where collisions may have happened + tiles
+            int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
+            int[][] tileList = BoundingBox.GetTileBounds(entity.collisionBox, entity.position);
+            for (int i = 0; i < chunkList.Length; i++)
+            {
+                Chunk chunk = entity.surface.GetChunk(chunkList[i], false);
+                //entity collision checks
+                List<Entity> collisionList = chunk.entityCollisionList;
+                for (int j = 0; j < collisionList.Count; j++)
+                {
+                    TypeToTest checkEntity = collisionList[j] as TypeToTest;
+                    if (checkEntity != null && (collisionList[j].collisionMask & entity.collisionMask) != 0 && !ReferenceEquals(collisionList[j], entity) &&
+                        BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, new Vector2(0, 0), collisionList[j].position))
+                    {
+                        list.Add(checkEntity);
+                    }
+                }
+            }
+            return list;
         }
     }
 }

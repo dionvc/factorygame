@@ -35,15 +35,15 @@ namespace EngineeringCorpsCS
 
         public void HandleInput(InputManager input)
         {
-            if(input.keyPressed[InputBindings.increasePlacementSize])
+            if(input.GetKeyPressed(InputBindings.increasePlacementSize, false))
             {
                 tilePlace += 1;
             }
-            if(input.keyPressed[InputBindings.decreasePlacementSize])
+            if(input.GetKeyPressed(InputBindings.decreasePlacementSize, false))
             {
                 tilePlace -= 1;
             }
-            if(input.mouseButton[InputBindings.primary])
+            if(input.GetMouseHeld(InputBindings.primary, false))
             {
                 float[] mousePos = input.GetMousePositionAsFloat();
                 //TODO: change to get chunkindex and tile index and accept a vector2f to avoid unnecessary operations
@@ -66,11 +66,11 @@ namespace EngineeringCorpsCS
                     
             }
 
-            if(input.mouseButton[InputBindings.secondary])
+            if (input.GetMouseHeld(InputBindings.secondary, false))
             {
                 float[] mousePos = input.GetMousePositionAsFloat();
                 int[] tileAligned = new int[] {(int) (mousePos[0] - mousePos[0] % Props.tileSize + 16),(int) ( mousePos[1] - mousePos[1] % Props.tileSize + 16) };
-                BoundingBox box = new BoundingBox(32, 32);
+                BoundingBox box = new BoundingBox(15, 15);
                 EntityGhost entityGhost = new EntityGhost(box, new Vector2(tileAligned[0], tileAligned[1]), surface);
                 if (!BoundingBox.CheckForCollision(entityGhost))
                 {
