@@ -17,11 +17,13 @@ namespace EngineeringCorpsCS
             Normal
         }
         PanelState panelState;
+        public delegate void Action();
         /// <summary>
         /// Key which closes the menu panel.  Defaults to none.
         /// </summary>
         public Keyboard.Key closePanelKey { get; set; } = Keyboard.Key.F15;
-        public MenuPanel(Vector2f relativePosition, Vector2f componentSize, bool[] sizeScaling)
+        public Action ClosePanelAction { get; set; } = null;
+        public MenuPanel(Vector2f relativePosition, Vector2f componentSize)
         {
             this.position = relativePosition;
             this.size = componentSize;
@@ -45,6 +47,7 @@ namespace EngineeringCorpsCS
             base.HandleInput(input);
             if(input.GetKeyPressed(closePanelKey, true))
             {
+                ClosePanelAction?.Invoke();
                 container.RemoveMenu(this);
                 return;
             }

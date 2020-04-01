@@ -14,15 +14,15 @@ namespace EngineeringCorpsCS
         {
             None = 0,
             Terrain = 1,            //All terrain is drawn on one layer
-            TerrainDecor = 2,
+            TerrainDecor = 2,       //Terrain decor is drawn before paths
             TerrainPath = 3,        //Placed paths
             Resource = 4,           //Some resources may have visible signs above ground
-            Item = 5,
-            EntitySorted = 6,
-            Overlay = 7,
+            EntityUnderItem = 5,
+            Item = 6,
+            EntitySorted = 7,
+            Overlay = 8,
             Air = 8,
-            IconOverlay = 9,
-            GUI = 10
+            IconOverlay = 9
         }
 
         public Vector2f drawOffset { get; set; }

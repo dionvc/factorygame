@@ -24,7 +24,7 @@ namespace EngineeringCorpsCS
         Color buttonNormal = Color.Yellow;
         Color buttonHover = Color.Magenta;
         Color buttonColor = Color.Yellow;
-        public MenuButton(Vector2f relativePosition, ButtonAction action, Vector2f componentSize)
+        public MenuButton(Vector2f relativePosition, Vector2f componentSize, ButtonAction action)
         {
             this.position = relativePosition;
             this.action = action;

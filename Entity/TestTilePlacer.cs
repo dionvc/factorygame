@@ -74,7 +74,8 @@ namespace EngineeringCorpsCS
                 EntityGhost entityGhost = new EntityGhost(box, new Vector2(tileAligned[0], tileAligned[1]), surface);
                 if (!BoundingBox.CheckForCollision(entityGhost))
                 {
-                    new Player(new Vector2(tileAligned[0], tileAligned[1]), surface, textureContainer);
+                    new Tree(new Vector2(tileAligned[0], tileAligned[1]), surface, textureContainer);
+                    //new Player(new Vector2(tileAligned[0], tileAligned[1]), surface, textureContainer);
                 }
             }
         }

@@ -20,9 +20,10 @@ namespace EngineeringCorpsCS
         public static float scrollSensitivity = 2.0f;
 
         public static Keyboard.Key showDebugMenu = Keyboard.Key.F3;
-        public static Keyboard.Key showPauseMenu = Keyboard.Key.Q;
+        public static Keyboard.Key showPauseMenu = Keyboard.Key.Escape;
 
         public static Keyboard.Key showMinimap = Keyboard.Key.N;
+        public static Keyboard.Key showWorldMap = Keyboard.Key.M;
 
         public static Keyboard.Key increasePlacementSize = Keyboard.Key.Add;
         public static Keyboard.Key decreasePlacementSize = Keyboard.Key.Subtract;

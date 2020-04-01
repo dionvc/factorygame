@@ -46,7 +46,6 @@ namespace EngineeringCorpsCS
         public int tileHeight { get; protected set; } = 2;
 
         public Vector2 position { get; protected set; }
-        //Consider what should be passed to entity by chunk (perhaps the chunk coordinates?)
         /// <summary>
         /// Defines behavior of entity upon being clicked.  Example: Open a menu.
         /// </summary>

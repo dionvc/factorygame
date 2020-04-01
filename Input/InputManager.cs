@@ -132,6 +132,7 @@ namespace EngineeringCorpsCS
             mouseClick[e.Button] = true;
             mouseAccumulator[e.Button]++;
         }
+
         private void HandleMouseRelease(object sender, MouseButtonEventArgs e)
         {
             mouseButton[e.Button] = false;

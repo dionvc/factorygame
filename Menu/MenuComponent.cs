@@ -23,6 +23,8 @@ namespace EngineeringCorpsCS
         public bool lockedPosition = false;
         public string pivot1 = "center";
         public string pivot2 = "center";
+        public string pivot3 = "inside";
+        public float margin = 0.0f; //specify margin of attachment.  If attaching to a component, then the sign matters.
         protected Vector2f scale;
 
         virtual public void Draw(RenderTexture gui, Vector2f origin)
@@ -46,39 +48,59 @@ namespace EngineeringCorpsCS
                 position = new Vector2f(GUIView.Size.X / 2 - size.X / 2, GUIView.Size.Y / 2 - size.Y / 2);
                 if (pivot1 == "top" || pivot2 == "top")
                 {
-                    position += new Vector2f(0, -GUIView.Size.Y / 2 + size.Y / 2);
+                    position += new Vector2f(0, -GUIView.Size.Y / 2 + size.Y / 2 + margin);
                 }
                 if (pivot1 == "bottom" || pivot2 == "bottom")
                 {
-                    position += new Vector2f(0, GUIView.Size.Y / 2 - size.Y / 2);
+                    position += new Vector2f(0, GUIView.Size.Y / 2 - size.Y / 2 - margin);
                 }
                 if (pivot1 == "left" || pivot2 == "left")
                 {
-                    position += new Vector2f(-GUIView.Size.X / 2 + size.X / 2, 0);
+                    position += new Vector2f(-GUIView.Size.X / 2 + size.X / 2 + margin, 0);
                 }
                 if (pivot1 == "right" || pivot2 == "right")
                 {
-                    position += new Vector2f(GUIView.Size.X / 2 - size.X / 2, 0);
+                    position += new Vector2f(GUIView.Size.X / 2 - size.X / 2 - margin, 0);
+                }
+            }
+            else if(pivot3 == "inside")
+            {
+                position = new Vector2f(parent.position.X + parent.size.X / 2 - size.X / 2, parent.position.Y + parent.size.Y / 2 - size.Y / 2);
+                if (pivot1 == "top" || pivot2 == "top")
+                {
+                    position += new Vector2f(0, size.Y + margin - parent.size.Y/2);
+                }
+                if (pivot1 == "bottom" || pivot2 == "bottom")
+                {
+                    position += new Vector2f(0, parent.size.Y/2 - size.Y - margin);
+                }
+                if (pivot1 == "left" || pivot2 == "left")
+                {
+                    position += new Vector2f(margin + size.X - parent.size.X/2, 0);
+                }
+                if (pivot1 == "right" || pivot2 == "right")
+                {
+                    position += new Vector2f(parent.size.X/2 - size.X - margin, 0);
                 }
             }
             else
             {
-                position = new Vector2f(parent.position.X, parent.position.Y);
+                position = new Vector2f(parent.position.X + parent.size.X / 2 - size.X / 2, parent.position.Y + parent.size.Y / 2 - size.Y / 2);
                 if (pivot1 == "top" || pivot2 == "top")
                 {
-                    position += new Vector2f(0, - size.Y);
+                    position += new Vector2f(0, -size.Y - margin - parent.size.Y/2);
                 }
                 if (pivot1 == "bottom" || pivot2 == "bottom")
                 {
-                    position += new Vector2f(0, parent.size.Y);
+                    position += new Vector2f(0, parent.size.Y/2 + margin);
                 }
                 if (pivot1 == "left" || pivot2 == "left")
                 {
-                    position += new Vector2f(-size.X, 0);
+                    position += new Vector2f(-size.X - parent.size.X/2 - margin, 0);
                 }
                 if (pivot1 == "right" || pivot2 == "right")
                 {
-                    position += new Vector2f(parent.size.X, 0);
+                    position += new Vector2f(parent.size.X/2 + margin, 0);
                 }
             }
         }

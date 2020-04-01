@@ -55,30 +55,7 @@ namespace EngineeringCorpsCS
                         "\nTile Coordinates:" + (int)(worldX / Props.tileSize) % Props.chunkSize + ", " + (int)(worldY / Props.tileSize) % Props.chunkSize +
                         "\nChunk Index:" + SurfaceContainer.WorldToChunkIndex(worldX, worldY);
                     coordinates.Position = new Vector2f(0, 64);
-                    VertexArray boundingBoxArray = new VertexArray(PrimitiveType.Lines);
-                    float[] pointsE = test.collisionBox.GetPoints();
-                    Vector2f positionE = test.position;
-                    for (int i = 0; i < pointsE.Length; i += 2)
-                    {
-                        boundingBoxArray.Append(new Vertex(new Vector2f(pointsE[i], pointsE[i + 1]) + positionE, Color.Magenta));
-                        boundingBoxArray.Append(new Vertex(new Vector2f(pointsE[(i + 2) % 8], pointsE[(i + 3) % 8]) + positionE, Color.Magenta));
-                    }
-
-                    GUI.Draw(boundingBoxArray);
-                    GUI.Draw(biomeText);
-                    GUI.Draw(fpsText);
-                    GUI.Draw(coordinates);
-                    GUI.Display();
-                }
-                Sprite GUISprite = new Sprite(GUI.Texture);
-                window.Draw(GUISprite);
-                //==============================END menu debugging code
-                //End of debugging code
-                */
-
-            //window.Display();
-
-            //}
+                    */
             #endregion debug code DELETIOn
         }
 
@@ -86,7 +63,8 @@ namespace EngineeringCorpsCS
         private enum GameState
         {
             mainMenu,
-            inGame
+            inGame,
+            paused
         }
         //Essentials
         private RenderWindow window;
@@ -131,14 +109,15 @@ namespace EngineeringCorpsCS
             //TODO: Investigate this cyclic couple of the menu system and input.  Input definitely needs access to menufactory.  Menucontainer may not need access to input.
             input = new InputManager(window);
             menuContainer = new MenuContainer(input);
-            menuFactory = new MenuFactory(menuContainer);
-            input.menuFactory = menuFactory;
+            
             camera = new Camera();
             camera.SubscribeToInput(input);
             renderer = new Renderer(window, menuContainer);
+            menuFactory = new MenuFactory(menuContainer, renderer);
             window.Resized += camera.HandleResize;
             window.Resized += renderer.ResizeGUI;
             window.Resized += menuContainer.RepositionMenus;
+            input.menuFactory = menuFactory;
         }
         public void StartMenu()
         {
@@ -188,7 +167,7 @@ namespace EngineeringCorpsCS
             #endregion
             //Attaching the camera to something!
             camera.focusedEntity = players[15];
-            menuFactory.CreateMinimap(renderer, camera);
+            menuFactory.CreateMinimap(camera);
             TestTilePlacer tilePlacer = new TestTilePlacer(surfaceContainer, renderer, textureContainer);
             tilePlacer.SubscribeToInput(input);
         }
@@ -206,22 +185,25 @@ namespace EngineeringCorpsCS
 
         public void RunGame()
         {
-            while (window.IsOpen && gameState == GameState.inGame)
+            while (window.IsOpen && (gameState == GameState.inGame || gameState == GameState.paused))
             {
                 //prepare for drawing and dispatch window events
                 window.Clear();
                 window.DispatchEvents();
                 //update input
                 input.Update();
-                
-                //update entities
-                foreach (Player p in players)
+
+                if (gameState != GameState.paused)
                 {
-                    p.Update();
+                    //update entities
+                    foreach (Player p in players)
+                    {
+                        p.Update();
+                    }
+                    List<Player> test = BoundingBox.GetCollisionListOfType<Player>(players[15]);
+                    testLightSource1.Update();
+                    surfaceContainer.Update();
                 }
-                List<Player> test = BoundingBox.GetCollisionListOfType<Player>(players[15]);
-                testLightSource1.Update();
-                surfaceContainer.Update();
                 //update camera
                 camera.Update();
                 //drawing game world (terrain, entities)
@@ -244,6 +226,10 @@ namespace EngineeringCorpsCS
         {
             gameState = GameState.mainMenu;
         }
+        public void PauseGame()
+        {
+            gameState = GameState.paused;
+        }
         public void ExitGame()
         {
             window.Close();
@@ -251,19 +237,19 @@ namespace EngineeringCorpsCS
 
         public void SubscribeToInput(InputManager input)
         {
-            input.AddInputSubscriber(this, true);
+            input.AddInputSubscriber(this, false);
         }
 
         public void UnsubscribeToInput(InputManager input)
         {
-            input.RemoveInputSubscriber(this, true);
+            input.RemoveInputSubscriber(this, false);
         }
 
         public void HandleInput(InputManager input)
         {
             if (input.GetKeyPressed(InputBindings.showPauseMenu, true))
             {
-                menuFactory.CreateMainMenu(this, camera);
+                menuFactory.CreatePauseMenu(this, camera);
             }
         }
     }

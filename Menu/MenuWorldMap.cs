@@ -13,32 +13,33 @@ namespace EngineeringCorpsCS
         //Two options: have the minimap itself fetch and cache the minimap drawing
         //or have the renderer take care of rendering the minimap to a view this component passes.
         List<VertexArray> vertexArrays;
+        VertexArray pollutionArray;
         RenderTexture textureMinimap;
         RenderStates transformState;
         Transform transform;
         Renderer renderer;
         Camera camera;
-        int refreshCounter = 0;
+        int refreshCounter = 30;
         int refreshRate = 30;
-        int tX = 0;
-        int tY = 0;
+        Vector2 controlTranslation;
         float mapScale = 1.0f;
         int minimapXRange = 5;
         int minimapYRange = 5;
         bool getPollution = true;
         public bool controllable { get; set; } = false;
         public int controlSpeed { get; set; } = 4;
-        public MenuWorldMap(Camera camera, Renderer renderer, Vector2f relativePosition, Vector2f componentSize, bool[] sizeScaling)
+        public MenuWorldMap(Camera camera, Renderer renderer, Vector2f relativePosition, Vector2f componentSize)
         {
             this.position = relativePosition;
             this.size = componentSize;
             this.camera = camera;
             this.renderer = renderer;
-
+            controlTranslation = new Vector2(0, 0);
             transform = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
             transformState = new RenderStates(transform);
             textureMinimap = new RenderTexture((uint)size.X, (uint)size.Y);
             vertexArrays = new List<VertexArray>();
+            pollutionArray = new VertexArray(PrimitiveType.Triangles);
         }
 
         public override void Draw(RenderTexture gui, Vector2f origin)
@@ -46,16 +47,17 @@ namespace EngineeringCorpsCS
             refreshCounter++;
             if (refreshCounter >= refreshRate || renderer.modifiedVertexArrays == true)
             {
-                renderer.GenerateMinimapTextures(camera.focusedEntity.surface, camera.focusedEntity.position, minimapXRange, minimapYRange, vertexArrays);
+                minimapXRange = (int)Math.Ceiling(size.X/Props.tileSize * mapScale);
+                minimapYRange = (int)Math.Ceiling(size.Y/Props.tileSize * mapScale);
+                renderer.GenerateMinimapTextures(camera.focusedEntity.surface, camera.focusedEntity.position + controlTranslation, minimapXRange, minimapYRange, vertexArrays);
                 refreshCounter = 0;
                 if(getPollution == true)
                 {
-                    vertexArrays.Add(new VertexArray(PrimitiveType.Triangles));
-                    renderer.GeneratePollutionVertexArray(camera.focusedEntity.surface, camera.focusedEntity.position, minimapXRange, minimapYRange, vertexArrays[vertexArrays.Count-1]);
+                    renderer.GeneratePollutionVertexArray(camera.focusedEntity.surface, camera.focusedEntity.position, minimapXRange, minimapYRange, pollutionArray);
                 }
             }
             Transform transform = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
-            Vector2f translation = new Vector2f(size.X / 2 - (camera.focusedEntity.position.x * mapScale / Props.tileSize) + tX, size.Y / 2 - (camera.focusedEntity.position.y * mapScale / Props.tileSize) + tY);
+            Vector2f translation = new Vector2f(size.X / 2 - (camera.focusedEntity.position.x * mapScale / Props.tileSize) + controlTranslation.x, size.Y / 2 - (camera.focusedEntity.position.y * mapScale / Props.tileSize) + controlTranslation.y);
             transform.Translate(translation);
             transform.Scale(mapScale, mapScale);
             transformState.Transform = transform;
@@ -66,6 +68,10 @@ namespace EngineeringCorpsCS
                     textureMinimap.Draw(vertexArrays[i], transformState);
                 }
                 
+            }
+            if (getPollution == true)
+            {
+                textureMinimap.Draw(pollutionArray, transformState);
             }
             textureMinimap.Display();
             Sprite minimap = new Sprite(textureMinimap.Texture);
@@ -81,19 +87,19 @@ namespace EngineeringCorpsCS
             {
                 if (input.GetKeyHeld(InputBindings.moveLeft, true))
                 {
-                    tX += controlSpeed;
+                    controlTranslation.x += controlSpeed * mapScale;
                 }
                 if (input.GetKeyHeld(InputBindings.moveRight, true))
                 {
-                    tX -= controlSpeed;
+                    controlTranslation.x -= controlSpeed * mapScale;
                 }
                 if (input.GetKeyHeld(InputBindings.moveUp, true))
                 {
-                    tY += controlSpeed;
+                    controlTranslation.y += controlSpeed * mapScale;
                 }
                 if (input.GetKeyHeld(InputBindings.moveDown, true))
                 {
-                    tY -= controlSpeed;
+                    controlTranslation.y -= controlSpeed * mapScale;
                 }
                 if (input.GetMouseScrollDelta(false) != 0)
                 {

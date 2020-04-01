@@ -305,7 +305,9 @@ namespace EngineeringCorpsCS
         public void ResizeGUI(Object s, SizeEventArgs e)
         {
             GUI.Dispose();
+            lighting.Dispose();
             GUI = new RenderTexture(e.Width, e.Height);
+            lighting = new RenderTexture(e.Width, e.Height);
         }
 
         /// <summary>
@@ -481,7 +483,7 @@ namespace EngineeringCorpsCS
         {
             if(input.GetKeyPressed(InputBindings.showDebugMenu, true))
             {
-                input.menuFactory.CreateDebugMenu(this);
+                input.menuFactory.CreateDebugMenu();
             }
         }
 

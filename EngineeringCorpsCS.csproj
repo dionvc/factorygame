@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chunk\Alliance.cs" />
+    <Compile Include="Menu\MenuSlider.cs" />
     <Compile Include="Drawable\Animation.cs" />
     <Compile Include="Entity\Base.cs" />
     <Compile Include="Drawable\Drawable.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Chunk\SurfaceContainer.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="Chunk\SurfaceGenerator.cs" />
+    <Compile Include="Entity\Item.cs" />
     <Compile Include="LightSource.cs" />
     <Compile Include="Menu\MenuWorldMap.cs" />
     <Compile Include="Menu\MenuFactory.cs" />

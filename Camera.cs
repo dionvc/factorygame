@@ -72,6 +72,10 @@ namespace EngineeringCorpsCS
 
                 gameView.Size = new SFML.System.Vector2f(viewScale * 1280, viewScale * 720);
             }
+            if(input.GetKeyPressed(InputBindings.showWorldMap, true))
+            {
+                input.menuFactory.CreateWorldMap(this);
+            }
             //Handle clicking on things that are in view here with consideration to focusedentity
         }
     }
