@@ -30,7 +30,7 @@ namespace EngineeringCorpsCS
             Text fpsText = new Text("default", debugFont, 32);
             Text coordinates = new Text("default", debugFont, 32);
             coordinates.LineSpacing = 0.5f;
-            Clock clock = new Clock();
+            
 
 
             while (window.IsOpen)
@@ -80,6 +80,9 @@ namespace EngineeringCorpsCS
         SurfaceContainer surfaceContainer;
         TileCollection tileCollection;
         //Debug variable
+        Clock clock;
+        float fps;
+
         private List<Player> players;
         private LightSource testLightSource1;
         private List<Tree> tree;
@@ -113,7 +116,7 @@ namespace EngineeringCorpsCS
             camera = new Camera();
             camera.SubscribeToInput(input);
             renderer = new Renderer(window, menuContainer);
-            menuFactory = new MenuFactory(menuContainer, renderer);
+            menuFactory = new MenuFactory(menuContainer, renderer, this);
             window.Resized += camera.HandleResize;
             window.Resized += renderer.ResizeGUI;
             window.Resized += menuContainer.RepositionMenus;
@@ -124,6 +127,7 @@ namespace EngineeringCorpsCS
             //TODO: double check this menu creation
             renderer.SubscribeToInput(input);
             menuFactory.CreateMainMenu(this, camera);
+            menuFactory.CreateTestSlider();
             while (window.IsOpen && gameState == GameState.mainMenu)
             {
                 window.Clear();
@@ -185,14 +189,19 @@ namespace EngineeringCorpsCS
 
         public void RunGame()
         {
+            clock = new Clock();
             while (window.IsOpen && (gameState == GameState.inGame || gameState == GameState.paused))
             {
+                //Check fps
+                fps = 1.0f / clock.ElapsedTime.AsSeconds();
+                clock.Restart();
                 //prepare for drawing and dispatch window events
                 window.Clear();
                 window.DispatchEvents();
                 //update input
                 input.Update();
 
+                //Do not update game world if game is paused TODO: add to input pause on handling game subscriber input
                 if (gameState != GameState.paused)
                 {
                     //update entities
@@ -218,15 +227,15 @@ namespace EngineeringCorpsCS
                 StartMenu();
             }
         }
-        public void BeginGame()
+        public void SwitchToIngame()
         {
             gameState = GameState.inGame;
         }
-        public void ExitToMenu()
+        public void SwitchToMainMenu()
         {
             gameState = GameState.mainMenu;
         }
-        public void PauseGame()
+        public void SwitchToPauseGame()
         {
             gameState = GameState.paused;
         }
@@ -251,6 +260,11 @@ namespace EngineeringCorpsCS
             {
                 menuFactory.CreatePauseMenu(this, camera);
             }
+        }
+
+        public string GetFPS()
+        {
+            return fps.ToString();
         }
     }
 }

@@ -80,6 +80,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chunk\Alliance.cs" />
+    <Compile Include="Menu\MenuDynamicText.cs" />
+    <Compile Include="Menu\MenuField.cs" />
+    <Compile Include="Menu\MenuListBox.cs" />
     <Compile Include="Menu\MenuSlider.cs" />
     <Compile Include="Drawable\Animation.cs" />
     <Compile Include="Entity\Base.cs" />

@@ -26,9 +26,8 @@ namespace EngineeringCorpsCS
         Color buttonColor = Color.Yellow;
         public MenuButton(Vector2f relativePosition, Vector2f componentSize, ButtonAction action)
         {
-            this.position = relativePosition;
+            Initialize(relativePosition, componentSize);
             this.action = action;
-            this.size = componentSize;
             this.buttonState = ButtonState.Normal;
             this.collisionBox = new BoundingBox(this.size);
         }
@@ -38,23 +37,21 @@ namespace EngineeringCorpsCS
             test.Position = origin + position;
             test.FillColor = buttonColor;
             gui.Draw(test);
-            for (int i = 0; i < attachedComponents.Count; i++)
-            {
-                attachedComponents[i].Draw(gui, origin + position);
-            }
+            base.Draw(gui, origin);
         }
         override public void HandleInput(InputManager input)
         {
+            base.HandleInput(input);
             //TODO: move to translate and store absolute position of component precomputed?
+            Vector2f mousePos = input.GetMousePosition();
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
-            Vector2f mousePos = input.GetMousePosition();
-            while(bubble != null)
+            while (bubble != null)
             {
                 origin += bubble.position;
                 bubble = bubble.parent;
             }
-            if(buttonState != ButtonState.Held && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, (position + origin)))
+            if (buttonState != ButtonState.Held && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, (position + origin)))
             {
                 buttonState = ButtonState.Hover;
                 buttonColor = buttonHover;
@@ -71,7 +68,7 @@ namespace EngineeringCorpsCS
             }
             if (buttonState == ButtonState.Held && input.GetMouseReleased(InputBindings.primary, false))
             {
-                action();
+                action?.Invoke();
                 buttonState = ButtonState.Normal;
                 buttonColor = buttonNormal;
             }

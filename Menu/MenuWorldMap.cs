@@ -30,8 +30,7 @@ namespace EngineeringCorpsCS
         public int controlSpeed { get; set; } = 4;
         public MenuWorldMap(Camera camera, Renderer renderer, Vector2f relativePosition, Vector2f componentSize)
         {
-            this.position = relativePosition;
-            this.size = componentSize;
+            Initialize(relativePosition, componentSize);
             this.camera = camera;
             this.renderer = renderer;
             controlTranslation = new Vector2(0, 0);
@@ -78,6 +77,7 @@ namespace EngineeringCorpsCS
             minimap.Position = origin + position;
             gui.Draw(minimap);
             textureMinimap.Clear();
+            base.Draw(gui, origin);
         }
 
         public override void HandleInput(InputManager input)

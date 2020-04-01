@@ -23,20 +23,27 @@ namespace EngineeringCorpsCS
         FastNoise elevationNoise;
         FastNoise moistureNoise;
         FastNoise temperatureNoise;
+        FastNoise.NoiseType elevationType;
+        FastNoise.NoiseType moistureType;
+        FastNoise.NoiseType temperatureType;
         List<Tile> tileList;
         public SurfaceGenerator(int seed, TileCollection tiles)
         {
+            elevationType = FastNoise.NoiseType.PerlinFractal;
+            moistureType = FastNoise.NoiseType.PerlinFractal;
+            temperatureType = FastNoise.NoiseType.PerlinFractal;
             Random r = new Random();
             elevationNoise = new FastNoise();
-            elevationNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
+            elevationNoise.SetNoiseType(elevationType);
             elevationNoise.SetSeed(r.Next(0, int.MaxValue - 1));
+            elevationNoise.SetFractalType(FastNoise.FractalType.RigidMulti);
 
             moistureNoise = new FastNoise();
-            moistureNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
+            moistureNoise.SetNoiseType(moistureType);
             moistureNoise.SetSeed(r.Next(0, int.MaxValue - 1));
 
             temperatureNoise = new FastNoise();
-            temperatureNoise.SetNoiseType(FastNoise.NoiseType.Perlin);
+            temperatureNoise.SetNoiseType(temperatureType);
             temperatureNoise.SetSeed(r.Next(0, int.MaxValue - 1));
 
             tileList = tiles.GetTerrainTiles();
@@ -44,15 +51,19 @@ namespace EngineeringCorpsCS
 
         public byte GetTile(int nx, int ny)
         {
-            double elevation = 0.5 * elevationNoise.GetPerlin(1 * nx, 1 * ny)
-            + 0.25 * elevationNoise.GetPerlin(2 * nx, 2 * ny)
-            + 0.25 * elevationNoise.GetPerlin(4 * nx, 4 * ny);
-            double moisture = 0.5 * moistureNoise.GetPerlin(1 * nx, 1 * ny)
-            + 0.25 * moistureNoise.GetPerlin(2 * nx, 2 * ny)
-            + 0.25 * moistureNoise.GetPerlin(4 * nx, 4 * ny);
-            double temperature = 0.5 * temperatureNoise.GetPerlin(1 * nx, 1 * ny)
-            + 0.25 * temperatureNoise.GetPerlin(2 * nx, 2 * ny)
-            + 0.25 * temperatureNoise.GetPerlin(4 * nx, 4 * ny);
+            double elevation = 0.5 * elevationNoise.GetNoise(1 * nx, 1 * ny)
+            + 0.25 * elevationNoise.GetNoise(2 * nx, 2 * ny)
+            + 0.25 * elevationNoise.GetNoise(4 * nx, 4 * ny);
+            double moisture = 0.5 * moistureNoise.GetNoise(1 * nx, 1 * ny)
+            + 0.25 * moistureNoise.GetNoise(2 * nx, 2 * ny)
+            + 0.25 * moistureNoise.GetNoise(4 * nx, 4 * ny);
+            double temperature = 0.5 * temperatureNoise.GetNoise(1 * nx, 1 * ny)
+            + 0.25 * temperatureNoise.GetNoise(2 * nx, 2 * ny)
+            + 0.25 * temperatureNoise.GetNoise(4 * nx, 4 * ny);
+
+            elevation = Math.Pow(elevation, 1); 
+            moisture = Math.Pow(moisture, 0.5);
+            temperature = Math.Pow(temperature, 1);
             byte chosenTile = 0;
             float currentMin = 2;
             foreach(Tile t in tileList)

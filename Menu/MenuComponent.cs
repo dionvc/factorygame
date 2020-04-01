@@ -27,6 +27,11 @@ namespace EngineeringCorpsCS
         public float margin = 0.0f; //specify margin of attachment.  If attaching to a component, then the sign matters.
         protected Vector2f scale;
 
+        public void Initialize(Vector2f relativePosition, Vector2f size)
+        {
+            this.position = relativePosition;
+            this.size = size;
+        }
         virtual public void Draw(RenderTexture gui, Vector2f origin)
         {
             for (int i = 0; i < attachedComponents.Count; i++)

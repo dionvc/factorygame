@@ -12,22 +12,24 @@ namespace EngineeringCorpsCS
     {
         MenuContainer menuContainer;
         Renderer renderer;
+        Program program;
         Font debugFont = new Font("SairaRegular.ttf");
-        public MenuFactory(MenuContainer menuContainer, Renderer renderer)
+        public MenuFactory(MenuContainer menuContainer, Renderer renderer, Program program)
         {
             this.menuContainer = menuContainer;
             this.renderer = renderer;
+            this.program = program;
         }
 
         public void CreateMainMenu(Program program, Camera camera)
         {
             MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 150));
-            MenuButton startGameButton = new MenuButton(new Vector2f(25, 25), new Vector2f(100, 100), program.BeginGame);
+            MenuButton startGameButton = new MenuButton(new Vector2f(25, 25), new Vector2f(100, 100), program.SwitchToIngame);
             MenuText startGameText = new MenuText(new Vector2f(0, 0), debugFont, "Start Game", 24); 
             mainMenu.AttachComponent(startGameButton);
             startGameButton.AttachComponent(startGameText);
             MenuText endGameText = new MenuText(new Vector2f(0, 0), debugFont, "End Game", 24);
-            MenuButton endGameButton = new MenuButton(new Vector2f(125, 25), new Vector2f(100, 100), program.ExitToMenu);
+            MenuButton endGameButton = new MenuButton(new Vector2f(125, 25), new Vector2f(100, 100), program.SwitchToMainMenu);
             mainMenu.AttachComponent(endGameButton);
             endGameButton.AttachComponent(endGameText);
             MenuText quitGameText = new MenuText(new Vector2f(0, 0), debugFont, "Quit Game", 24);
@@ -46,12 +48,12 @@ namespace EngineeringCorpsCS
         public void CreatePauseMenu(Program program, Camera camera)
         {
             MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 150));
-            MenuButton startGameButton = new MenuButton(new Vector2f(25, 25), new Vector2f(100, 100), program.BeginGame);
+            MenuButton startGameButton = new MenuButton(new Vector2f(25, 25), new Vector2f(100, 100), program.SwitchToIngame);
             MenuText startGameText = new MenuText(new Vector2f(0, 0), debugFont, "Start Game", 24);
             mainMenu.AttachComponent(startGameButton);
             startGameButton.AttachComponent(startGameText);
             MenuText endGameText = new MenuText(new Vector2f(0, 0), debugFont, "End Game", 24);
-            MenuButton endGameButton = new MenuButton(new Vector2f(125, 25), new Vector2f(100, 100), program.ExitToMenu);
+            MenuButton endGameButton = new MenuButton(new Vector2f(125, 25), new Vector2f(100, 100), program.SwitchToMainMenu);
             mainMenu.AttachComponent(endGameButton);
             endGameButton.AttachComponent(endGameText);
             MenuText quitGameText = new MenuText(new Vector2f(0, 0), debugFont, "Quit Game", 24);
@@ -59,8 +61,8 @@ namespace EngineeringCorpsCS
             mainMenu.AttachComponent(quitGameButton);
             quitGameButton.AttachComponent(quitGameText);
             mainMenu.closePanelKey = InputBindings.showPauseMenu;
-            mainMenu.ClosePanelAction = program.BeginGame;
-            program.PauseGame();
+            mainMenu.ClosePanelAction = program.SwitchToIngame;
+            program.SwitchToPauseGame();
             mainMenu.pivot1 = "center";
             mainMenu.pivot2 = "center";
             mainMenu.SetInitialPosition(camera.GetGUIView());
@@ -72,7 +74,11 @@ namespace EngineeringCorpsCS
             MenuPanel debugMenu = new MenuPanel(new Vector2f(720, 0), new Vector2f(300, 150));
             MenuButton boundingBoxButton = new MenuButton(new Vector2f(25, 25), new Vector2f(100, 100), renderer.ToggleBoundingBoxRendering);
             MenuText boundingBoxButtonText = new MenuText(new Vector2f(0, 0), debugFont, "Show/Hide boundinggggggggggggggggg boxes", 24);
+
+            MenuDynamicText fps = new MenuDynamicText(new Vector2f(0, 0), debugFont, "Fps: {0}", 24, new List<MenuDynamicText.DynamicString> { program.GetFPS });
+
             debugMenu.AttachComponent(boundingBoxButton);
+            debugMenu.AttachComponent(fps);
             boundingBoxButton.AttachComponent(boundingBoxButtonText);
             debugMenu.closePanelKey = InputBindings.showDebugMenu;
             menuContainer.AttachMenu(debugMenu);
@@ -110,6 +116,13 @@ namespace EngineeringCorpsCS
             minimapPanel.SetInitialPosition(camera.GetGUIView());
             minimapPanel.lockedPosition = true;
             menuContainer.AttachMenu(minimapPanel);
+        }
+
+
+        public void CreateTestSlider()
+        {
+            MenuSlider testSlider = new MenuSlider(new Vector2f(50, 50), new Vector2f(150, 16));
+            menuContainer.AttachMenu(testSlider);
         }
     }
 }

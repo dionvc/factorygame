@@ -25,8 +25,7 @@ namespace EngineeringCorpsCS
         public Action ClosePanelAction { get; set; } = null;
         public MenuPanel(Vector2f relativePosition, Vector2f componentSize)
         {
-            this.position = relativePosition;
-            this.size = componentSize;
+            Initialize(relativePosition, componentSize);
             this.scale = new Vector2f(1, 1);
             collisionBox = new BoundingBox(this.size);
             panelState = PanelState.Normal;
@@ -37,10 +36,7 @@ namespace EngineeringCorpsCS
             test.Position = origin + position;
             test.FillColor = Color.Red;
             gui.Draw(test);
-            for (int i = 0; i < attachedComponents.Count; i++)
-            {
-                attachedComponents[i].Draw(gui, origin + position);
-            }
+            base.Draw(gui, origin);
         }
         public override void HandleInput(InputManager input)
         {
@@ -52,9 +48,9 @@ namespace EngineeringCorpsCS
                 return;
             }
             //TODO: move to translate and store absolute position of component precomputed?
+            Vector2f mousePos = input.GetMousePosition();
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
-            Vector2f mousePos = input.GetMousePosition();
             while (bubble != null)
             {
                 origin += bubble.position;
