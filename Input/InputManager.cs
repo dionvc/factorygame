@@ -40,7 +40,8 @@ namespace EngineeringCorpsCS
         /// This client's menuFactory.  Menu's are created by input, so they are closely coupled.
         public MenuFactory menuFactory { get; set; }
 
-
+        private string keyString;
+        private bool keyStringConsumed;
         private int tickAccumulator = 0;
         private int keyResetInterval = 60;
         private List<IInputSubscriber> subscriberMenuList;
@@ -58,6 +59,7 @@ namespace EngineeringCorpsCS
             window.MouseButtonPressed += HandleMouseClick;
             window.MouseButtonReleased += HandleMouseRelease;
             window.MouseWheelScrolled += HandleMouseWheel;
+            window.TextEntered += HandleTextEntered;
             keyPressed = new Dictionary<Keyboard.Key, bool>();
             keyHeld = new Dictionary<Keyboard.Key, bool>();
             keyReleased = new Dictionary<Keyboard.Key, bool>();
@@ -122,7 +124,9 @@ namespace EngineeringCorpsCS
             keyConsumedForFrame.Clear();
             mouseButtonConsumedForFrame.Clear();
             mouseScrollConsumedForFrame = false;
+            keyStringConsumed = false;
             mouseScrollDelta = 0.0f;
+            keyString = "";
             tickAccumulator++;
         }
 
@@ -163,6 +167,10 @@ namespace EngineeringCorpsCS
             //Console.WriteLine("KeyReleased: " + e.ToString());
         }
 
+        private void HandleTextEntered(object sender, TextEventArgs e)
+        {
+            keyString = e.Unicode;
+        }
         /// <summary>
         /// Adds a subscriber to the input stream
         /// </summary>
@@ -264,6 +272,29 @@ namespace EngineeringCorpsCS
             return false;
         }
 
+        /// <summary>
+        /// Returns a string of keys pressed this frame
+        /// </summary>
+        /// <param name="consume"></param>
+        /// <returns></returns>
+        public string GetKeyString(bool consume)
+        {
+            if(keyStringConsumed)
+            {
+                return "";
+            }
+            if (consume)
+            {
+                keyStringConsumed = true;
+                return keyString;
+            }
+            else
+            {
+                return keyString;
+            }
+            
+            
+        }
         /// <summary>
         /// Gets whether a key was held for this frame and optionally consumes it for the frame.
         /// </summary>

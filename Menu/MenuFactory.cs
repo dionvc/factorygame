@@ -126,13 +126,31 @@ namespace EngineeringCorpsCS
         }
 
 
-        public void CreateTestSlider()
+        public void CreateWorldMenu(Camera camera, SurfaceGenerator surfaceGenerator)
         {
-            MenuSlider testSlider = new MenuSlider(new Vector2f(50, 50), new Vector2f(150, 16));
-            menuContainer.AttachMenu(testSlider);
+            MenuPanel worldMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(500,500));
+            string[] noiseNames = Enum.GetNames(typeof(FastNoise.NoiseType));
+            int[] noiseValues = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            MenuListBox moistureNoiseType = new MenuListBox(new Vector2f(0,0), new Vector2f(150,25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, debugFont, 24, 24, 0);
+            moistureNoiseType.additionalParam = "moisture";
+            MenuListBox elevationNoiseType = new MenuListBox(new Vector2f(100, 0), new Vector2f(150, 25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, debugFont, 24, 24, 0);
+            elevationNoiseType.additionalParam = "elevation";
+            MenuListBox temperatureNoiseType = new MenuListBox(new Vector2f(200, 0), new Vector2f(150, 25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, debugFont, 24, 24, 0);
+            temperatureNoiseType.additionalParam = "temperature";
 
-            MenuListBox menuListBox = new MenuListBox(new Vector2f(400, 50), new Vector2f(100, 25), new string[] { "t1", "t2" }, new int[] { 1, 2 }, null, debugFont, 24, 24, 0);
-            menuContainer.AttachMenu(menuListBox);
+            worldMenu.SetInitialPosition(camera.GetGUIView());
+
+            worldMenu.AttachComponent(moistureNoiseType);
+            worldMenu.AttachComponent(elevationNoiseType);
+            worldMenu.AttachComponent(temperatureNoiseType);
+            menuContainer.AttachMenu(worldMenu);
+        }
+
+        public void CreateTestField(SurfaceGenerator surfaceGenerator)
+        {
+            MenuField menuField = new MenuField(debugFont, surfaceGenerator.ParseString);
+            menuField.tag = "surfacesize";
+            menuContainer.AttachMenu(menuField);
         }
     }
 }

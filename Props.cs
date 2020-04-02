@@ -8,8 +8,6 @@ namespace EngineeringCorpsCS
 {
     static class Props
     {
-        public const int worldSize = 2048; //size of world in chunks TODO: move this to map generation
-        
         //These constants are pretty vital to the functionality of the game and are justifiable as globals.
         //Graphics stuff
         public const int chunkSize = 32; //size of chunk in tiles

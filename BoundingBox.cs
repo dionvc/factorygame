@@ -420,14 +420,14 @@ namespace EngineeringCorpsCS
         /// <param name="self"></param>
         /// <param name="selfPos"></param>
         /// <returns></returns>
-        public static int[] GetChunkBounds(BoundingBox self, Vector2 posSelf)
+        public static int[] GetChunkBounds(BoundingBox self, Vector2 posSelf, SurfaceContainer surface)
         {
             float xMin = posSelf.x - self.radiusApproximation - Props.tileCollisionFactor * Props.tileSize;
             float xMax = posSelf.x + self.radiusApproximation + Props.tileCollisionFactor * Props.tileSize;
             float yMin = posSelf.y - self.radiusApproximation - Props.tileCollisionFactor * Props.tileSize;
             float yMax = posSelf.y + self.radiusApproximation + Props.tileCollisionFactor * Props.tileSize;
-            int[] top = SurfaceContainer.WorldToChunkCoords(xMin, yMin);
-            int[] bot = SurfaceContainer.WorldToChunkCoords(xMax, yMax);
+            int[] top = surface.WorldToChunkCoords(xMin, yMin);
+            int[] bot = surface.WorldToChunkCoords(xMax, yMax);
             int yRange = (bot[1] - top[1]) + 1;
             int xRange = (bot[0] - top[0]) + 1;
             int[] ret = new int[xRange * yRange];
@@ -436,7 +436,7 @@ namespace EngineeringCorpsCS
             {
                 for (int j = top[1]; j <= bot[1]; j++)
                 {
-                    ret[k] = i * Props.worldSize + j;
+                    ret[k] = i * surface.worldSize + j;
                     k++;
                 }
             }
@@ -551,7 +551,7 @@ namespace EngineeringCorpsCS
             {
                 Vector2 velocity = scaledVelocity.Copy();
                 Vector2 newEntityPos = new Vector2(entity.position.x + velocity.x, entity.position.y + velocity.y);
-                int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, newEntityPos);
+                int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, newEntityPos, entity.surface);
                 int[][] tileList = BoundingBox.GetTileBounds(entity.collisionBox, newEntityPos);
 
                 //Checks collisions with entities and tiles
@@ -583,7 +583,7 @@ namespace EngineeringCorpsCS
                         Tile tile = entity.surface.tileCollection.GetTerrainTile(chunk.GetTile(tileList[i][j]));
                         if ((entity.collisionMask & tile.collisionMask) != 0)
                         {
-                            Vector2 tilePos = SurfaceContainer.WorldToTileVector(chunkList[i], tileList[i][j]);
+                            Vector2 tilePos = entity.surface.WorldToTileVector(chunkList[i], tileList[i][j]);
                             if (BoundingBox.CheckCollisionWithPushBack(entity.collisionBox, entity.surface.tileBox, entity.position, velocity, tilePos, out pushBack))
                             {
                                 velocity.Add(pushBack);
@@ -605,7 +605,7 @@ namespace EngineeringCorpsCS
         /// <returns></returns>
         public static bool CheckForCollision(Entity entity)
         {
-            int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
+            int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position, entity.surface);
             int[][] tileList = BoundingBox.GetTileBounds(entity.collisionBox, entity.position);
             for (int i = 0; i < chunkList.Length; i++)
             {
@@ -632,7 +632,7 @@ namespace EngineeringCorpsCS
                     Tile tile = entity.surface.tileCollection.GetTerrainTile(chunk.GetTile(tileList[i][j]));
                     if ((entity.collisionMask & tile.collisionMask) != 0)
                     {
-                        Vector2 tilePos = SurfaceContainer.WorldToTileVector(chunkList[i], tileList[i][j]);
+                        Vector2 tilePos = entity.surface.WorldToTileVector(chunkList[i], tileList[i][j]);
                         if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, new Vector2(0,0), tilePos))
                         {
                             return true;
@@ -654,7 +654,7 @@ namespace EngineeringCorpsCS
             entities = new List<Entity>();
             tileIndices = new List<int>();
             //list of chunks where collisions may have happened + tiles
-            int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
+            int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position, entity.surface);
             int[][] tileList = BoundingBox.GetTileBounds(entity.collisionBox, entity.position);
             for (int i = 0; i < chunkList.Length; i++)
             {
@@ -678,7 +678,7 @@ namespace EngineeringCorpsCS
                     Tile tile = entity.surface.tileCollection.GetTerrainTile(chunk.GetTile(tileList[i][j]));
                     if ((entity.collisionMask & tile.collisionMask) != 0)
                     {
-                        Vector2 tilePos = SurfaceContainer.WorldToTileVector(chunkList[i], tileList[i][j]);
+                        Vector2 tilePos = entity.surface.WorldToTileVector(chunkList[i], tileList[i][j]);
                         if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, new Vector2(0, 0), tilePos))
                         {
                             tileIndices.Add(tileList[i][j]);
@@ -701,7 +701,7 @@ namespace EngineeringCorpsCS
             //lists to keep track of collided entities
             List<TypeToTest> list = new List<TypeToTest>();
             //list of chunks where collisions may have happened + tiles
-            int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
+            int[] chunkList = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position, entity.surface);
             int[][] tileList = BoundingBox.GetTileBounds(entity.collisionBox, entity.position);
             for (int i = 0; i < chunkList.Length; i++)
             {

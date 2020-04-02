@@ -49,7 +49,7 @@ namespace EngineeringCorpsCS
                 //TODO: change to get chunkindex and tile index and accept a vector2f to avoid unnecessary operations
                 BoundingBox tilePlacementBox = new BoundingBox(1 + placementSize * 32, 1 + placementSize * 32);
                 Vector2 pos = new Vector2(mousePos[0], mousePos[1]);
-                int[] chunkBounds = BoundingBox.GetChunkBounds(tilePlacementBox, pos);
+                int[] chunkBounds = BoundingBox.GetChunkBounds(tilePlacementBox, pos, surface);
                 int[][] tileBounds = BoundingBox.GetTileBounds(tilePlacementBox, pos);
                 for(int i = 0; i < chunkBounds.Length; i++)
                 {

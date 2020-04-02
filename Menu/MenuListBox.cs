@@ -15,7 +15,7 @@ namespace EngineeringCorpsCS
             Normal, //closed with selected value visible
             Focused //Open with selections visible
         }
-        public delegate void SelectionMethod(string header, int value);
+        public delegate void SelectionMethod(string addtionalParam, int value);
         string[] listHeaders;
         int[] listValues;
         MenuText[] texts;
@@ -26,6 +26,10 @@ namespace EngineeringCorpsCS
         float lineSpacing;
         ListBoxState listboxState;
         SelectionMethod applySelection;
+        /// <summary>
+        /// Additional param that will be passed with the selection
+        /// </summary>
+        public string additionalParam { get; set; } = "";
 
         /// <summary>
         /// A drop down menu implementation.  Very quick if you are selecting from a range of enums.
@@ -61,8 +65,8 @@ namespace EngineeringCorpsCS
         {
             //Draw the top component field and text header
             RectangleShape box = new RectangleShape(size);
-            box.Position = position;
-            box.FillColor = Color.Red;
+            box.Position = origin + position;
+            box.FillColor = Color.Magenta;
             gui.Draw(box);
             selectedText.Draw(gui, origin + position);
             //Draw the dropdown button
@@ -72,7 +76,7 @@ namespace EngineeringCorpsCS
                 for (int i = 0; i < listHeaders.Length; i++)
                 {
                     RectangleShape otherbox = new RectangleShape(size);
-                    otherbox.Position = new Vector2f(position.X, position.Y + size.Y + i * lineSpacing);
+                    otherbox.Position = origin + new Vector2f(position.X, position.Y + size.Y + i * lineSpacing);
                     otherbox.FillColor = Color.Yellow;
                     gui.Draw(otherbox);
                     texts[i].Draw(gui, origin + position);
@@ -107,7 +111,7 @@ namespace EngineeringCorpsCS
                 for (int i = 0; i < listHeaders.Length; i++)
                 {
                     //check collision for each list header
-                    if (BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, dropdownBox, position + new Vector2f(0, lineSpacing * (i + 1))))
+                    if (BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, dropdownBox, origin + position + new Vector2f(0, lineSpacing * (i + 1))))
                     {
                         hoveredValue = i;
                         collided = true;
@@ -121,7 +125,7 @@ namespace EngineeringCorpsCS
                         input.GetMouseClicked(InputBindings.primary, true);
                     }
                     selectedValue = hoveredValue;
-                    applySelection?.Invoke(listHeaders[selectedValue], listValues[selectedValue]);
+                    applySelection?.Invoke(additionalParam, listValues[selectedValue]);
                     selectedText.SetText(listHeaders[selectedValue]);
                     listboxState = ListBoxState.Normal;
                 }

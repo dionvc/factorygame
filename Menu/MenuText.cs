@@ -10,7 +10,7 @@ namespace EngineeringCorpsCS
 {
     class MenuText : MenuComponent
     {
-        string textString;
+        public string textString { get; protected set; }
         List<Text> textComponents;
         Vector2f[] textPositions;
         public float lineSpacing { get; set; }
@@ -87,6 +87,7 @@ namespace EngineeringCorpsCS
         /// <param name="text"></param>
         public void SetText(string text)
         {
+            textComponents.Clear();
             textString = text;
             textComponents.Add(new Text(textString, font, charSize));
             textComponents[0].Position = new Vector2f(0, 0);

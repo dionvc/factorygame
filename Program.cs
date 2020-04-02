@@ -78,6 +78,7 @@ namespace EngineeringCorpsCS
         private GameState gameState;
         //ingame variables
         SurfaceContainer surfaceContainer;
+        SurfaceGenerator surfaceGenerator;
         TileCollection tileCollection;
         //Debug variable
         Clock clock;
@@ -94,7 +95,7 @@ namespace EngineeringCorpsCS
             window.SetFramerateLimit(60);
             window.Closed += (s, a) => window.Close();
             window.SetActive();
-            Image icon = new Image("Graphics/EngineeringCorpsIcon.png");
+            Image icon = new Image("Graphics/GUI/EngineeringCorpsIcon.png");
             window.SetIcon(icon.Size.X, icon.Size.Y, icon.Pixels);
             gameState = GameState.mainMenu;
         }
@@ -121,13 +122,19 @@ namespace EngineeringCorpsCS
             window.Resized += renderer.ResizeGUI;
             window.Resized += menuContainer.RepositionMenus;
             input.menuFactory = menuFactory;
+
+            //Game prototypes
+            tileCollection = new TileCollection(textureContainer);
         }
         public void StartMenu()
         {
             //TODO: double check this menu creation
             renderer.SubscribeToInput(input);
             menuFactory.CreateMainMenu(this, camera);
-            menuFactory.CreateTestSlider();
+
+            surfaceGenerator = new SurfaceGenerator(tileCollection);
+            menuFactory.CreateTestField(surfaceGenerator);
+            menuFactory.CreateWorldMenu(camera, surfaceGenerator);
             while (window.IsOpen && gameState == GameState.mainMenu)
             {
                 window.Clear();
@@ -148,8 +155,7 @@ namespace EngineeringCorpsCS
             menuContainer.RemoveAllMenus();
             this.SubscribeToInput(input);
             //Game systems intialization
-            tileCollection = new TileCollection(textureContainer);
-            surfaceContainer = new SurfaceContainer(tileCollection, 3000, 1000, 196);
+            surfaceContainer = new SurfaceContainer(tileCollection, surfaceGenerator, 3000, 1000, 196) ;
             renderer.InitializeForGame(tileCollection);
             #region test entities
             players = new List<Player>();

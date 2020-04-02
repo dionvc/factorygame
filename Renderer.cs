@@ -75,14 +75,14 @@ namespace EngineeringCorpsCS
             window.SetView(camera.GetGameView()); //Set view
             Vector2f origin = window.MapPixelToCoords(new Vector2i(0, 0), camera.GetGameView());
             Vector2f extent = window.MapPixelToCoords(new Vector2i((int)window.Size.X, (int)window.Size.Y), camera.GetGameView());
-            int[] begPos = SurfaceContainer.WorldToChunkCoords(origin.X, origin.Y);
-            int[] endPos = SurfaceContainer.WorldToChunkCoords(extent.X, extent.Y);
+            int[] begPos = surface.WorldToChunkCoords(origin.X, origin.Y);
+            int[] endPos = surface.WorldToChunkCoords(extent.X, extent.Y);
             #region terrain drawing
             for (int i = begPos[0]; i <= endPos[0]; i++)
             {
                 for (int j = begPos[1]; j <= endPos[1]; j++)
                 {
-                    int key = (i) * Props.worldSize + j;
+                    int key = (i) * surface.worldSize + j;
                     if (terrainVertexArrays.TryGetValue(key, out _) == false)
                     {
                         terrainVertexArrays.Add(key, tileCollection.GenerateTerrainVertices(surface, new int[] { i, j }));
@@ -164,7 +164,7 @@ namespace EngineeringCorpsCS
             #endregion
 
             #region bounding box drawing
-                    if (drawBoundingBoxes == true)
+            if (drawBoundingBoxes == true)
             {
                 for (int i = begPos[0]; i <= endPos[0]; i++)
                 {
@@ -173,12 +173,12 @@ namespace EngineeringCorpsCS
                         Chunk chunk = surface.GetChunk(i, j);
                         #region Tile bounding box drawing
 
-                        int chunkIndex = i * Props.worldSize + j;
+                        int chunkIndex = i * surface.worldSize + j;
                         float[] pointsTile = surface.tileBox.GetPoints();
                         VertexArray vA;
                         if (!tileBoundingBoxVertexArray.TryGetValue(chunkIndex, out vA))
                         {
-                            vA = tileCollection.GenerateTerrainBoundingBoxArray(chunk, chunkIndex, pointsTile);
+                            vA = tileCollection.GenerateTerrainBoundingBoxArray(surface, chunk, chunkIndex, pointsTile);
                             tileBoundingBoxVertexArray.Add(chunkIndex, vA);
                         }
                         window.Draw(vA);
@@ -206,7 +206,7 @@ namespace EngineeringCorpsCS
             cullCounter++;
             if(cullCounter > cullRate)
             {
-                CullVertexCache(camera);
+                CullVertexCache(camera, surface);
                 cullCounter = 0;
             }
         }
@@ -225,14 +225,14 @@ namespace EngineeringCorpsCS
             {
                 for(int j = chunkIndices[1] - yRange; j <= chunkIndices[1] + yRange; j++)
                 {
-                    Chunk chunk = surface.GetChunk((i * Props.worldSize) + j, false);
+                    Chunk chunk = surface.GetChunk((i * surface.worldSize) + j, false);
                     if (chunk != null)
                     {
                         VertexArray vA;
-                        if (!minimapVertexArrays.TryGetValue(i * Props.worldSize + j, out vA))
+                        if (!minimapVertexArrays.TryGetValue(i * surface.worldSize + j, out vA))
                         {
-                            vA = tileCollection.GenerateTerrainMinimap(chunk, (i * Props.worldSize) + j);
-                            minimapVertexArrays.Add(i * Props.worldSize + j, vA);
+                            vA = tileCollection.GenerateTerrainMinimap(chunk, (i * surface.worldSize) + j, surface.worldSize);
+                            minimapVertexArrays.Add(i * surface.worldSize + j, vA);
                         }
                         vertexArrays.Add(vA);
                         //next get entities
@@ -395,14 +395,14 @@ namespace EngineeringCorpsCS
         /// <summary>
         /// Culls vertex arrays that are too far away based on camera variables.
         /// </summary>
-        public void CullVertexCache(Camera camera)
+        public void CullVertexCache(Camera camera, SurfaceContainer surface)
         {
-            int[] cameraChunkCoords = SurfaceContainer.WorldToChunkCoords(camera.GetGameView().Center.X, camera.GetGameView().Center.Y);
+            int[] cameraChunkCoords = surface.WorldToChunkCoords(camera.GetGameView().Center.X, camera.GetGameView().Center.Y);
             List<int> keysToRemove = new List<int>();
 
             foreach(int key in terrainVertexArrays.Keys)
             {
-                int[] chunkIndices = SurfaceContainer.ChunkIndexToChunkCoords(key);
+                int[] chunkIndices = surface.ChunkIndexToChunkCoords(key);
                 if (Math.Abs(chunkIndices[0] - cameraChunkCoords[0]) > Props.vertexArrayCullingDistance ||
                     Math.Abs(chunkIndices[1] - cameraChunkCoords[1]) > Props.vertexArrayCullingDistance)
                 {
@@ -425,7 +425,7 @@ namespace EngineeringCorpsCS
 
             foreach(int key in tileBoundingBoxVertexArray.Keys)
             {
-                int[] chunkIndices = SurfaceContainer.ChunkIndexToChunkCoords(key);
+                int[] chunkIndices = surface.ChunkIndexToChunkCoords(key);
                 if (Math.Abs(chunkIndices[0] - cameraChunkCoords[0]) > Props.vertexArrayCullingDistance ||
                     Math.Abs(chunkIndices[1] - cameraChunkCoords[1]) > Props.vertexArrayCullingDistance)
                 {
@@ -447,7 +447,7 @@ namespace EngineeringCorpsCS
             {
                 foreach (int key in minimapVertexArrays.Keys)
                 {
-                    int[] chunkIndices = SurfaceContainer.ChunkIndexToChunkCoords(key);
+                    int[] chunkIndices = surface.ChunkIndexToChunkCoords(key);
                     if (Math.Abs(chunkIndices[0] - cameraChunkCoords[0]) > Props.vertexArrayCullingDistance ||
                         Math.Abs(chunkIndices[1] - cameraChunkCoords[1]) > Props.vertexArrayCullingDistance)
                     {

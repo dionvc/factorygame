@@ -22,15 +22,17 @@ namespace EngineeringCorpsCS
         private byte levelOfDarkness; //the maximum byte value for darkness
         public BoundingBox tileBox { get; protected set; }
         public TileCollection tileCollection { get; protected set; }
+        public int worldSize { get; protected set; }
 
-        public SurfaceContainer(TileCollection tileCollection, int timeOfMidday, int lengthOfNight, byte levelOfDarkness)
+        public SurfaceContainer(TileCollection tileCollection, SurfaceGenerator surfaceGenerator, int timeOfMidday, int lengthOfNight, byte levelOfDarkness)
         {
+            this.worldSize = surfaceGenerator.surfaceSize;
             tileBox = new BoundingBox(-16, -16, 16, 16);
             this.tileCollection = tileCollection;
-            chunks = new Chunk[Props.worldSize * Props.worldSize];
-            surfaceGenerator = new SurfaceGenerator(0, tileCollection);
+            chunks = new Chunk[worldSize * worldSize];
+            this.surfaceGenerator = surfaceGenerator;
             activeChunks = new List<Chunk>();
-
+            
             this.timeOfMidday = timeOfMidday;
             this.lengthOfNight = lengthOfNight;
             this.levelOfDarkness = levelOfDarkness;
@@ -50,45 +52,45 @@ namespace EngineeringCorpsCS
         {
             Chunk chunk = new Chunk();
             chunk.GenerateTerrain((x) * Props.chunkSize, (y) * Props.chunkSize, surfaceGenerator);
-            SetChunk(x, y, chunk);
+            SetChunk(x * worldSize + y, chunk);
             activeChunks.Add(chunk);
         }
         public Chunk GetChunk(int x, int y)
         {
-            if(x < 0 || x >= Props.worldSize || y < 0 || y >= Props.worldSize)
+            if(x < 0 || x >= worldSize || y < 0 || y >= worldSize)
             {
                 return null;
             }
-            if (chunks[x * Props.worldSize + y] != null)
+            if (chunks[x * worldSize + y] != null)
             {
-                return chunks[x * Props.worldSize + y];
+                return chunks[x * worldSize + y];
             }
             else
             {
                 GenerateTerrain(x, y);
-                return chunks[x * Props.worldSize + y];
+                return chunks[x * worldSize + y];
             }
         }
         public Chunk GetChunk(int[] xy)
         {
-            if (xy[0] < 0 || xy[0] >= Props.worldSize || xy[1] < 0 || xy[1] >= Props.worldSize)
+            if (xy[0] < 0 || xy[0] >= worldSize || xy[1] < 0 || xy[1] >= worldSize)
             {
                 return null;
             }
-            if (chunks[xy[0] * Props.worldSize + xy[1]] != null)
+            if (chunks[xy[0] * worldSize + xy[1]] != null)
             {
-                return chunks[xy[0] * Props.worldSize + xy[1]];
+                return chunks[xy[0] * worldSize + xy[1]];
             }
             else
             {
                 GenerateTerrain(xy[0], xy[1]);
-                return chunks[xy[0] * Props.worldSize + xy[1]];
+                return chunks[xy[0] * worldSize + xy[1]];
             }
         }
 
         public Chunk GetChunk(int chunkIndex, bool generate)
         {
-            if(chunkIndex < 0 || chunkIndex > (Props.worldSize * Props.worldSize))
+            if(chunkIndex < 0 || chunkIndex > (worldSize * worldSize) - 1)
             {
                 return null;
             }
@@ -104,9 +106,9 @@ namespace EngineeringCorpsCS
             }
         }
 
-        public void SetChunk(int x, int y, Chunk chunk)
+        public void SetChunk(int chunkIndex, Chunk chunk)
         {
-            chunks[x * Props.worldSize + y] = chunk;
+            chunks[chunkIndex] = chunk;
         }
 
         /// <summary>
@@ -119,7 +121,7 @@ namespace EngineeringCorpsCS
             entity.centeredChunk = chunkIndex;
             entity.surface = this;
             GetChunk(chunkIndex, true).AddEntityToChunk(entity);
-            int[] newCollisionChunks = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
+            int[] newCollisionChunks = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position, entity.surface);
             foreach (int x in newCollisionChunks)
             {
                 GetChunk(x, true).AddEntityCollisionCheck(entity);
@@ -146,7 +148,7 @@ namespace EngineeringCorpsCS
                 GetChunk(newChunkIndex, true).AddEntityToChunk(entity);
             }
             //Now, the entity's collision chunks are computed
-            int[] newCollisionChunks  = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position);
+            int[] newCollisionChunks  = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position, entity.surface);
             foreach (int x in newCollisionChunks)
             {
                 if(!entity.collisionChunks.Contains(x))
@@ -213,7 +215,7 @@ namespace EngineeringCorpsCS
         /// <returns></returns>
         public float GetInterpolatedPollution(int cX, int cY)
         {
-            Chunk chunk = GetChunk(cX * Props.worldSize + cY, false);
+            Chunk chunk = GetChunk(cX * worldSize + cY, false);
             float interpPollution = 0;
             int chunkCounter = 0;
             if(chunk != null)
@@ -221,19 +223,19 @@ namespace EngineeringCorpsCS
                 interpPollution += chunk.pollutionValue;
                 chunkCounter++;
             }
-            chunk = GetChunk((cX - 1) * Props.worldSize + cY, false);
+            chunk = GetChunk((cX - 1) * worldSize + cY, false);
             if(chunk != null)
             {
                 interpPollution += chunk.pollutionValue;
                 chunkCounter++;
             }
-            chunk = GetChunk(cX * Props.worldSize + cY, false);
+            chunk = GetChunk(cX * worldSize + cY, false);
             if(chunk != null)
             {
                 interpPollution += chunk.pollutionValue;
                 chunkCounter++;
             }
-            chunk = GetChunk(cX * Props.worldSize + cY, false);
+            chunk = GetChunk(cX * worldSize + cY, false);
             if(chunk!= null)
             {
                 interpPollution += chunk.pollutionValue;
@@ -259,24 +261,43 @@ namespace EngineeringCorpsCS
             return Convert.ToByte(darkness);
         }
 
-        #region Coordinate conversions TODO: Cull this section down to "index" type functions
         /// <summary>
-        /// Converts world coordinates to chunk coordinates
+        /// Gets the tile bounding the provided vector2
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <returns>x,y chunk coords</returns>
-        public static int[] WorldToChunkCoords(float x, float y)
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public byte GetTileFromWorld(Vector2 pos)
         {
-            x = x < 0 ? x = 0 : x;
-            y = y < 0 ? y = 0 : y;
-            //TODO: add extremity chunk check (eg x > worldsize... or whatever)
-            return new int[] {(int) Math.Floor(x/(Props.tileSize * Props.chunkSize)), (int) Math.Floor(y/(Props.tileSize * Props.chunkSize))};
+            int chunkIndex = WorldToChunkIndex(pos);
+            int tileIndex = WorldToTileIndex(pos);
+            return GetChunk(chunkIndex, true).GetTile(tileIndex);
         }
 
-        public static int[] WorldToChunkCoords(Vector2 pos)
+        /// <summary>
+        /// Gets a tile value from world coordinates provided as integers.
+        /// </summary>
+        /// <param name="cXY"></param>
+        /// <param name="i"></param>
+        /// <param name="j"></param>
+        /// <returns></returns>
+        public byte GetTileFromWorldInt(int[] cXY, int i, int j)
         {
-            return new int[] { (int)Math.Floor(pos.x / (Props.tileSize * Props.chunkSize)), (int)Math.Floor(pos.y / (Props.tileSize * Props.chunkSize)) };
+            int iN = (i % Props.chunkSize + Props.chunkSize) % Props.chunkSize;
+            int jN = (j % Props.chunkSize + Props.chunkSize) % Props.chunkSize;
+            Chunk chunk = GetChunk(new int[] { cXY[0] + (int)Math.Floor(i * 1.0 / Props.chunkSize), cXY[1] + (int)Math.Floor(j * 1.0 / Props.chunkSize) });
+            if (chunk == null)
+            {
+                return 0; //void
+            }
+            return chunk.GetTile(iN, jN);
+        }
+        public Vector2 WorldToTileVector(int chunkIndex, int tileIndex)
+        {
+            float x = 16.5f + (chunkIndex / worldSize) * Props.chunkSize * Props.tileSize;
+            float y = 16.5f + (chunkIndex % worldSize) * Props.chunkSize * Props.tileSize;
+            x += (tileIndex / Props.chunkSize) * Props.tileSize;
+            y += (tileIndex % Props.chunkSize) * Props.tileSize;
+            return new Vector2(x, y);
         }
 
         /// <summary>
@@ -284,20 +305,10 @@ namespace EngineeringCorpsCS
         /// </summary>
         /// <param name="pos"></param>
         /// <returns></returns>
-        public static int WorldToChunkIndex(Vector2 pos)
+        public int WorldToChunkIndex(Vector2 pos)
         {
             int[] wC = WorldToChunkCoords(pos);
-            return wC[0] * Props.worldSize + wC[1];
-        }
-        /// <summary>
-        /// Returns the chunk's index at a specified world coordinate
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public static int WorldToChunkIndex(float x, float y)
-        {
-            int[] wC = WorldToChunkCoords(x, y);
-            return wC[0] * Props.worldSize + wC[1];
+            return wC[0] * worldSize + wC[1];
         }
 
         /// <summary>
@@ -305,9 +316,47 @@ namespace EngineeringCorpsCS
         /// </summary>
         /// <param name="chunkIndex"></param>
         /// <returns></returns>
-        public static int[] ChunkIndexToChunkCoords(int chunkIndex)
+        public int[] ChunkIndexToChunkCoords(int chunkIndex)
         {
-            return new int[] { (chunkIndex / Props.worldSize), (chunkIndex % Props.worldSize) };
+            return new int[] { (chunkIndex / worldSize), (chunkIndex % worldSize) };
+        }
+
+        #region Coordinate conversions TODO: Cull this section down to "index" type functions
+        /// <summary>
+        /// Converts world coordinates to chunk coordinates
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns>x,y chunk coords</returns>
+        public int[] WorldToChunkCoords(float x, float y)
+        {
+            x = x < 0 ? x = 0 : x;
+            y = y < 0 ? y = 0 : y;
+            x = x > worldSize * Props.chunkSize * Props.tileSize ? x = (worldSize-1) * Props.chunkSize * Props.tileSize : x;
+            y = y > worldSize * Props.chunkSize * Props.tileSize ? y = (worldSize-1) * Props.chunkSize * Props.tileSize : y;
+            return new int[] {(int) Math.Floor(x/(Props.tileSize * Props.chunkSize)), (int) Math.Floor(y/(Props.tileSize * Props.chunkSize))};
+        }
+
+        /// <summary>
+        /// Converts a vector2 to chunk coords
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static int[] WorldToChunkCoords(Vector2 pos)
+        {
+            return new int[] { (int)Math.Floor(pos.x / (Props.tileSize * Props.chunkSize)), (int)Math.Floor(pos.y / (Props.tileSize * Props.chunkSize)) };
+        }
+
+        
+        /// <summary>
+        /// Returns the chunk's index at a specified world coordinate
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public int WorldToChunkIndex(float x, float y)
+        {
+            int[] wC = WorldToChunkCoords(x, y);
+            return wC[0] * worldSize + wC[1];
         }
 
         /// <summary>
@@ -333,61 +382,19 @@ namespace EngineeringCorpsCS
             int yR = (int)Math.Floor(y/Props.tileSize);
             return new int[] { xR/Props.chunkSize, yR/Props.chunkSize, xR % Props.chunkSize, yR % Props.chunkSize };
         }
-
         public static int[] WorldToAbsoluteTileCoords(float x, float y)
         {
             int xR = (int)Math.Floor(x / Props.tileSize);
             int yR = (int)Math.Floor(y / Props.tileSize);
             return new int[] { xR, yR };
         }
-        
-        public static Vector2 WorldToTileVector(int chunkIndex, int tileIndex)
-        {
-            float x = 16.5f + (chunkIndex / Props.worldSize) * Props.chunkSize * Props.tileSize;
-            float y = 16.5f + (chunkIndex % Props.worldSize) * Props.chunkSize * Props.tileSize;
-            x += (tileIndex / Props.chunkSize) * Props.tileSize;
-            y += (tileIndex % Props.chunkSize) * Props.tileSize;
-            return new Vector2(x, y);
-        }
-        
+
         public static int WorldToTileIndex(Vector2 pos)
         {
             int xR = ((int)Math.Floor(pos.x / Props.tileSize)) % Props.chunkSize; //coords in tile
             int yR = ((int)Math.Floor(pos.y / Props.tileSize)) % Props.chunkSize; //coords in tile
             return xR * Props.chunkSize + yR;
         }
-
-        public byte GetTileFromWorld(float x, float y)
-        {
-            int[] xyij = WorldToTileCoords(x, y);
-            Chunk chunk = GetChunk(new int[] { xyij[0], xyij[1] });
-            if(chunk == null)
-            {
-                return 0;
-            }
-            return chunk.GetTile(xyij[2], xyij[3]);
-        }
-
-        public byte GetTileFromWorld(Vector2 pos)
-        {
-            int chunkIndex = WorldToChunkIndex(pos);
-            int tileIndex = WorldToTileIndex(pos);
-            return GetChunk(chunkIndex, true).GetTile(tileIndex);
-        }
-
-        public byte GetTileFromWorldInt(int[] cXY, int i, int j)
-        {
-            int iN = (i % Props.chunkSize + Props.chunkSize) % Props.chunkSize;
-            int jN = (j % Props.chunkSize + Props.chunkSize) % Props.chunkSize;
-            Chunk chunk = GetChunk(new int[] { cXY[0] + (int)Math.Floor(i * 1.0 / Props.chunkSize), cXY[1] + (int)Math.Floor(j * 1.0 / Props.chunkSize) });
-            if (chunk == null)
-            {
-                return 0; //void
-            }
-            return chunk.GetTile(iN, jN);
-
-        }
-
         public static int[] TileToWorldCoords(int x, int y, int cx, int cy)
         {
             return new int[] { (cx * Props.chunkSize + x) * Props.tileSize, (cy * Props.chunkSize + x) * Props.tileSize };

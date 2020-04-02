@@ -27,24 +27,26 @@ namespace EngineeringCorpsCS
         FastNoise.NoiseType moistureType;
         FastNoise.NoiseType temperatureType;
         List<Tile> tileList;
-        public SurfaceGenerator(int seed, TileCollection tiles)
+        public int surfaceSize { get; set; }
+        public SurfaceGenerator(TileCollection tiles)
         {
             elevationType = FastNoise.NoiseType.PerlinFractal;
             moistureType = FastNoise.NoiseType.PerlinFractal;
             temperatureType = FastNoise.NoiseType.PerlinFractal;
             Random r = new Random();
+            int seed = r.Next(0, int.MaxValue - 1);
             elevationNoise = new FastNoise();
             elevationNoise.SetNoiseType(elevationType);
-            elevationNoise.SetSeed(r.Next(0, int.MaxValue - 1));
+            elevationNoise.SetSeed(seed);
             elevationNoise.SetFractalType(FastNoise.FractalType.RigidMulti);
 
             moistureNoise = new FastNoise();
             moistureNoise.SetNoiseType(moistureType);
-            moistureNoise.SetSeed(r.Next(0, int.MaxValue - 1));
+            moistureNoise.SetSeed(seed/3);
 
             temperatureNoise = new FastNoise();
             temperatureNoise.SetNoiseType(temperatureType);
-            temperatureNoise.SetSeed(r.Next(0, int.MaxValue - 1));
+            temperatureNoise.SetSeed(seed/7);
 
             tileList = tiles.GetTerrainTiles();
         }
@@ -75,6 +77,55 @@ namespace EngineeringCorpsCS
                 }
             }
             return chosenTile;
+        }
+
+        public bool SetSeed(string seed, out string parsed)
+        {
+            int parsedInt;
+            if(!int.TryParse(seed, out parsedInt))
+            {
+                parsed = "0";
+                return false;
+            }
+            Random r = new Random(parsedInt);
+            elevationNoise.SetSeed(r.Next(0, int.MaxValue - 1));
+            moistureNoise.SetSeed(r.Next(0, int.MaxValue - 1));
+            temperatureNoise.SetSeed(r.Next(0, int.MaxValue -1));
+            parsed = parsedInt.ToString();
+            return true;
+        }
+
+        public void SetNoiseType(string type, int value)
+        {
+            if(type == "moisture")
+            {
+                moistureNoise.SetNoiseType((FastNoise.NoiseType)value);
+            }
+            else if(type == "elevation")
+            {
+                elevationNoise.SetNoiseType((FastNoise.NoiseType)value);
+            }
+            else if(type == "temperature")
+            {
+                temperatureNoise.SetNoiseType((FastNoise.NoiseType)value);
+            }
+        }
+
+        public bool ParseString(string tag, string value, out string updated)
+        {
+            updated = "";
+            if (tag == "surfacesize")
+            {
+                int val;
+                if (int.TryParse(value, out val))
+                {
+                    surfaceSize = val;
+                    surfaceSize = surfaceSize > 2048 ? 2048 : surfaceSize;
+                    updated = surfaceSize.ToString();
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
