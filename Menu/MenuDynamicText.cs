@@ -11,20 +11,29 @@ namespace EngineeringCorpsCS
     class MenuDynamicText : MenuComponent
     {
         public delegate string DynamicString();
-        List<DynamicString> methodList;
+        DynamicString[] methodList;
         string[] stringArray;
         Text textComponent;
         char lineSplit = ' ';
         string textString;
         string unformattedString;
-        public MenuDynamicText(Vector2f relativePosition, Font font, string text, uint charSize, List<DynamicString> methodList)
+
+        /// <summary>
+        /// Useful for displaying values that change frame to frame.
+        /// </summary>
+        /// <param name="relativePosition"></param>
+        /// <param name="font"></param>
+        /// <param name="text"></param>
+        /// <param name="charSize"></param>
+        /// <param name="methodList"></param>
+        public MenuDynamicText(Vector2f relativePosition, Font font, string text, uint charSize, DynamicString[] methodList)
         {
             this.position = relativePosition;
             this.methodList = methodList;
             textComponent = new Text("", font, charSize);
             textComponent.LineSpacing = 0.6f;
             unformattedString = text;
-            stringArray = new string[methodList.Count];
+            stringArray = new string[methodList.Length];
         }
 
         override public void Draw(RenderTexture gui, Vector2f origin)
@@ -86,7 +95,7 @@ namespace EngineeringCorpsCS
 
         private void EvaluateMethods()
         {
-            for(int i = 0; i < methodList.Count; i++)
+            for(int i = 0; i < methodList.Length; i++)
             {
                 stringArray[i] = methodList[i]();
             }

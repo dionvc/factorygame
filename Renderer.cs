@@ -499,7 +499,7 @@ namespace EngineeringCorpsCS
         /// </summary>
         public void ToggleCullingMinimap()
         {
-
+            cullMinimap = !cullMinimap;
         }
     }
 }

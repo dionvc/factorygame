@@ -131,8 +131,6 @@ namespace EngineeringCorpsCS
                         //origin that vertices will be defined relative to
                         int oX = (cXY[0] + i) * Props.tileSize;
                         int oY = (cXY[1] + j) * Props.tileSize;
-                        //pixel rounder amount, fixes issue #2 on github
-                        float pR = 0.5f;
 
                         #region Regular tile variant determination
                         if (currentTile == curType)
@@ -255,8 +253,6 @@ namespace EngineeringCorpsCS
                     //origin that vertices will be defined relative to
                     int oX = (cXY[0] + i) * Props.tileSize;
                     int oY = (cXY[1] + j) * Props.tileSize;
-                    //pixel rounder amount, fixes issue #2 on github
-                    float pR = 0.5f;
 
                     int value = 0;
                     int variant = variantX % 4; //variant is determine by whether the transition is into an impassable tile

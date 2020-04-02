@@ -18,7 +18,7 @@ namespace EngineeringCorpsCS
         SurfaceContainer viewedSurface;
         public Camera()
         {
-            gameView = new View(new FloatRect(0, 0, 2 * 1280, 2 * 720));
+            gameView = new View(new FloatRect(0, 0, 1280, 720));
             guiView = new View(new Vector2f(640, 360), new Vector2f(1280, 720));
             viewScale = 1.0f;
         }
@@ -43,8 +43,7 @@ namespace EngineeringCorpsCS
         public void HandleResize(Object s, SizeEventArgs e)
         {
             gameView.Size = new Vector2f(e.Width, e.Height);
-            guiView.Size = new Vector2f(e.Width, e.Height);
-            guiView.Center = new Vector2f(e.Width / 2, e.Height / 2);
+            guiView = new View(new Vector2f(e.Width/2, e.Height/2), new Vector2f(e.Width, e.Height));
         }
 
         public void SubscribeToInput(InputManager input)

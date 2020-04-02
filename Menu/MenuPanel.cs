@@ -47,7 +47,8 @@ namespace EngineeringCorpsCS
                 container.RemoveMenu(this);
                 return;
             }
-            //TODO: move to translate and store absolute position of component precomputed?
+            
+            //Computing absolute position to check collision
             Vector2f mousePos = input.GetMousePosition();
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
@@ -56,13 +57,17 @@ namespace EngineeringCorpsCS
                 origin += bubble.position;
                 bubble = bubble.parent;
             }
+            //If the menu is collided with then it will consume the mouse position so that it does not interact with anything else
+            bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, position + origin);
+            
             if (panelState == PanelState.Dragging && input.GetMouseReleased(InputBindings.primary, false))
             {
                 panelState = PanelState.Normal;
             }
-            if (panelState == PanelState.Normal && input.GetMouseClicked(InputBindings.primary, false) && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, position + origin))
+            if (panelState == PanelState.Normal && input.GetMouseClicked(InputBindings.primary, false) && collided)
             {
                 input.GetMouseClicked(InputBindings.primary, true);
+                container.PushMenuToFront(this);
                 panelState = PanelState.Dragging;
                 this.Translate(input.GetMouseDiff());
             }

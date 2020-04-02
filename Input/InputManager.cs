@@ -194,6 +194,14 @@ namespace EngineeringCorpsCS
             subscriberList.Remove(subscriber);
         }
 
+        public void PushMenuToFront(IInputSubscriber subscriber) 
+        {
+            if(subscriberMenuList.Remove(subscriber))
+            {
+                subscriberMenuList.Insert(0,subscriber);
+            }
+        }
+
         public void ClearGameSubscribers()
         {
             subscriberList.Clear();

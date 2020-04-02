@@ -11,27 +11,74 @@ namespace EngineeringCorpsCS
     class MenuText : MenuComponent
     {
         string textString;
-        Text textComponent;
-        bool textSet = false;
+        List<Text> textComponents;
+        Vector2f[] textPositions;
+        public float lineSpacing { get; set; }
         char lineSplit = ' ';
-        public MenuText(Vector2f relativePosition, Font font, string text, uint charSize)
+        Font font;
+        uint charSize;
+        public MenuText(Vector2f relativePosition, Vector2f componentSize, Font font, string text, uint charSize, float lineSpacing)
         {
-            this.position = relativePosition;
-            textComponent = new Text("", font, charSize);
-            textComponent.LineSpacing = 0.6f;
-            textString = text;
+            Initialize(relativePosition, componentSize);
+            textComponents = new List<Text>();
+            this.lineSpacing = lineSpacing;
+            this.font = font;
+            this.charSize = charSize;
+            SetText(text);
         }
 
         override public void Draw(RenderTexture gui, Vector2f origin)
         {
-            if(textSet == false)
+            for(int i = 0; i < textComponents.Count; i++)
             {
-                ComputeSize();
-                SetText(textString);
+                if (textPositions == null)
+                {
+                    textComponents[i].Position = position + origin + new Vector2f(0, i * 12.0f);
+                }
+                else
+                {
+                    textComponents[i].Position = position + origin + textPositions[i];
+                }
+                gui.Draw(textComponents[i]);
             }
-            textComponent.Position = position + origin;
-            gui.Draw(textComponent);
             base.Draw(gui, origin);
+        }
+
+        public void SetInitialPosition()
+        {
+            //do not change the position of the text component, but instead the positions of the text objects contained
+            float centerX = size.X / 2;
+            float centerY = size.Y / 2;
+            int components = textComponents.Count;
+            textPositions = new Vector2f[components];
+            for (int i = 0; i < components; i++)
+            {
+                textPositions[i] = new Vector2f(size.X / 2, size.Y / 2);
+                textComponents[i].Origin = new Vector2f(textComponents[i].GetLocalBounds().Width / 2.0f, textComponents[i].GetLocalBounds().Height / 2.0f);
+                if (pivot1 == "center" || pivot2 == "center")
+                {
+                    textPositions[i] += new Vector2f(0, (i - components/2.0f) * charSize + charSize/4);
+                }
+                if (pivot1 == "top" || pivot2 == "top")
+                {
+                    textComponents[i].Origin += new Vector2f(0, -textComponents[i].GetLocalBounds().Height / 2.0f);
+                    textPositions[i] += new Vector2f(0, (i * charSize) - size.Y / 2);
+                }
+                if (pivot1 == "bottom" || pivot2 == "bottom") {
+                    textComponents[i].Origin += new Vector2f(0, -textComponents[i].GetLocalBounds().Height / 2.0f);
+                    textPositions[i] += new Vector2f(0, -((components - i) * charSize) + size.Y / 2);
+                }
+                if (pivot1 == "left" || pivot2 == "left") 
+                {
+                    textComponents[i].Origin += new Vector2f(-textComponents[i].GetLocalBounds().Width / 2.0f, 0);
+                    textPositions[i] += new Vector2f(-size.X / 2, 0);
+                }
+                if (pivot1 == "right" || pivot2 == "right")
+                {
+                    textComponents[i].Origin = new Vector2f(textComponents[i].GetLocalBounds().Width, 0);
+                    textPositions[i] += new Vector2f(size.X / 2, 0);
+                }
+            }
         }
 
         /// <summary>
@@ -40,48 +87,42 @@ namespace EngineeringCorpsCS
         /// <param name="text"></param>
         public void SetText(string text)
         {
-            textComponent.Position = new Vector2f(0, 0);
             textString = text;
-            textComponent.DisplayedString = text;
+            textComponents.Add(new Text(textString, font, charSize));
+            textComponents[0].Position = new Vector2f(0, 0);
+            textComponents[0].DisplayedString = text;
             uint lastlineSplit = 0;
-            textSet = true;
-            if(fixedWidth == false)
+            int currentComponent = 0;
+
+            for(uint i = 0; i < textString.Length; i++)
             {
-                //change the width of the text component to reflect its variable width
-                size = new Vector2f(textComponent.FindCharacterPos(Convert.ToUInt32(textComponent.DisplayedString.Length)).X, size.Y);
-                return;
-            }
-            for (uint i = 0; i < textString.Length; i++)
-            {
-                if (textComponent.FindCharacterPos(i).X > size.X)
+                if(textComponents[currentComponent].FindCharacterPos(i - lastlineSplit).X + charSize/2 > size.X)
                 {
                     for(uint j = i; j > lastlineSplit; j--)
                     {
-                        if(textString[(int)j] == lineSplit)
+                        if(textString[(int)j].Equals(lineSplit))
                         {
-                            textString = textString.Insert((int)(j) + 1, "\n");
-                            Console.WriteLine(j + " : " + textComponent.FindCharacterPos(j).X + " : " + textString);
-                            textComponent.DisplayedString = textString;
+                            textComponents[currentComponent].DisplayedString = textString.Substring((int)lastlineSplit, (int)j - (int)lastlineSplit).Trim();
+                            textComponents.Add(new Text(textString.Substring((int)j).Trim(), font, charSize));
+                            currentComponent++;
                             lastlineSplit = j;
                             break;
                         }
-                        else if(j == lastlineSplit + 1)
+                        if(j == lastlineSplit + 1)
                         {
-                            textString = textString.Insert((int)(i - 2), "-\n");
-                            Console.WriteLine(i + " : " + textComponent.FindCharacterPos(i).X + " : " + textString);
-                            textComponent.DisplayedString = textString;
-                            lastlineSplit = i + 1;
-                            i++;
+                            string newstring = textString.Substring((int)lastlineSplit, (int)i - (int)lastlineSplit).Trim();
+                            textComponents[currentComponent].DisplayedString = newstring.Insert(newstring.Length, "-");
+                            textComponents.Add(new Text(textString.Substring((int)i).Trim(), font, charSize));
+                            currentComponent++;
+                            lastlineSplit = i;
                             break;
                         }
                     }
-                    
                 }
             }
-            size = new Vector2f(size.X, textComponent.FindCharacterPos(Convert.ToUInt32(textComponent.DisplayedString.Length)).Y);
         }
 
-        private void ComputeSize()
+        public void ComputeSize()
         {
             this.size = new Vector2f(parent.size.X - 2 * margin - position.X, parent.size.Y - 2 * margin - position.Y);
         }

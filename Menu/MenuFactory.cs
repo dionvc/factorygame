@@ -23,17 +23,17 @@ namespace EngineeringCorpsCS
 
         public void CreateMainMenu(Program program, Camera camera)
         {
-            MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 150));
-            MenuButton startGameButton = new MenuButton(new Vector2f(25, 25), new Vector2f(100, 100), program.SwitchToIngame);
-            MenuText startGameText = new MenuText(new Vector2f(0, 0), debugFont, "Start Game", 24); 
+            MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(200, 200));
+            MenuButton startGameButton = new MenuButton(new Vector2f(25, 25), new Vector2f(150, 50), program.SwitchToIngame);
+            MenuText startGameText = new MenuText(new Vector2f(0, 0), new Vector2f(150,50), debugFont, "Start Game", 24, 0.6f); 
             mainMenu.AttachComponent(startGameButton);
             startGameButton.AttachComponent(startGameText);
-            MenuText endGameText = new MenuText(new Vector2f(0, 0), debugFont, "End Game", 24);
-            MenuButton endGameButton = new MenuButton(new Vector2f(125, 25), new Vector2f(100, 100), program.SwitchToMainMenu);
+            MenuText endGameText = new MenuText(new Vector2f(0, 0), new Vector2f(150, 50), debugFont, "End Game", 24, 0.6f);
+            MenuButton endGameButton = new MenuButton(new Vector2f(25, 75), new Vector2f(150, 50), program.SwitchToMainMenu);
             mainMenu.AttachComponent(endGameButton);
             endGameButton.AttachComponent(endGameText);
-            MenuText quitGameText = new MenuText(new Vector2f(0, 0), debugFont, "Quit Game", 24);
-            MenuButton quitGameButton = new MenuButton(new Vector2f(225, 25), new Vector2f(100, 100), program.ExitGame);
+            MenuText quitGameText = new MenuText(new Vector2f(0, 0), new Vector2f(150, 50), debugFont, "Quit Game", 24, 0.6f);
+            MenuButton quitGameButton = new MenuButton(new Vector2f(25, 125), new Vector2f(150, 50), program.ExitGame);
             mainMenu.AttachComponent(quitGameButton);
             quitGameButton.AttachComponent(quitGameText);
 
@@ -42,6 +42,11 @@ namespace EngineeringCorpsCS
             mainMenu.pivot1 = "center";
             mainMenu.pivot2 = "center";
             mainMenu.SetInitialPosition(camera.GetGUIView());
+
+            startGameText.SetInitialPosition();
+            endGameText.SetInitialPosition();
+            quitGameText.SetInitialPosition();
+
             menuContainer.AttachMenu(mainMenu);
         }
 
@@ -49,14 +54,14 @@ namespace EngineeringCorpsCS
         {
             MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 150));
             MenuButton startGameButton = new MenuButton(new Vector2f(25, 25), new Vector2f(100, 100), program.SwitchToIngame);
-            MenuText startGameText = new MenuText(new Vector2f(0, 0), debugFont, "Start Game", 24);
+            MenuText startGameText = new MenuText(new Vector2f(0, 0), new Vector2f(100, 100), debugFont, "Start Game", 24, 0.6f);
             mainMenu.AttachComponent(startGameButton);
             startGameButton.AttachComponent(startGameText);
-            MenuText endGameText = new MenuText(new Vector2f(0, 0), debugFont, "End Game", 24);
+            MenuText endGameText = new MenuText(new Vector2f(0, 0), new Vector2f(100, 100), debugFont, "End Game", 24, 0.6f);
             MenuButton endGameButton = new MenuButton(new Vector2f(125, 25), new Vector2f(100, 100), program.SwitchToMainMenu);
             mainMenu.AttachComponent(endGameButton);
             endGameButton.AttachComponent(endGameText);
-            MenuText quitGameText = new MenuText(new Vector2f(0, 0), debugFont, "Quit Game", 24);
+            MenuText quitGameText = new MenuText(new Vector2f(0, 0), new Vector2f(100, 100), debugFont, "Quit Game", 24, 0.6f);
             MenuButton quitGameButton = new MenuButton(new Vector2f(225, 25), new Vector2f(100, 100), program.ExitGame);
             mainMenu.AttachComponent(quitGameButton);
             quitGameButton.AttachComponent(quitGameText);
@@ -73,9 +78,9 @@ namespace EngineeringCorpsCS
         {
             MenuPanel debugMenu = new MenuPanel(new Vector2f(720, 0), new Vector2f(300, 150));
             MenuButton boundingBoxButton = new MenuButton(new Vector2f(25, 25), new Vector2f(100, 100), renderer.ToggleBoundingBoxRendering);
-            MenuText boundingBoxButtonText = new MenuText(new Vector2f(0, 0), debugFont, "Show/Hide boundinggggggggggggggggg boxes", 24);
+            MenuText boundingBoxButtonText = new MenuText(new Vector2f(0, 0), new Vector2f(100,100), debugFont, "Show/Hide boundinggggggggggggggggg boxes", 24, 0.6f);
 
-            MenuDynamicText fps = new MenuDynamicText(new Vector2f(0, 0), debugFont, "Fps: {0}", 24, new List<MenuDynamicText.DynamicString> { program.GetFPS });
+            MenuDynamicText fps = new MenuDynamicText(new Vector2f(0, 0), debugFont, "Fps: {0}", 24, new MenuDynamicText.DynamicString[] { program.GetFPS });
 
             debugMenu.AttachComponent(boundingBoxButton);
             debugMenu.AttachComponent(fps);
@@ -115,6 +120,8 @@ namespace EngineeringCorpsCS
             minimapPanel.pivot2 = "left";
             minimapPanel.SetInitialPosition(camera.GetGUIView());
             minimapPanel.lockedPosition = true;
+            renderer.ToggleCullingMinimap();
+            minimapPanel.ClosePanelAction = renderer.ToggleCullingMinimap;
             menuContainer.AttachMenu(minimapPanel);
         }
 
@@ -123,6 +130,9 @@ namespace EngineeringCorpsCS
         {
             MenuSlider testSlider = new MenuSlider(new Vector2f(50, 50), new Vector2f(150, 16));
             menuContainer.AttachMenu(testSlider);
+
+            MenuListBox menuListBox = new MenuListBox(new Vector2f(400, 50), new Vector2f(100, 25), new string[] { "t1", "t2" }, new int[] { 1, 2 }, null, debugFont, 24, 24, 0);
+            menuContainer.AttachMenu(menuListBox);
         }
     }
 }

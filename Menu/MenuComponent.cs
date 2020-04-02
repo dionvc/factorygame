@@ -47,7 +47,12 @@ namespace EngineeringCorpsCS
             }
         }
 
-        public void SetInitialPosition(View GUIView)
+        public void SetRelativePosition(Vector2f position)
+        {
+            this.position = position;
+        }
+
+        virtual public void SetInitialPosition(View GUIView)
         {
             if(parent == null) {
                 position = new Vector2f(GUIView.Size.X / 2 - size.X / 2, GUIView.Size.Y / 2 - size.Y / 2);
@@ -106,6 +111,69 @@ namespace EngineeringCorpsCS
                 if (pivot1 == "right" || pivot2 == "right")
                 {
                     position += new Vector2f(parent.size.X/2 + margin, 0);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Position the component relative to another component
+        /// </summary>
+        /// <param name="component"></param>
+        public void SetInitialPosition(MenuComponent component)
+        {
+            Vector2f origin = new Vector2f(0, 0);
+            MenuComponent bubble = component;
+            while (bubble != null)
+            {
+                origin += bubble.position;
+                bubble = bubble.parent;
+            }
+            Vector2f thisOrigin = new Vector2f(0, 0);
+            bubble = this.parent;
+            while (bubble != null)
+            {
+                thisOrigin += bubble.position;
+                bubble = bubble.parent;
+            }
+            Vector2f relativeToThis = origin - thisOrigin;
+            if (pivot3 == "inside")
+            {
+                position = new Vector2f(relativeToThis.X + component.size.X / 2 - size.X / 2, relativeToThis.Y + component.size.Y / 2 - size.Y / 2);
+                if (pivot1 == "top" || pivot2 == "top")
+                {
+                    position += new Vector2f(0, size.Y + margin - component.size.Y / 2);
+                }
+                if (pivot1 == "bottom" || pivot2 == "bottom")
+                {
+                    position += new Vector2f(0, component.size.Y / 2 - size.Y - margin);
+                }
+                if (pivot1 == "left" || pivot2 == "left")
+                {
+                    position += new Vector2f(margin + size.X - component.size.X / 2, 0);
+                }
+                if (pivot1 == "right" || pivot2 == "right")
+                {
+                    position += new Vector2f(component.size.X / 2 - size.X - margin, 0);
+                }
+            }
+            else
+            {
+                position = new Vector2f(relativeToThis.X + component.size.X / 2 - size.X / 2, relativeToThis.Y + component.size.Y / 2 - size.Y / 2);
+                if (pivot1 == "top" || pivot2 == "top")
+                {
+                    position += new Vector2f(0, -size.Y - margin - component.size.Y / 2);
+                }
+                if (pivot1 == "bottom" || pivot2 == "bottom")
+                {
+                    position += new Vector2f(0, component.size.Y / 2 + margin);
+                }
+                if (pivot1 == "left" || pivot2 == "left")
+                {
+                    position += new Vector2f(-size.X - component.size.X / 2 - margin, 0);
+                }
+                if (pivot1 == "right" || pivot2 == "right")
+                {
+                    position += new Vector2f(component.size.X / 2 + margin, 0);
                 }
             }
         }

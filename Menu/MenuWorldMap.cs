@@ -43,12 +43,13 @@ namespace EngineeringCorpsCS
 
         public override void Draw(RenderTexture gui, Vector2f origin)
         {
+            textureMinimap.Clear();
             refreshCounter++;
             if (refreshCounter >= refreshRate || renderer.modifiedVertexArrays == true)
             {
-                minimapXRange = (int)Math.Ceiling(size.X/Props.tileSize * mapScale);
-                minimapYRange = (int)Math.Ceiling(size.Y/Props.tileSize * mapScale);
-                renderer.GenerateMinimapTextures(camera.focusedEntity.surface, camera.focusedEntity.position + controlTranslation, minimapXRange, minimapYRange, vertexArrays);
+                minimapXRange = (int)Math.Ceiling(size.X/ Props.tileSize / 1.5 / mapScale);
+                minimapYRange = (int)Math.Ceiling(size.Y/ Props.tileSize / 1.5 / mapScale);
+                renderer.GenerateMinimapTextures(camera.focusedEntity.surface, camera.focusedEntity.position + new Vector2(-controlTranslation.x * Props.tileSize, -controlTranslation.y * Props.tileSize), minimapXRange, minimapYRange, vertexArrays);
                 refreshCounter = 0;
                 if(getPollution == true)
                 {
@@ -56,7 +57,7 @@ namespace EngineeringCorpsCS
                 }
             }
             Transform transform = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
-            Vector2f translation = new Vector2f(size.X / 2 - (camera.focusedEntity.position.x * mapScale / Props.tileSize) + controlTranslation.x, size.Y / 2 - (camera.focusedEntity.position.y * mapScale / Props.tileSize) + controlTranslation.y);
+            Vector2f translation = new Vector2f(size.X / 2 - ((camera.focusedEntity.position.x / Props.tileSize) - controlTranslation.x) * mapScale, size.Y / 2 - ((camera.focusedEntity.position.y / Props.tileSize) - controlTranslation.y) * mapScale);
             transform.Translate(translation);
             transform.Scale(mapScale, mapScale);
             transformState.Transform = transform;
@@ -76,7 +77,6 @@ namespace EngineeringCorpsCS
             Sprite minimap = new Sprite(textureMinimap.Texture);
             minimap.Position = origin + position;
             gui.Draw(minimap);
-            textureMinimap.Clear();
             base.Draw(gui, origin);
         }
 

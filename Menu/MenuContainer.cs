@@ -19,7 +19,7 @@ namespace EngineeringCorpsCS
         }
         public void RenderMenus(RenderTexture GUI)
         {
-            for (int i = 0; i < menus.Count; i++)
+            for (int i = menus.Count - 1; i >= 0; i--)
             {
                 menus[i].Draw(GUI, new Vector2f(0, 0));
             }
@@ -27,7 +27,7 @@ namespace EngineeringCorpsCS
         public void AttachMenu(MenuComponent menu)
         {
             menu.container = this;
-            menus.Add(menu);
+            menus.Insert(0,menu);
             menu.SubscribeToInput(input);
         }
 
@@ -52,6 +52,13 @@ namespace EngineeringCorpsCS
             {
                 menu.SetInitialPosition(input.GetCamera().GetGUIView());
             }
+        }
+
+        public void PushMenuToFront(MenuComponent menuComponent)
+        {
+            menus.Remove(menuComponent);
+            menus.Insert(0, menuComponent);
+            input.PushMenuToFront(menuComponent);
         }
     }
 }
