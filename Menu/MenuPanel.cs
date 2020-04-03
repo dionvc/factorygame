@@ -117,6 +117,10 @@ namespace EngineeringCorpsCS
         }
         public override void HandleInput(InputManager input)
         {
+            if(input.GetMouseClicked(InputBindings.primary, false))
+            {
+                container.PushMenuToFront(this);
+            }
             base.HandleInput(input);
             if(input.GetKeyPressed(closePanelKey, true))
             {
@@ -144,7 +148,6 @@ namespace EngineeringCorpsCS
             if (panelState == PanelState.Normal && input.GetMouseClicked(InputBindings.primary, false) && collided)
             {
                 input.GetMouseClicked(InputBindings.primary, true);
-                container.PushMenuToFront(this);
                 panelState = PanelState.Dragging;
                 this.Translate(input.GetMouseDiff());
             }

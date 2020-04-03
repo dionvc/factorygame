@@ -40,6 +40,10 @@ namespace EngineeringCorpsCS
             {
                 testBack.FillColor = Color.Cyan;
             }
+            else if(fieldState == FieldState.Modified)
+            {
+                testBack.FillColor = Color.Blue;
+            }
             gui.Draw(testBack);
             textField.Draw(gui, origin + position, guiState);
             base.Draw(gui, origin, guiState);
@@ -89,7 +93,7 @@ namespace EngineeringCorpsCS
                     }
                 }
             }
-            if(fieldState == FieldState.Focused && !collided && input.GetMouseClicked(InputBindings.primary, true))
+            if(fieldState == FieldState.Focused && !collided && input.GetMouseClickedIgnoreConsume(InputBindings.primary))
             {
                 fieldState = FieldState.Modified;
             }

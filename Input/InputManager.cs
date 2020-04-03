@@ -352,6 +352,11 @@ namespace EngineeringCorpsCS
             return false;
         }
 
+        public bool GetMouseClickedIgnoreConsume(Mouse.Button mb)
+        {
+            return mouseClick[mb];
+        }
+
         /// <summary>
         /// Gets if the mouse button was held for this frame and optionally consumes it.
         /// </summary>
