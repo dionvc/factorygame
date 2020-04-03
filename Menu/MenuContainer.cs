@@ -17,11 +17,11 @@ namespace EngineeringCorpsCS
         {
             this.input = input;
         }
-        public void RenderMenus(RenderTexture GUI)
+        public void RenderMenus(RenderTexture GUI, RenderStates guiState)
         {
             for (int i = menus.Count - 1; i >= 0; i--)
             {
-                menus[i].Draw(GUI, new Vector2f(0, 0));
+                menus[i].Draw(GUI, new Vector2f(0, 0), guiState);
             }
         }
         public void AttachMenu(MenuComponent menu)

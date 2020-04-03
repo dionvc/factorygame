@@ -18,6 +18,7 @@ namespace EngineeringCorpsCS
         RenderTexture lighting;
         RenderStates lightingState;
         RenderStates[] terrainRenderStates;
+        RenderStates guiState;
         List<Entity> drawList;
 
         //Collections
@@ -41,11 +42,11 @@ namespace EngineeringCorpsCS
         //TODO: Move to textureContainer
         Texture voidMinimap = new Texture(new Image(Props.chunkSize, Props.chunkSize, Color.Black));
 
-        public Renderer(Window window, MenuContainer menuContainer)
+        public Renderer(Window window, MenuContainer menuContainer, Texture guiElements)
         {
             this.menuContainer = menuContainer;
             GUI = new RenderTexture(window.Size.X, window.Size.Y);
-
+            guiState = new RenderStates(guiElements);
             lighting = new RenderTexture(window.Size.X, window.Size.Y);
             lightingState = new RenderStates(BlendMode.Multiply);
         }
@@ -295,7 +296,7 @@ namespace EngineeringCorpsCS
         {
             window.SetView(camera.GetGUIView());
             GUI.Clear(Color.Transparent);
-            menuContainer.RenderMenus(GUI);
+            menuContainer.RenderMenus(GUI, guiState);
             GUI.Display();
             Sprite GUISprite = new Sprite(GUI.Texture);
             window.Draw(GUISprite);

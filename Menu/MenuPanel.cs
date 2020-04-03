@@ -23,20 +23,97 @@ namespace EngineeringCorpsCS
         /// </summary>
         public Keyboard.Key closePanelKey { get; set; } = Keyboard.Key.F15;
         public Action ClosePanelAction { get; set; } = null;
-        public MenuPanel(Vector2f relativePosition, Vector2f componentSize)
+
+        VertexArray panelGraphic;
+        public MenuPanel(Vector2f relativePosition, Vector2f componentSize, FloatRect bounds, float borderSize)
         {
             Initialize(relativePosition, componentSize);
             this.scale = new Vector2f(1, 1);
             collisionBox = new BoundingBox(this.size);
             panelState = PanelState.Normal;
+
+            panelGraphic = new VertexArray(PrimitiveType.Triangles);
+            //Topleft
+            panelGraphic.Append(new Vertex(new Vector2f(0, 0), new Vector2f(0, 0)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, 0), new Vector2f(32, 0)));
+            panelGraphic.Append(new Vertex(new Vector2f(0, borderSize), new Vector2f(0, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, 0), new Vector2f(32, 0)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, borderSize), new Vector2f(32, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(0, borderSize), new Vector2f(0, 32)));
+            //Topright
+            panelGraphic.Append(new Vertex(new Vector2f(size.X - borderSize, 0), new Vector2f(64, 0)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X, 0), new Vector2f(96, 0)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X - borderSize, borderSize), new Vector2f(64, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X, 0), new Vector2f(96, 0)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X, borderSize), new Vector2f(96, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X - borderSize, borderSize), new Vector2f(64, 32)));
+            //Top
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, 0), new Vector2f(32, 0)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X - borderSize, 0), new Vector2f(64, 0)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, borderSize), new Vector2f(32, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X - borderSize, 0), new Vector2f(64, 0)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X - borderSize, borderSize), new Vector2f(64, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, borderSize), new Vector2f(32, 32)));
+            //Center
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, borderSize), new Vector2f(32, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X-borderSize, borderSize), new Vector2f(64, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, size.Y - borderSize), new Vector2f(32, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X-borderSize, borderSize), new Vector2f(64, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X-borderSize, size.Y-borderSize), new Vector2f(64, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, size.Y-borderSize), new Vector2f(32, 64)));
+            //Left
+            panelGraphic.Append(new Vertex(new Vector2f(0, borderSize), new Vector2f(0, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, borderSize), new Vector2f(32, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(0, size.Y-borderSize), new Vector2f(0, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, borderSize), new Vector2f(32, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, size.Y-borderSize), new Vector2f(32, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(0, size.Y-borderSize), new Vector2f(0, 64)));
+            //Right
+            panelGraphic.Append(new Vertex(new Vector2f(size.X-borderSize, borderSize), new Vector2f(64, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X, borderSize), new Vector2f(96, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X-borderSize, size.Y - borderSize), new Vector2f(64, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X, borderSize), new Vector2f(96, 32)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X, size.Y - borderSize), new Vector2f(96, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X-borderSize, size.Y - borderSize), new Vector2f(64, 64)));
+            //bottomleft
+            panelGraphic.Append(new Vertex(new Vector2f(0, size.Y - borderSize), new Vector2f(0, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, size.Y -borderSize), new Vector2f(32, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(0, size.Y), new Vector2f(0, 96)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, size.Y - borderSize), new Vector2f(32, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, size.Y), new Vector2f(32, 96)));
+            panelGraphic.Append(new Vertex(new Vector2f(0, size.Y), new Vector2f(0, 96)));
+            //bottomright
+            panelGraphic.Append(new Vertex(new Vector2f(size.X - borderSize, size.Y - borderSize), new Vector2f(64, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X, size.Y - borderSize), new Vector2f(96, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X - borderSize, size.Y), new Vector2f(64, 96)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X, size.Y - borderSize), new Vector2f(96, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X, size.Y), new Vector2f(96, 96)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X - borderSize, size.Y), new Vector2f(64, 96)));
+            //bottom
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, size.Y - borderSize), new Vector2f(32, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X - borderSize, size.Y - borderSize), new Vector2f(64, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(borderSize, size.Y), new Vector2f(32, 96)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X - borderSize, size.Y - borderSize), new Vector2f(64, 64)));
+            panelGraphic.Append(new Vertex(new Vector2f(size.X - borderSize, size.Y), new Vector2f(64, 96)));
+            panelGraphic.Append(new Vertex(new Vector2f(0, size.Y), new Vector2f(32, 96)));
+
+
         }
-        override public void Draw(RenderTexture gui, Vector2f origin)
+        override public void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
         {
             RectangleShape test = new RectangleShape(size);
             test.Position = origin + position;
             test.FillColor = Color.Red;
-            gui.Draw(test);
-            base.Draw(gui, origin);
+            //Construct transform
+            Transform t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            t.Translate(origin + position);
+            Transform original = guiState.Transform;
+            guiState.Transform = t;
+            gui.Draw(panelGraphic, guiState);
+            //Draw children
+            base.Draw(gui, origin, guiState);
+            //Return to original transform
+            guiState.Transform = original;
         }
         public override void HandleInput(InputManager input)
         {

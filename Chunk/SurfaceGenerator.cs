@@ -27,7 +27,7 @@ namespace EngineeringCorpsCS
         FastNoise.NoiseType moistureType;
         FastNoise.NoiseType temperatureType;
         List<Tile> tileList;
-        public int surfaceSize { get; set; }
+        public int surfaceSize { get; set; } = 24;
         public SurfaceGenerator(TileCollection tiles)
         {
             elevationType = FastNoise.NoiseType.PerlinFractal;
@@ -79,20 +79,12 @@ namespace EngineeringCorpsCS
             return chosenTile;
         }
 
-        public bool SetSeed(string seed, out string parsed)
+        public void SetSeed(int seed)
         {
-            int parsedInt;
-            if(!int.TryParse(seed, out parsedInt))
-            {
-                parsed = "0";
-                return false;
-            }
-            Random r = new Random(parsedInt);
+            Random r = new Random(seed);
             elevationNoise.SetSeed(r.Next(0, int.MaxValue - 1));
             moistureNoise.SetSeed(r.Next(0, int.MaxValue - 1));
             temperatureNoise.SetSeed(r.Next(0, int.MaxValue -1));
-            parsed = parsedInt.ToString();
-            return true;
         }
 
         public void SetNoiseType(string type, int value)
@@ -122,6 +114,16 @@ namespace EngineeringCorpsCS
                     surfaceSize = val;
                     surfaceSize = surfaceSize > 2048 ? 2048 : surfaceSize;
                     updated = surfaceSize.ToString();
+                    return true;
+                }
+            }
+            if (tag == "seed")
+            {
+                int val;
+                if (int.TryParse(value, out val))
+                {
+                    SetSeed(val);
+                    updated = val.ToString();
                     return true;
                 }
             }

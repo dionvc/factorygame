@@ -41,7 +41,7 @@ namespace EngineeringCorpsCS
             pollutionArray = new VertexArray(PrimitiveType.Triangles);
         }
 
-        public override void Draw(RenderTexture gui, Vector2f origin)
+        public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
         {
             textureMinimap.Clear();
             refreshCounter++;
@@ -77,7 +77,7 @@ namespace EngineeringCorpsCS
             Sprite minimap = new Sprite(textureMinimap.Texture);
             minimap.Position = origin + position;
             gui.Draw(minimap);
-            base.Draw(gui, origin);
+            base.Draw(gui, origin, guiState);
         }
 
         public override void HandleInput(InputManager input)

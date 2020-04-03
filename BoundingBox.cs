@@ -580,6 +580,10 @@ namespace EngineeringCorpsCS
                     //TODO: try solution outline above
                     for (int j = 0; j < tileList[i].Length; j++)
                     {
+                        if(tileList[i][j] < 0)
+                        {
+                            continue;
+                        }
                         Tile tile = entity.surface.tileCollection.GetTerrainTile(chunk.GetTile(tileList[i][j]));
                         if ((entity.collisionMask & tile.collisionMask) != 0)
                         {

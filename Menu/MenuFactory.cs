@@ -23,7 +23,7 @@ namespace EngineeringCorpsCS
 
         public void CreateMainMenu(Program program, Camera camera)
         {
-            MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(200, 200));
+            MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(200, 200), new FloatRect(0,0,96,96), 8);
             MenuButton startGameButton = new MenuButton(new Vector2f(25, 25), new Vector2f(150, 50), program.SwitchToIngame);
             MenuText startGameText = new MenuText(new Vector2f(0, 0), new Vector2f(150,50), debugFont, "Start Game", 24, 0.6f); 
             mainMenu.AttachComponent(startGameButton);
@@ -52,7 +52,7 @@ namespace EngineeringCorpsCS
 
         public void CreatePauseMenu(Program program, Camera camera)
         {
-            MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 150));
+            MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 150), new FloatRect(0, 0, 96, 96), 8);
             MenuButton startGameButton = new MenuButton(new Vector2f(25, 25), new Vector2f(100, 100), program.SwitchToIngame);
             MenuText startGameText = new MenuText(new Vector2f(0, 0), new Vector2f(100, 100), debugFont, "Start Game", 24, 0.6f);
             mainMenu.AttachComponent(startGameButton);
@@ -76,7 +76,7 @@ namespace EngineeringCorpsCS
 
         public void CreateDebugMenu()
         {
-            MenuPanel debugMenu = new MenuPanel(new Vector2f(720, 0), new Vector2f(300, 150));
+            MenuPanel debugMenu = new MenuPanel(new Vector2f(720, 0), new Vector2f(300, 150), new FloatRect(0, 0, 96, 96), 8);
             MenuButton boundingBoxButton = new MenuButton(new Vector2f(25, 25), new Vector2f(100, 100), renderer.ToggleBoundingBoxRendering);
             MenuText boundingBoxButtonText = new MenuText(new Vector2f(0, 0), new Vector2f(100,100), debugFont, "Show/Hide boundinggggggggggggggggg boxes", 24, 0.6f);
 
@@ -91,7 +91,7 @@ namespace EngineeringCorpsCS
 
         public void CreateMinimap(Camera camera)
         {
-            MenuPanel minimapPanel = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 300));
+            MenuPanel minimapPanel = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 300), new FloatRect(0, 0, 96, 96), 8);
             MenuWorldMap minimap = new MenuWorldMap(camera, renderer, new Vector2f(25, 25), new Vector2f(250, 250));
             MenuButton minimapPollutionToggle = new MenuButton(new Vector2f(25, 275), new Vector2f(50, 50), minimap.TogglePollution);
             minimapPanel.AttachComponent(minimap);
@@ -107,7 +107,7 @@ namespace EngineeringCorpsCS
 
         public void CreateWorldMap(Camera camera)
         {
-            MenuPanel minimapPanel = new MenuPanel(new Vector2f(0, 0), camera.GetGUIView().Size);
+            MenuPanel minimapPanel = new MenuPanel(new Vector2f(0, 0), camera.GetGUIView().Size, new FloatRect(0, 0, 96, 96), 8);
             MenuWorldMap minimap = new MenuWorldMap(camera, renderer, new Vector2f(25, 25), camera.GetGUIView().Size - new Vector2f(50,50));
             MenuButton minimapPollutionToggle = new MenuButton(new Vector2f(25, 275), new Vector2f(50, 50), minimap.TogglePollution);
             minimapPanel.AttachComponent(minimap);
@@ -128,7 +128,7 @@ namespace EngineeringCorpsCS
 
         public void CreateWorldMenu(Camera camera, SurfaceGenerator surfaceGenerator)
         {
-            MenuPanel worldMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(500,500));
+            MenuPanel worldMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(500,500), new FloatRect(0, 0, 96, 96), 8);
             string[] noiseNames = Enum.GetNames(typeof(FastNoise.NoiseType));
             int[] noiseValues = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             MenuListBox moistureNoiseType = new MenuListBox(new Vector2f(0,0), new Vector2f(150,25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, debugFont, 24, 24, 0);
@@ -138,8 +138,15 @@ namespace EngineeringCorpsCS
             MenuListBox temperatureNoiseType = new MenuListBox(new Vector2f(200, 0), new Vector2f(150, 25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, debugFont, 24, 24, 0);
             temperatureNoiseType.additionalParam = "temperature";
 
+            MenuField menuField = new MenuField(new Vector2f(0, 200), new Vector2f(100,25), debugFont, surfaceGenerator.ParseString);
+            menuField.tag = "surfacesize";
+            MenuField seedField = new MenuField(new Vector2f(0, 300), new Vector2f(100, 25), debugFont, surfaceGenerator.ParseString);
+            seedField.tag = "seed";
+
             worldMenu.SetInitialPosition(camera.GetGUIView());
 
+            worldMenu.AttachComponent(menuField);
+            worldMenu.AttachComponent(seedField);
             worldMenu.AttachComponent(moistureNoiseType);
             worldMenu.AttachComponent(elevationNoiseType);
             worldMenu.AttachComponent(temperatureNoiseType);
@@ -148,9 +155,7 @@ namespace EngineeringCorpsCS
 
         public void CreateTestField(SurfaceGenerator surfaceGenerator)
         {
-            MenuField menuField = new MenuField(debugFont, surfaceGenerator.ParseString);
-            menuField.tag = "surfacesize";
-            menuContainer.AttachMenu(menuField);
+            
         }
     }
 }

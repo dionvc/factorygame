@@ -36,7 +36,7 @@ namespace EngineeringCorpsCS
             stringArray = new string[methodList.Length];
         }
 
-        override public void Draw(RenderTexture gui, Vector2f origin)
+        override public void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
         {
             EvaluateMethods();
             textString = string.Format(unformattedString, stringArray);
@@ -44,7 +44,7 @@ namespace EngineeringCorpsCS
             SetText(textString);
             textComponent.Position = position + origin;
             gui.Draw(textComponent);
-            base.Draw(gui, origin);
+            base.Draw(gui, origin, guiState);
         }
 
         public void SetText(string text)

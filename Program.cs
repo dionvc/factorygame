@@ -116,7 +116,7 @@ namespace EngineeringCorpsCS
             
             camera = new Camera();
             camera.SubscribeToInput(input);
-            renderer = new Renderer(window, menuContainer);
+            renderer = new Renderer(window, menuContainer, textureContainer.GetTexture("guiTilesheet"));
             menuFactory = new MenuFactory(menuContainer, renderer, this);
             window.Resized += camera.HandleResize;
             window.Resized += renderer.ResizeGUI;

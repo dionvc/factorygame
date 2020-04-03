@@ -27,7 +27,7 @@ namespace EngineeringCorpsCS
             SetText(text);
         }
 
-        override public void Draw(RenderTexture gui, Vector2f origin)
+        override public void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
         {
             for(int i = 0; i < textComponents.Count; i++)
             {
@@ -41,7 +41,7 @@ namespace EngineeringCorpsCS
                 }
                 gui.Draw(textComponents[i]);
             }
-            base.Draw(gui, origin);
+            base.Draw(gui, origin, guiState);
         }
 
         public void SetInitialPosition()

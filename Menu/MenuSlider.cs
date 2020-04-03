@@ -31,7 +31,7 @@ namespace EngineeringCorpsCS
             collisionBox = new BoundingBox(componentSize);
         }
 
-        public override void Draw(RenderTexture gui, Vector2f origin)
+        public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
         {
             //draw the slider (regular, hightlighted, and pressed)
             //draw the backdrop of slider (details?)
@@ -45,7 +45,7 @@ namespace EngineeringCorpsCS
             slider.Position = origin + position + new Vector2f(sliderValue, 0);
             gui.Draw(back);
             gui.Draw(slider);
-            base.Draw(gui, origin);
+            base.Draw(gui, origin, guiState);
         }
 
         public override void HandleInput(InputManager input)

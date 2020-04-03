@@ -32,11 +32,11 @@ namespace EngineeringCorpsCS
             this.position = relativePosition;
             this.size = size;
         }
-        virtual public void Draw(RenderTexture gui, Vector2f origin)
+        virtual public void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
         {
             for (int i = 0; i < attachedComponents.Count; i++)
             {
-                attachedComponents[i].Draw(gui, origin + position);
+                attachedComponents[i].Draw(gui, origin + position, guiState);
             }
         }
         public void Translate(Vector2f translation)

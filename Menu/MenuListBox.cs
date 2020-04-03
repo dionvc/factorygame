@@ -61,14 +61,14 @@ namespace EngineeringCorpsCS
             listboxState = ListBoxState.Normal;
         }
 
-        public override void Draw(RenderTexture gui, Vector2f origin)
+        public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
         {
             //Draw the top component field and text header
             RectangleShape box = new RectangleShape(size);
             box.Position = origin + position;
             box.FillColor = Color.Magenta;
             gui.Draw(box);
-            selectedText.Draw(gui, origin + position);
+            selectedText.Draw(gui, origin + position, guiState);
             //Draw the dropdown button
             //If is focused:
             if (listboxState == ListBoxState.Focused)
@@ -79,7 +79,7 @@ namespace EngineeringCorpsCS
                     otherbox.Position = origin + new Vector2f(position.X, position.Y + size.Y + i * lineSpacing);
                     otherbox.FillColor = Color.Yellow;
                     gui.Draw(otherbox);
-                    texts[i].Draw(gui, origin + position);
+                    texts[i].Draw(gui, origin + position, guiState);
                 }
             }
             //Draw the dropdown transparent selector

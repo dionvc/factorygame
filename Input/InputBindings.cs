@@ -27,5 +27,7 @@ namespace EngineeringCorpsCS
 
         public static Keyboard.Key increasePlacementSize = Keyboard.Key.Add;
         public static Keyboard.Key decreasePlacementSize = Keyboard.Key.Subtract;
+
+        public static Keyboard.Key backSpace = Keyboard.Key.Backspace;
     }
 }

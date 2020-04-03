@@ -31,13 +31,13 @@ namespace EngineeringCorpsCS
             this.buttonState = ButtonState.Normal;
             this.collisionBox = new BoundingBox(this.size);
         }
-        override public void Draw(RenderTexture gui, Vector2f origin)
+        override public void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
         {
             RectangleShape test = new RectangleShape(size);
             test.Position = origin + position;
             test.FillColor = buttonColor;
             gui.Draw(test);
-            base.Draw(gui, origin);
+            base.Draw(gui, origin, guiState);
         }
         override public void HandleInput(InputManager input)
         {

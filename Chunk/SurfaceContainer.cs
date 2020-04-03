@@ -215,6 +215,10 @@ namespace EngineeringCorpsCS
         /// <returns></returns>
         public float GetInterpolatedPollution(int cX, int cY)
         {
+            if(cX < 0 || cY < 0 || cX > worldSize || cY > worldSize)
+            {
+                return 0;
+            }
             Chunk chunk = GetChunk(cX * worldSize + cY, false);
             float interpPollution = 0;
             int chunkCounter = 0;
@@ -332,8 +336,8 @@ namespace EngineeringCorpsCS
         {
             x = x < 0 ? x = 0 : x;
             y = y < 0 ? y = 0 : y;
-            x = x > worldSize * Props.chunkSize * Props.tileSize ? x = (worldSize-1) * Props.chunkSize * Props.tileSize : x;
-            y = y > worldSize * Props.chunkSize * Props.tileSize ? y = (worldSize-1) * Props.chunkSize * Props.tileSize : y;
+            x = x >= worldSize * Props.chunkSize * Props.tileSize ? x = (worldSize-1) * Props.chunkSize * Props.tileSize : x;
+            y = y >= worldSize * Props.chunkSize * Props.tileSize ? y = (worldSize-1) * Props.chunkSize * Props.tileSize : y;
             return new int[] {(int) Math.Floor(x/(Props.tileSize * Props.chunkSize)), (int) Math.Floor(y/(Props.tileSize * Props.chunkSize))};
         }
 
