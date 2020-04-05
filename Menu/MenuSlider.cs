@@ -19,16 +19,22 @@ namespace EngineeringCorpsCS
             Sliding,
             Released
         }
-        delegate void ApplySlider(float value);
+        public delegate void ApplySlider(string tag, float value);
         ApplySlider sliderAction;
         float sliderValue = 0.0f; //value relative to componentSize (default I guess can be halfway)
-        float sliderRange = 100.0f; //The underlying range.  This means that a slider at halfway visually would have half this value.
+        float sliderMax = 2.0f; //The underlying range.  This means that a slider at halfway visually would have half this value.
+        float sliderMin = 0.5f;
         SliderState sliderState;
-        public MenuSlider(Vector2f relativePosition, Vector2f componentSize)
+        public string tag { get; set; }
+        public MenuSlider(Vector2f componentSize, ApplySlider sliderAction, float sliderMin, float sliderMax, float sliderInitialValue)
         {
-            Initialize(relativePosition, componentSize);
+            Initialize(componentSize);
+            this.sliderMin = sliderMin;
+            this.sliderMax = sliderMax;
+            sliderValue = ((sliderInitialValue)/sliderMax * size.X);
             sliderState = SliderState.Normal;
             collisionBox = new BoundingBox(componentSize);
+            this.sliderAction = sliderAction;
         }
 
         public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
@@ -42,7 +48,7 @@ namespace EngineeringCorpsCS
                 back.FillColor = Color.Blue;
             }
             RectangleShape slider = new RectangleShape(new Vector2f(32, 64));
-            slider.Position = origin + position + new Vector2f(sliderValue, 0);
+            slider.Position = origin + position + new Vector2f(sliderValue - 16, -32);
             gui.Draw(back);
             gui.Draw(slider);
             base.Draw(gui, origin, guiState);
@@ -75,7 +81,7 @@ namespace EngineeringCorpsCS
             if(sliderState == SliderState.Sliding && input.GetMouseReleased(InputBindings.primary, true))
             {
                 sliderState = SliderState.Released;
-                sliderAction?.Invoke(sliderRange * sliderValue/size.X);
+                sliderAction?.Invoke(tag, sliderMax * sliderValue/size.X + sliderMin);
             }
 
             if(sliderState == SliderState.Sliding)

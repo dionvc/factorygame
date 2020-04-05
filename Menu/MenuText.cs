@@ -16,10 +16,10 @@ namespace EngineeringCorpsCS
         public float lineSpacing { get; set; }
         char lineSplit = ' ';
         Font font;
-        uint charSize;
-        public MenuText(Vector2f relativePosition, Vector2f componentSize, Font font, string text, uint charSize, float lineSpacing)
+        public uint charSize { get; protected set; }
+        public MenuText(Vector2f componentSize, Font font, string text, uint charSize, float lineSpacing)
         {
-            Initialize(relativePosition, componentSize);
+            Initialize(componentSize);
             textComponents = new List<Text>();
             this.lineSpacing = lineSpacing;
             this.font = font;
@@ -54,29 +54,29 @@ namespace EngineeringCorpsCS
             for (int i = 0; i < components; i++)
             {
                 textPositions[i] = new Vector2f(size.X / 2, size.Y / 2);
-                textComponents[i].Origin = new Vector2f(textComponents[i].GetLocalBounds().Width / 2.0f, textComponents[i].GetLocalBounds().Height / 2.0f);
+                textComponents[i].Origin = new Vector2f(textComponents[i].GetLocalBounds().Width / 2.0f, charSize / 2.0f);
                 if (pivot1 == "center" || pivot2 == "center")
                 {
-                    textPositions[i] += new Vector2f(0, (i - components/2.0f) * charSize + charSize/4);
+                    textPositions[i] += new Vector2f(0, (i - (components - 1)/2.0f) * charSize - charSize/8);
                 }
                 if (pivot1 == "top" || pivot2 == "top")
                 {
                     textComponents[i].Origin += new Vector2f(0, -textComponents[i].GetLocalBounds().Height / 2.0f);
-                    textPositions[i] += new Vector2f(0, (i * charSize) - size.Y / 2);
+                    textPositions[i] += new Vector2f(0, (i * charSize) - size.Y / 2 + margin);
                 }
                 if (pivot1 == "bottom" || pivot2 == "bottom") {
                     textComponents[i].Origin += new Vector2f(0, -textComponents[i].GetLocalBounds().Height / 2.0f);
-                    textPositions[i] += new Vector2f(0, -((components - i) * charSize) + size.Y / 2);
+                    textPositions[i] += new Vector2f(0, -((components - i) * charSize) + size.Y / 2 - margin);
                 }
                 if (pivot1 == "left" || pivot2 == "left") 
                 {
                     textComponents[i].Origin += new Vector2f(-textComponents[i].GetLocalBounds().Width / 2.0f, 0);
-                    textPositions[i] += new Vector2f(-size.X / 2, 0);
+                    textPositions[i] += new Vector2f(-size.X / 2 + margin, 0);
                 }
                 if (pivot1 == "right" || pivot2 == "right")
                 {
                     textComponents[i].Origin = new Vector2f(textComponents[i].GetLocalBounds().Width, 0);
-                    textPositions[i] += new Vector2f(size.X / 2, 0);
+                    textPositions[i] += new Vector2f(size.X / 2 - margin, 0);
                 }
             }
         }
@@ -121,11 +121,17 @@ namespace EngineeringCorpsCS
                     }
                 }
             }
+            SetInitialPosition();
         }
 
         public void ComputeSize()
         {
             this.size = new Vector2f(parent.size.X - 2 * margin - position.X, parent.size.Y - 2 * margin - position.Y);
+        }
+
+        public Vector2f GetLastPosition()
+        {
+            return textPositions[textPositions.Length-1] + new Vector2f(textComponents[textPositions.Length -1].GetLocalBounds().Width, 0) - textComponents[textPositions.Length - 1].Origin;
         }
     }
 }

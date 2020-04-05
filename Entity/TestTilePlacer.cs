@@ -70,7 +70,7 @@ namespace EngineeringCorpsCS
             {
                 float[] mousePos = input.GetMousePositionAsFloat();
                 int[] tileAligned = new int[] {(int) (mousePos[0] - mousePos[0] % Props.tileSize + 16),(int) ( mousePos[1] - mousePos[1] % Props.tileSize + 16) };
-                BoundingBox box = new BoundingBox(15, 15);
+                BoundingBox box = new BoundingBox(-15, -15, 15, 15);
                 EntityGhost entityGhost = new EntityGhost(box, new Vector2(tileAligned[0], tileAligned[1]), surface);
                 if (!BoundingBox.CheckForCollision(entityGhost))
                 {

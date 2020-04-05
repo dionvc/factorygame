@@ -27,26 +27,31 @@ namespace EngineeringCorpsCS
         FastNoise.NoiseType moistureType;
         FastNoise.NoiseType temperatureType;
         List<Tile> tileList;
-        public int surfaceSize { get; set; } = 24;
+        public int surfaceSize { get; set; }
+        float moistureFactor;
+        float temperatureFactor;
+        float elevationFactor;
+        public int seed { get; protected set; }
         public SurfaceGenerator(TileCollection tiles)
         {
+            surfaceSize = 2048;
+            moistureFactor = 1.0f;
+            temperatureFactor = 1.0f;
+            elevationFactor = 1.0f;
             elevationType = FastNoise.NoiseType.PerlinFractal;
             moistureType = FastNoise.NoiseType.PerlinFractal;
             temperatureType = FastNoise.NoiseType.PerlinFractal;
-            Random r = new Random();
-            int seed = r.Next(0, int.MaxValue - 1);
+
             elevationNoise = new FastNoise();
             elevationNoise.SetNoiseType(elevationType);
-            elevationNoise.SetSeed(seed);
-            elevationNoise.SetFractalType(FastNoise.FractalType.RigidMulti);
-
             moistureNoise = new FastNoise();
             moistureNoise.SetNoiseType(moistureType);
-            moistureNoise.SetSeed(seed/3);
-
             temperatureNoise = new FastNoise();
             temperatureNoise.SetNoiseType(temperatureType);
-            temperatureNoise.SetSeed(seed/7);
+
+            Random r = new Random();
+            seed = r.Next(0, int.MaxValue - 1);
+            SetSeed(seed);
 
             tileList = tiles.GetTerrainTiles();
         }
@@ -63,9 +68,9 @@ namespace EngineeringCorpsCS
             + 0.25 * temperatureNoise.GetNoise(2 * nx, 2 * ny)
             + 0.25 * temperatureNoise.GetNoise(4 * nx, 4 * ny);
 
-            elevation = Math.Pow(elevation, 1); 
-            moisture = Math.Pow(moisture, 0.5);
-            temperature = Math.Pow(temperature, 1);
+            elevation = Math.Pow(elevation, elevationFactor); 
+            moisture = Math.Pow(moisture, moistureFactor);
+            temperature = Math.Pow(temperature, temperatureFactor);
             byte chosenTile = 0;
             float currentMin = 2;
             foreach(Tile t in tileList)
@@ -81,6 +86,7 @@ namespace EngineeringCorpsCS
 
         public void SetSeed(int seed)
         {
+            this.seed = seed;
             Random r = new Random(seed);
             elevationNoise.SetSeed(r.Next(0, int.MaxValue - 1));
             moistureNoise.SetSeed(r.Next(0, int.MaxValue - 1));
@@ -103,6 +109,22 @@ namespace EngineeringCorpsCS
             }
         }
 
+        public void SetNoiseFactor(string tag, float value)
+        {
+            if(tag == "moisture")
+            {
+                moistureFactor = value;
+            }
+            if(tag == "elevation")
+            {
+                elevationFactor = value;
+            }
+            if(tag == "temperature")
+            {
+                temperatureFactor = value;
+            }
+        }
+
         public bool ParseString(string tag, string value, out string updated)
         {
             updated = "";
@@ -112,7 +134,7 @@ namespace EngineeringCorpsCS
                 if (int.TryParse(value, out val))
                 {
                     surfaceSize = val;
-                    surfaceSize = surfaceSize > 2048 ? 2048 : surfaceSize;
+                    surfaceSize = surfaceSize > Props.maxSurfaceSize * Props.chunkSize ? Props.maxSurfaceSize * Props.chunkSize : surfaceSize;
                     updated = surfaceSize.ToString();
                     return true;
                 }
@@ -125,6 +147,19 @@ namespace EngineeringCorpsCS
                     SetSeed(val);
                     updated = val.ToString();
                     return true;
+                }
+                else
+                {
+                    //case of nil input need to update back to some random value
+                    if (value == "")
+                    {
+                        SetSeed(new Random().Next(0, int.MaxValue-1));
+                        updated = "";
+                        return true;
+                    }
+                    //alternatively if the input couldn't be parsed just return the currently set seed
+                    updated = seed.ToString();
+                    return false;
                 }
             }
             return false;

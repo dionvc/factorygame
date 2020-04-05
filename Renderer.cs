@@ -204,12 +204,7 @@ namespace EngineeringCorpsCS
                 entityBoundingBoxArray.Clear();
             }
             #endregion bounding box drawing
-            cullCounter++;
-            if(cullCounter > cullRate)
-            {
-                CullVertexCache(camera, surface);
-                cullCounter = 0;
-            }
+            
         }
 
         /// <summary>
@@ -300,7 +295,7 @@ namespace EngineeringCorpsCS
             GUI.Display();
             Sprite GUISprite = new Sprite(GUI.Texture);
             window.Draw(GUISprite);
-            modifiedVertexArrays = false;
+            cullCounter++;
         }
 
         public void ResizeGUI(Object s, SizeEventArgs e)
@@ -393,6 +388,15 @@ namespace EngineeringCorpsCS
             }
         }
 
+        public void CheckCullVertexCache(Camera camera, SurfaceContainer surface)
+        {
+            if (cullCounter > cullRate)
+            {
+                CullVertexCache(camera, surface);
+                cullCounter = 0;
+            }
+            modifiedVertexArrays = false;
+        }
         /// <summary>
         /// Culls vertex arrays that are too far away based on camera variables.
         /// </summary>

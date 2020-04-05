@@ -28,9 +28,9 @@ namespace EngineeringCorpsCS
         bool getPollution = true;
         public bool controllable { get; set; } = false;
         public int controlSpeed { get; set; } = 4;
-        public MenuWorldMap(Camera camera, Renderer renderer, Vector2f relativePosition, Vector2f componentSize)
+        public MenuWorldMap(Vector2f componentSize, Camera camera, Renderer renderer)
         {
-            Initialize(relativePosition, componentSize);
+            Initialize(componentSize);
             this.camera = camera;
             this.renderer = renderer;
             controlTranslation = new Vector2(0, 0);
@@ -53,7 +53,7 @@ namespace EngineeringCorpsCS
                 refreshCounter = 0;
                 if(getPollution == true)
                 {
-                    renderer.GeneratePollutionVertexArray(camera.focusedEntity.surface, camera.focusedEntity.position, minimapXRange, minimapYRange, pollutionArray);
+                    renderer.GeneratePollutionVertexArray(camera.focusedEntity.surface, camera.focusedEntity.position + new Vector2(-controlTranslation.x * Props.tileSize, -controlTranslation.y * Props.tileSize), minimapXRange, minimapYRange, pollutionArray);
                 }
             }
             Transform transform = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);

@@ -23,30 +23,48 @@ namespace EngineeringCorpsCS
         string fieldValue;
         MenuText textField;
         FieldState fieldState;
-        public MenuField(Vector2f relativePosition, Vector2f componentSize, Font font, ParseField parseField)
+        VertexArray fieldBackGround;
+        RectangleShape cursor;
+        int cursorCounter;
+        int cursorRefresh;
+        public MenuField(Vector2f componentSize, Font font, ParseField parseField)
         {
-            Initialize(relativePosition, componentSize);
-            textField = new MenuText(new Vector2f(0, 0), new Vector2f(100, 100), font, "", 24, 24);
+            Initialize(componentSize);
+            textField = new MenuText(new Vector2f(size.X, size.Y), font, "", Convert.ToUInt32(size.Y - 4), size.Y);
             this.parseField = parseField;
             fieldState = FieldState.Normal;
             collisionBox = new BoundingBox(size);
+            fieldBackGround = CreateMenuGraphicArray(new FloatRect(96, 0, 96, 96), 10);
+            cursor = new RectangleShape(new Vector2f(1, textField.charSize - 4));
+            cursorCounter = 0;
+            cursorRefresh = 30;
         }
 
         public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
         {
-            RectangleShape testBack = new RectangleShape(size);
-            testBack.Position = origin + position;
-            if(fieldState == FieldState.Focused)
-            {
-                testBack.FillColor = Color.Cyan;
-            }
-            else if(fieldState == FieldState.Modified)
-            {
-                testBack.FillColor = Color.Blue;
-            }
-            gui.Draw(testBack);
+            
+            //Construct transform
+            Transform t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            t.Translate(origin + position);
+            Transform original = guiState.Transform;
+            guiState.Transform = t;
+            gui.Draw(fieldBackGround, guiState);
             textField.Draw(gui, origin + position, guiState);
+            if (cursorCounter > cursorRefresh)
+            {
+                if (fieldState == FieldState.Focused)
+                {
+                    cursor.Position = origin + position + textField.GetLastPosition() + new Vector2f(1, 4);
+                    gui.Draw(cursor);
+                }
+                if(cursorCounter > 2 * cursorRefresh)
+                {
+                    cursorCounter = 0;
+                }
+            }
             base.Draw(gui, origin, guiState);
+            guiState.Transform = original;
+            cursorCounter++;
         }
 
         public override void HandleInput(InputManager input)
@@ -68,26 +86,31 @@ namespace EngineeringCorpsCS
             }
             if (fieldState == FieldState.Focused)
             {
+                string updated;
                 if (input.GetKeyPressed(InputBindings.backSpace, true))
                 {
                     if (fieldValue.Length > 1)
                     {
                         fieldValue = fieldValue.Substring(0, fieldValue.Length - 1);
-                        textField.SetText(fieldValue);
+                        parseField(tag, fieldValue, out updated);
+                        textField.SetText(updated);
+                        fieldValue = updated;
                     }
                     else
                     {
                         fieldValue = "";
+                        parseField(tag, fieldValue, out updated);
                         textField.SetText(fieldValue);
+                        fieldValue = updated;
                     }
                 }
                 else
                 {
                     string inputString = input.GetKeyString(true);
-                    string updated;
                     fieldValue = fieldValue + inputString;
-                    if (inputString != "" && parseField.Invoke(tag, fieldValue, out updated))
+                    if (inputString != "")
                     {
+                        bool success = parseField.Invoke(tag, fieldValue, out updated);
                         textField.SetText(updated);
                         fieldValue = updated;
                     }

@@ -26,7 +26,7 @@ namespace EngineeringCorpsCS
 
         public SurfaceContainer(TileCollection tileCollection, SurfaceGenerator surfaceGenerator, int timeOfMidday, int lengthOfNight, byte levelOfDarkness)
         {
-            this.worldSize = surfaceGenerator.surfaceSize;
+            this.worldSize = surfaceGenerator.surfaceSize / Props.chunkSize;
             tileBox = new BoundingBox(-16, -16, 16, 16);
             this.tileCollection = tileCollection;
             chunks = new Chunk[worldSize * worldSize];

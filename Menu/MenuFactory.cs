@@ -13,75 +13,81 @@ namespace EngineeringCorpsCS
         MenuContainer menuContainer;
         Renderer renderer;
         Program program;
-        Font debugFont = new Font("SairaRegular.ttf");
-        public MenuFactory(MenuContainer menuContainer, Renderer renderer, Program program)
+        FontContainer fontContainer;
+        TextureContainer textureContainer;
+        public MenuFactory(MenuContainer menuContainer, Renderer renderer, Program program, TextureContainer textureContainer, FontContainer fontContainer)
         {
             this.menuContainer = menuContainer;
             this.renderer = renderer;
             this.program = program;
+            this.fontContainer = fontContainer;
+            this.textureContainer = textureContainer;
         }
 
-        public void CreateMainMenu(Program program, Camera camera)
+        public void CreateMainMenu(Camera camera)
         {
-            MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(200, 200), new FloatRect(0,0,96,96), 8);
-            MenuButton startGameButton = new MenuButton(new Vector2f(25, 25), new Vector2f(150, 50), program.SwitchToIngame);
-            MenuText startGameText = new MenuText(new Vector2f(0, 0), new Vector2f(150,50), debugFont, "Start Game", 24, 0.6f); 
-            mainMenu.AttachComponent(startGameButton);
-            startGameButton.AttachComponent(startGameText);
-            MenuText endGameText = new MenuText(new Vector2f(0, 0), new Vector2f(150, 50), debugFont, "End Game", 24, 0.6f);
-            MenuButton endGameButton = new MenuButton(new Vector2f(25, 75), new Vector2f(150, 50), program.SwitchToMainMenu);
-            mainMenu.AttachComponent(endGameButton);
-            endGameButton.AttachComponent(endGameText);
-            MenuText quitGameText = new MenuText(new Vector2f(0, 0), new Vector2f(150, 50), debugFont, "Quit Game", 24, 0.6f);
-            MenuButton quitGameButton = new MenuButton(new Vector2f(25, 125), new Vector2f(150, 50), program.ExitGame);
+            Font titleFont = fontContainer.GetFont("SairaRegular");
+            MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(200, 200), new FloatRect(0,0,96,96), 4);
+            MenuButton newGameButton = new MenuButton(new Vector2f(150, 50), program.CreateMapGenMenu);
+            MenuText startGameText = new MenuText(new Vector2f(150,50), titleFont, "New Game", 24, 0.6f); 
+            mainMenu.AttachComponent(newGameButton);
+            newGameButton.AttachComponent(startGameText);
+            MenuText quitGameText = new MenuText(new Vector2f(150, 50), titleFont, "Quit Game", 24, 0.6f);
+            MenuButton quitGameButton = new MenuButton(new Vector2f(150, 50), program.ExitGame);
             mainMenu.AttachComponent(quitGameButton);
             quitGameButton.AttachComponent(quitGameText);
 
             //Component adjustment
             mainMenu.closePanelKey = InputBindings.showPauseMenu;
-            mainMenu.pivot1 = "center";
-            mainMenu.pivot2 = "center";
             mainMenu.SetInitialPosition(camera.GetGUIView());
-
-            startGameText.SetInitialPosition();
-            endGameText.SetInitialPosition();
-            quitGameText.SetInitialPosition();
+            newGameButton.SetPivots("top", "center", "inside", 25.0f);
+            newGameButton.SetInitialPosition(camera.GetGUIView());
+            quitGameButton.SetPivots("bottom", "center", "outside", 0.0f);
+            quitGameButton.SetInitialPosition(newGameButton);
 
             menuContainer.AttachMenu(mainMenu);
         }
 
-        public void CreatePauseMenu(Program program, Camera camera)
+        public void CreatePauseMenu(Camera camera)
         {
-            MenuPanel mainMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 150), new FloatRect(0, 0, 96, 96), 8);
-            MenuButton startGameButton = new MenuButton(new Vector2f(25, 25), new Vector2f(100, 100), program.SwitchToIngame);
-            MenuText startGameText = new MenuText(new Vector2f(0, 0), new Vector2f(100, 100), debugFont, "Start Game", 24, 0.6f);
-            mainMenu.AttachComponent(startGameButton);
+            Font pauseMenuFont = fontContainer.GetFont("SairaRegular");
+            MenuPanel pausemenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(200, 200), new FloatRect(0, 0, 96, 96), 4);
+            MenuButton startGameButton = new MenuButton(new Vector2f(150, 50), pausemenu.ClosePanel);
+            MenuText startGameText = new MenuText(new Vector2f(150, 50), pauseMenuFont, "Resume Game", 24, 0.6f);
+            pausemenu.AttachComponent(startGameButton);
             startGameButton.AttachComponent(startGameText);
-            MenuText endGameText = new MenuText(new Vector2f(0, 0), new Vector2f(100, 100), debugFont, "End Game", 24, 0.6f);
-            MenuButton endGameButton = new MenuButton(new Vector2f(125, 25), new Vector2f(100, 100), program.SwitchToMainMenu);
-            mainMenu.AttachComponent(endGameButton);
+            MenuText endGameText = new MenuText(new Vector2f(150, 50), pauseMenuFont, "Return to Title", 24, 0.6f);
+            MenuButton endGameButton = new MenuButton(new Vector2f(150, 50), program.SwitchToMainMenu);
+            pausemenu.AttachComponent(endGameButton);
             endGameButton.AttachComponent(endGameText);
-            MenuText quitGameText = new MenuText(new Vector2f(0, 0), new Vector2f(100, 100), debugFont, "Quit Game", 24, 0.6f);
-            MenuButton quitGameButton = new MenuButton(new Vector2f(225, 25), new Vector2f(100, 100), program.ExitGame);
-            mainMenu.AttachComponent(quitGameButton);
+            MenuText quitGameText = new MenuText(new Vector2f(150, 50), pauseMenuFont, "Quit Game", 24, 0.6f);
+            MenuButton quitGameButton = new MenuButton(new Vector2f(150, 50), program.ExitGame);
+            pausemenu.AttachComponent(quitGameButton);
             quitGameButton.AttachComponent(quitGameText);
-            mainMenu.closePanelKey = InputBindings.showPauseMenu;
-            mainMenu.ClosePanelAction = program.SwitchToIngame;
+
+            pausemenu.closePanelKey = InputBindings.showPauseMenu;
+            pausemenu.ClosePanelAction = program.SwitchToIngame;
+            pausemenu.SetPivots("center", "center", "inside", 0.0f);
+            pausemenu.SetInitialPosition(camera.GetGUIView());
+            startGameButton.SetPivots("top", "center", "inside", 25.0f);
+            startGameButton.SetInitialPosition(camera.GetGUIView());
+            endGameButton.SetPivots("bottom", "center", "outside", 0.0f);
+            endGameButton.SetInitialPosition(startGameButton);
+            quitGameButton.SetPivots("bottom", "center", "outside", 0.0f);
+            quitGameButton.SetInitialPosition(endGameButton);
+            menuContainer.AttachMenu(pausemenu);
+
+            //Pause the game
             program.SwitchToPauseGame();
-            mainMenu.pivot1 = "center";
-            mainMenu.pivot2 = "center";
-            mainMenu.SetInitialPosition(camera.GetGUIView());
-            menuContainer.AttachMenu(mainMenu);
         }
 
         public void CreateDebugMenu()
         {
-            MenuPanel debugMenu = new MenuPanel(new Vector2f(720, 0), new Vector2f(300, 150), new FloatRect(0, 0, 96, 96), 8);
-            MenuButton boundingBoxButton = new MenuButton(new Vector2f(25, 25), new Vector2f(100, 100), renderer.ToggleBoundingBoxRendering);
-            MenuText boundingBoxButtonText = new MenuText(new Vector2f(0, 0), new Vector2f(100,100), debugFont, "Show/Hide boundinggggggggggggggggg boxes", 24, 0.6f);
-
-            MenuDynamicText fps = new MenuDynamicText(new Vector2f(0, 0), debugFont, "Fps: {0}", 24, new MenuDynamicText.DynamicString[] { program.GetFPS });
-
+            Font debugFont = fontContainer.GetFont("SairaRegular");
+            MenuPanel debugMenu = new MenuPanel(new Vector2f(720, 0), new Vector2f(300, 150), new FloatRect(0, 0, 96, 96), 4);
+            MenuButton boundingBoxButton = new MenuButton(new Vector2f(100, 100), renderer.ToggleBoundingBoxRendering);
+            MenuText boundingBoxButtonText = new MenuText(new Vector2f(100,100), debugFont, "Bounding Boxes", 24, 0.6f);
+            MenuDynamicText fps = new MenuDynamicText(new Vector2f(100, 50), debugFont, "Fps: {0}", 24, new MenuDynamicText.DynamicString[] { program.GetFPS });
             debugMenu.AttachComponent(boundingBoxButton);
             debugMenu.AttachComponent(fps);
             boundingBoxButton.AttachComponent(boundingBoxButtonText);
@@ -91,71 +97,113 @@ namespace EngineeringCorpsCS
 
         public void CreateMinimap(Camera camera)
         {
-            MenuPanel minimapPanel = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 300), new FloatRect(0, 0, 96, 96), 8);
-            MenuWorldMap minimap = new MenuWorldMap(camera, renderer, new Vector2f(25, 25), new Vector2f(250, 250));
-            MenuButton minimapPollutionToggle = new MenuButton(new Vector2f(25, 275), new Vector2f(50, 50), minimap.TogglePollution);
+            MenuPanel minimapPanel = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 350), new FloatRect(0, 0, 96, 96), 4);
+            MenuWorldMap minimap = new MenuWorldMap(new Vector2f(250, 250), camera, renderer);
+            MenuButton minimapPollutionToggle = new MenuButton(new Vector2f(50, 50), minimap.TogglePollution);
             minimapPanel.AttachComponent(minimap);
             minimapPanel.AttachComponent(minimapPollutionToggle);
             minimapPollutionToggle.SetInitialPosition(camera.GetGUIView());
             minimapPanel.closePanelKey = InputBindings.showMinimap;
-            minimapPanel.pivot1 = "top";
-            minimapPanel.pivot2 = "right";
+            minimapPanel.SetPivots("top", "right", "inside", 0.0f);
             minimapPanel.SetInitialPosition(camera.GetGUIView());
             minimapPanel.lockedPosition = true;
+            minimap.SetPivots("top", "center", "inside", 25.0f);
+            minimap.SetInitialPosition(camera.GetGUIView());
+            minimapPollutionToggle.SetPivots("bottom", "center", "inside", 25.0f);
+            minimapPollutionToggle.SetInitialPosition(camera.GetGUIView());
             menuContainer.AttachMenu(minimapPanel);
         }
 
         public void CreateWorldMap(Camera camera)
         {
-            MenuPanel minimapPanel = new MenuPanel(new Vector2f(0, 0), camera.GetGUIView().Size, new FloatRect(0, 0, 96, 96), 8);
-            MenuWorldMap minimap = new MenuWorldMap(camera, renderer, new Vector2f(25, 25), camera.GetGUIView().Size - new Vector2f(50,50));
-            MenuButton minimapPollutionToggle = new MenuButton(new Vector2f(25, 275), new Vector2f(50, 50), minimap.TogglePollution);
+            MenuPanel minimapPanel = new MenuPanel(new Vector2f(0, 0), camera.GetGUIView().Size, new FloatRect(0, 0, 96, 96), 4);
+            MenuWorldMap minimap = new MenuWorldMap(camera.GetGUIView().Size - new Vector2f(50, 50), camera, renderer);
+            MenuButton minimapPollutionToggle = new MenuButton(new Vector2f(50, 50), minimap.TogglePollution);
             minimapPanel.AttachComponent(minimap);
             minimapPanel.AttachComponent(minimapPollutionToggle);
             minimap.controllable = true;
-            minimapPollutionToggle.pivot1 = "bottom";
             minimapPollutionToggle.SetInitialPosition(camera.GetGUIView());
             minimapPanel.closePanelKey = InputBindings.showWorldMap;
-            minimapPanel.pivot1 = "top";
-            minimapPanel.pivot2 = "left";
             minimapPanel.SetInitialPosition(camera.GetGUIView());
             minimapPanel.lockedPosition = true;
             renderer.ToggleCullingMinimap();
             minimapPanel.ClosePanelAction = renderer.ToggleCullingMinimap;
+            minimap.SetInitialPosition(camera.GetGUIView());
             menuContainer.AttachMenu(minimapPanel);
         }
 
 
-        public void CreateWorldMenu(Camera camera, SurfaceGenerator surfaceGenerator)
+        public void CreateMapGenMenu(SurfaceGenerator surfaceGenerator, Camera camera)
         {
-            MenuPanel worldMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(500,500), new FloatRect(0, 0, 96, 96), 8);
+            //Declaring elements
+            Font mapGenFont = fontContainer.GetFont("SairaRegular");
+            MenuPanel worldMenu = new MenuPanel(new Vector2f(0, 0), new Vector2f(500,500), new FloatRect(0, 0, 96, 96), 4);
+            //Noise dropdowns
             string[] noiseNames = Enum.GetNames(typeof(FastNoise.NoiseType));
             int[] noiseValues = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            MenuListBox moistureNoiseType = new MenuListBox(new Vector2f(0,0), new Vector2f(150,25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, debugFont, 24, 24, 0);
-            moistureNoiseType.additionalParam = "moisture";
-            MenuListBox elevationNoiseType = new MenuListBox(new Vector2f(100, 0), new Vector2f(150, 25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, debugFont, 24, 24, 0);
-            elevationNoiseType.additionalParam = "elevation";
-            MenuListBox temperatureNoiseType = new MenuListBox(new Vector2f(200, 0), new Vector2f(150, 25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, debugFont, 24, 24, 0);
-            temperatureNoiseType.additionalParam = "temperature";
-
-            MenuField menuField = new MenuField(new Vector2f(0, 200), new Vector2f(100,25), debugFont, surfaceGenerator.ParseString);
-            menuField.tag = "surfacesize";
-            MenuField seedField = new MenuField(new Vector2f(0, 300), new Vector2f(100, 25), debugFont, surfaceGenerator.ParseString);
+            MenuListBox moistureNoiseType = new MenuListBox(new Vector2f(150,25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, mapGenFont, 24, 24, 0);
+            moistureNoiseType.tag = "moisture";
+            MenuListBox elevationNoiseType = new MenuListBox(new Vector2f(150, 25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, mapGenFont, 24, 24, 0);
+            elevationNoiseType.tag = "elevation";
+            MenuListBox temperatureNoiseType = new MenuListBox(new Vector2f(150, 25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, mapGenFont, 24, 24, 0);
+            temperatureNoiseType.tag = "temperature";
+            //Surface size field
+            MenuText surfaceSizeFieldTitle = new MenuText(new Vector2f(100, 25), mapGenFont, "Map size:", 24, 24);
+            MenuField surfaceSizeField = new MenuField(new Vector2f(150,25), mapGenFont, surfaceGenerator.ParseString);
+            surfaceSizeField.tag = "surfacesize";
+            surfaceSizeField.AttachComponent(surfaceSizeFieldTitle);
+            surfaceSizeFieldTitle.SetPivots("left", "center", "outside", 25.0f);
+            surfaceSizeFieldTitle.SetInitialPosition();
+            surfaceSizeFieldTitle.SetInitialPosition(surfaceSizeField);
+            //Seed field
+            MenuText seedFieldTitle = new MenuText(new Vector2f(100, 25), mapGenFont, "Map Seed:", 24, 24);
+            MenuField seedField = new MenuField(new Vector2f(150, 25), mapGenFont, surfaceGenerator.ParseString);
             seedField.tag = "seed";
-
-            worldMenu.SetInitialPosition(camera.GetGUIView());
-
-            worldMenu.AttachComponent(menuField);
+            seedField.AttachComponent(seedFieldTitle);
+            seedFieldTitle.SetPivots("left", "center", "outside", 25.0f);
+            seedFieldTitle.SetInitialPosition();
+            seedFieldTitle.SetInitialPosition(seedField);
+            //Start game button
+            MenuButton startGame = new MenuButton(new Vector2f(100, 25), program.SwitchToIngame);
+            //Slider
+            MenuSlider elevationFactor = new MenuSlider(new Vector2f(100, 15), surfaceGenerator.SetNoiseFactor, 0.1f, 2.0f, 1.0f);
+            elevationFactor.tag = "elevation";
+            MenuSlider moistureFactor = new MenuSlider(new Vector2f(100, 15), surfaceGenerator.SetNoiseFactor, 0.1f, 2.0f, 1.0f);
+            moistureFactor.tag = "moisture";
+            MenuSlider temperatureFactor = new MenuSlider(new Vector2f(100, 15), surfaceGenerator.SetNoiseFactor, 0.1f, 2.0f, 1.0f);
+            temperatureFactor.tag = "temperature";
+            //Attaching Elements
+            worldMenu.AttachComponent(startGame);
             worldMenu.AttachComponent(seedField);
-            worldMenu.AttachComponent(moistureNoiseType);
-            worldMenu.AttachComponent(elevationNoiseType);
+            worldMenu.AttachComponent(surfaceSizeField);
             worldMenu.AttachComponent(temperatureNoiseType);
-            menuContainer.AttachMenu(worldMenu);
-        }
+            worldMenu.AttachComponent(elevationNoiseType);
+            worldMenu.AttachComponent(moistureNoiseType);
 
-        public void CreateTestField(SurfaceGenerator surfaceGenerator)
-        {
-            
+
+            worldMenu.AttachComponent(elevationFactor);
+            worldMenu.AttachComponent(moistureFactor);
+            worldMenu.AttachComponent(temperatureFactor);
+            //Positioning elements
+            seedField.SetPivots("bottom", "center", "outside", 25.0f);
+            seedField.SetInitialPosition(moistureNoiseType);
+            surfaceSizeField.SetPivots("bottom", "center", "outside", 25.0f);
+            surfaceSizeField.SetInitialPosition(seedField);
+            startGame.SetInitialPosition(camera.GetGUIView());
+            worldMenu.SetInitialPosition(camera.GetGUIView());
+            elevationFactor.SetInitialPosition(camera.GetGUIView());
+            moistureFactor.SetPivots("bottom", "center", "outside", 25.0f);
+            moistureFactor.SetInitialPosition(elevationFactor);
+            temperatureFactor.SetPivots("bottom", "center", "outside", 25.0f);
+            temperatureFactor.SetInitialPosition(moistureFactor);
+            moistureNoiseType.SetPivots("top", "center", "inside", 25.0f);
+            moistureNoiseType.SetInitialPosition(camera.GetGUIView());
+            elevationNoiseType.SetPivots("bottom", "center", "outside", 25.0f);
+            elevationNoiseType.SetInitialPosition(moistureNoiseType);
+            temperatureNoiseType.SetPivots("bottom", "center", "outside", 25.0f);
+            temperatureNoiseType.SetInitialPosition(elevationNoiseType);
+            //Finalize into menu container
+            menuContainer.AttachMenu(worldMenu);
         }
     }
 }

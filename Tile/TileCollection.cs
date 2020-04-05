@@ -365,23 +365,23 @@ namespace EngineeringCorpsCS
             float pR = 0.5f;
             //first triangle
             vA.Append(new Vertex(new Vector2f(oX - pR, oY - pR), shade,
-                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor, texOY * Props.tileSize * Props.resolutionScaleFactor))); //top left
+                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor + 0.5f, texOY * Props.tileSize * Props.resolutionScaleFactor + 0.5f))); //top left
 
             vA.Append(new Vertex(new Vector2f(oX + Props.tileSize + pR, oY - pR), shade,
-                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor, texOY * Props.tileSize * Props.resolutionScaleFactor))); //top right
+                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor - 0.5f, texOY * Props.tileSize * Props.resolutionScaleFactor + 0.5f))); //top right
 
             vA.Append(new Vertex(new Vector2f(oX - pR, oY + Props.tileSize + pR), shade,
-                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor, (texOY + 1) * Props.tileSize * Props.resolutionScaleFactor))); //bottom left
+                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor + 0.5f, (texOY + 1) * Props.tileSize * Props.resolutionScaleFactor - 0.5f))); //bottom left
 
             //second triangle
             vA.Append(new Vertex(new Vector2f(oX + Props.tileSize + pR, oY - pR), shade,
-                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor, texOY * Props.tileSize * Props.resolutionScaleFactor))); //top right
+                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor - 0.5f, texOY * Props.tileSize * Props.resolutionScaleFactor + 0.5f))); //top right
 
             vA.Append(new Vertex(new Vector2f(oX + Props.tileSize + pR, oY + Props.tileSize + pR), shade,
-                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor, (texOY + 1) * Props.tileSize * Props.resolutionScaleFactor))); //bottom right
+                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor - 0.5f, (texOY + 1) * Props.tileSize * Props.resolutionScaleFactor - 0.5f))); //bottom right
 
             vA.Append(new Vertex(new Vector2f(oX - pR, oY + Props.tileSize + pR), shade,
-                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor, (texOY + 1) * Props.tileSize * Props.resolutionScaleFactor))); //bottom left
+                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor + 0.5f, (texOY + 1) * Props.tileSize * Props.resolutionScaleFactor - 0.5f))); //bottom left
         }
 
         /// <summary>

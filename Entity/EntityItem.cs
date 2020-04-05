@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EngineeringCorpsCS
 {
-    class Item: Entity
+    class EntityItem: Entity
     {
         public override void OnClick()
         {

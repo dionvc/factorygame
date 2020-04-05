@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SFML.Window;
 using SFML.Graphics;
 using SFML.System;
+using SFML.Audio;
 
 namespace EngineeringCorpsCS
 {
@@ -16,18 +17,22 @@ namespace EngineeringCorpsCS
         View guiView;
         float viewScale;
         SurfaceContainer viewedSurface;
+        Vector2f gameViewSize;
         public Camera()
         {
             gameView = new View(new FloatRect(0, 0, 1280, 720));
             guiView = new View(new Vector2f(640, 360), new Vector2f(1280, 720));
             viewScale = 1.0f;
+            gameViewSize = new Vector2f(1280, 720);
         }
         public void Update()
         {
+            
             if (focusedEntity != null)
             {
                 gameView.Center = new Vector2f(focusedEntity.position.x, focusedEntity.position.y);
                 viewedSurface = focusedEntity.surface;
+                Listener.Position = new Vector3f(gameView.Center.X, 0.0f, gameView.Center.Y);
             }
         }
         public View GetGameView()
@@ -42,7 +47,10 @@ namespace EngineeringCorpsCS
 
         public void HandleResize(Object s, SizeEventArgs e)
         {
-            gameView.Size = new Vector2f(e.Width, e.Height);
+            float rW = (float)Math.Pow(2, Math.Round(Math.Log(e.Width) / Math.Log(2)));
+            float rH = (float)Math.Pow(2, Math.Round(Math.Log(e.Height) / Math.Log(2)));
+            gameView.Size = new Vector2f(rW, rH);
+            gameViewSize = gameView.Size;
             guiView = new View(new Vector2f(e.Width/2, e.Height/2), new Vector2f(e.Width, e.Height));
         }
 
@@ -59,17 +67,17 @@ namespace EngineeringCorpsCS
             //Handle zooming
             if (input.GetMouseScrollDelta(false) != 0)
             {
-                viewScale -= (input.GetMouseScrollDelta(true)/InputBindings.scrollSensitivity);
-                if (viewScale < 0.5)
+                viewScale -= (2 * input.GetMouseScrollDelta(true)/InputBindings.scrollSensitivity);
+                if (viewScale < 1.0f)
                 {
-                    viewScale = 0.5f;
+                    viewScale = 1.0f;
                 }
-                else if (viewScale > 8)
+                else if (viewScale > 16.0f)
                 {
-                    viewScale = 8.0f;
+                    viewScale = 16.0f;
                 }
-
-                gameView.Size = new SFML.System.Vector2f(viewScale * 1280, viewScale * 720);
+                
+                gameView.Size = gameViewSize * ((float)Math.Round(viewScale)/2);
             }
             if(input.GetKeyPressed(InputBindings.showWorldMap, true))
             {

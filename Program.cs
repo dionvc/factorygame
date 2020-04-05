@@ -117,7 +117,7 @@ namespace EngineeringCorpsCS
             camera = new Camera();
             camera.SubscribeToInput(input);
             renderer = new Renderer(window, menuContainer, textureContainer.GetTexture("guiTilesheet"));
-            menuFactory = new MenuFactory(menuContainer, renderer, this);
+            menuFactory = new MenuFactory(menuContainer, renderer, this, textureContainer, fontContainer);
             window.Resized += camera.HandleResize;
             window.Resized += renderer.ResizeGUI;
             window.Resized += menuContainer.RepositionMenus;
@@ -129,12 +129,9 @@ namespace EngineeringCorpsCS
         public void StartMenu()
         {
             //TODO: double check this menu creation
+            StaticSoundManager.Play();
             renderer.SubscribeToInput(input);
-            menuFactory.CreateMainMenu(this, camera);
-
-            surfaceGenerator = new SurfaceGenerator(tileCollection);
-            menuFactory.CreateTestField(surfaceGenerator);
-            menuFactory.CreateWorldMenu(camera, surfaceGenerator);
+            menuFactory.CreateMainMenu(camera);
             while (window.IsOpen && gameState == GameState.mainMenu)
             {
                 window.Clear();
@@ -168,8 +165,11 @@ namespace EngineeringCorpsCS
             {
                 //p.SubscribeToInput(input);
             }
-            for(int i = 0; i < 16; i++) {
-                tree.Add(new Tree(new Vector2(2064 + (256) * i, 2064), surfaceContainer, textureContainer));
+            for(int i = 0; i < 512; i++) {
+                for (int j = 0; j < 512; j++)
+                {
+                    tree.Add(new Tree(new Vector2(2064 + (32) * i, 32 * j), surfaceContainer, textureContainer));
+                }
             }
             testLightSource1 = new LightSource(new Vector2(1024, 1024), surfaceContainer, 2000.0f, textureContainer.GetTexture("lightsource"), players[15]);
             LightSource testLightSource2 = new LightSource(new Vector2(2048, 2048), surfaceContainer, 2000.0f, textureContainer.GetTexture("lightsource"), players[14]);
@@ -225,6 +225,8 @@ namespace EngineeringCorpsCS
                 renderer.RenderWorld(window, camera, surfaceContainer);
                 //drawing menus (main menu, pause, ingame, etc)
                 renderer.RenderGUI(window, camera);
+                //Cull far away vertexarrays from renderer cache
+                renderer.CheckCullVertexCache(camera, surfaceContainer);
                 window.Display();
             }
             if(gameState == GameState.mainMenu)
@@ -250,6 +252,12 @@ namespace EngineeringCorpsCS
             window.Close();
         }
 
+        public void CreateMapGenMenu()
+        {
+            surfaceGenerator = new SurfaceGenerator(tileCollection);
+            menuFactory.CreateMapGenMenu(surfaceGenerator, camera);
+        }
+
         public void SubscribeToInput(InputManager input)
         {
             input.AddInputSubscriber(this, false);
@@ -264,7 +272,7 @@ namespace EngineeringCorpsCS
         {
             if (input.GetKeyPressed(InputBindings.showPauseMenu, true))
             {
-                menuFactory.CreatePauseMenu(this, camera);
+                menuFactory.CreatePauseMenu(camera);
             }
         }
 

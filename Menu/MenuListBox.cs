@@ -29,7 +29,7 @@ namespace EngineeringCorpsCS
         /// <summary>
         /// Additional param that will be passed with the selection
         /// </summary>
-        public string additionalParam { get; set; } = "";
+        public string tag { get; set; } = "";
 
         /// <summary>
         /// A drop down menu implementation.  Very quick if you are selecting from a range of enums.
@@ -38,20 +38,21 @@ namespace EngineeringCorpsCS
         /// <param name="componentSize"></param>
         /// <param name="listHeaders"></param>
         /// <param name="listValues"></param>
-        public MenuListBox(Vector2f relativePosition, Vector2f componentSize, string[] listHeaders, int[] listValues, SelectionMethod applySelection, Font font, uint charSize, float lineSpacing, int initialValue)
+        public MenuListBox(Vector2f componentSize, string[] listHeaders, int[] listValues, SelectionMethod applySelection, Font font, uint charSize, float lineSpacing, int initialValue)
         {
-            Initialize(relativePosition, componentSize);
+            Initialize(componentSize);
             this.listHeaders = listHeaders;
             this.listValues = listValues;
             this.applySelection = applySelection;
             this.lineSpacing = lineSpacing;
             texts = new MenuText[listHeaders.Length];
-            selectedText = new MenuText(new Vector2f(0,-2), this.size, font, "", charSize, 0.6f);
+            selectedText = new MenuText(this.size, font, "", charSize, 0.6f);
+            selectedText.SetRelativePosition(new Vector2f(0, -2));
             selectedValue = initialValue;
             selectedText.SetText(listHeaders[initialValue]);
             for (int i = 0; i < listHeaders.Length; i++)
             {
-                texts[i] = new MenuText(new Vector2f(0, 0), this.size, font, listHeaders[i], charSize, 0.6f);
+                texts[i] = new MenuText(this.size, font, listHeaders[i], charSize, 0.6f);
                 AttachComponent(texts[i]);
                 texts[i].SetText(listHeaders[i]);
                 texts[i].SetRelativePosition(new Vector2f(0, (i + 1) * lineSpacing - 2));
@@ -106,7 +107,7 @@ namespace EngineeringCorpsCS
                 listboxState = ListBoxState.Focused;
                 hoveredValue = selectedValue;
             }
-            if (listboxState == ListBoxState.Focused)
+            else if (listboxState == ListBoxState.Focused)
             {
                 for (int i = 0; i < listHeaders.Length; i++)
                 {
@@ -117,7 +118,7 @@ namespace EngineeringCorpsCS
                         collided = true;
                     }
                 }
-                if(input.GetMouseClicked(InputBindings.primary, false))
+                if(input.GetMouseClickedIgnoreConsume(InputBindings.primary))
                 {
                     //don't process a click if it was on the listbox
                     if(collided)
@@ -125,7 +126,7 @@ namespace EngineeringCorpsCS
                         input.GetMouseClicked(InputBindings.primary, true);
                     }
                     selectedValue = hoveredValue;
-                    applySelection?.Invoke(additionalParam, listValues[selectedValue]);
+                    applySelection?.Invoke(tag, listValues[selectedValue]);
                     selectedText.SetText(listHeaders[selectedValue]);
                     listboxState = ListBoxState.Normal;
                 }

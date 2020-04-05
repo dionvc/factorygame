@@ -26,9 +26,9 @@ namespace EngineeringCorpsCS
         /// <param name="text"></param>
         /// <param name="charSize"></param>
         /// <param name="methodList"></param>
-        public MenuDynamicText(Vector2f relativePosition, Font font, string text, uint charSize, DynamicString[] methodList)
+        public MenuDynamicText(Vector2f componentSize, Font font, string text, uint charSize, DynamicString[] methodList)
         {
-            this.position = relativePosition;
+            Initialize(componentSize);
             this.methodList = methodList;
             textComponent = new Text("", font, charSize);
             textComponent.LineSpacing = 0.6f;
@@ -52,12 +52,6 @@ namespace EngineeringCorpsCS
             textComponent.Position = new Vector2f(0, 0);
             textComponent.DisplayedString = text;
             uint lastlineSplit = 0;
-            if (fixedWidth == false)
-            {
-                //change the width of the text component to reflect its variable width
-                size = new Vector2f(textComponent.FindCharacterPos(Convert.ToUInt32(textComponent.DisplayedString.Length)).X, size.Y);
-                return;
-            }
             for (uint i = 0; i < textString.Length; i++)
             {
                 if (textComponent.FindCharacterPos(i).X > size.X)

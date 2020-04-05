@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{7E57B0D1-719E-4C0A-BBAF-0C09C1387060}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>EngineeringCorpsCS</RootNamespace>
     <AssemblyName>EngineeringCorpsCS</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -56,6 +56,27 @@
     <ApplicationIcon>EngineeringCorpsIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="SFML.Audio, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\SFML.Audio.2.5.0\lib\netstandard2.0\SFML.Audio.dll</HintPath>
@@ -80,8 +101,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chunk\Alliance.cs" />
+    <Compile Include="Entity\ItemStack.cs" />
+    <Compile Include="Menu\MenuCheckbox.cs" />
     <Compile Include="Menu\MenuDynamicText.cs" />
     <Compile Include="Menu\MenuField.cs" />
+    <Compile Include="Menu\MenuKeyCodeField.cs" />
     <Compile Include="Menu\MenuListBox.cs" />
     <Compile Include="Menu\MenuSlider.cs" />
     <Compile Include="Drawable\Animation.cs" />
@@ -101,7 +125,7 @@
     <Compile Include="Chunk\SurfaceContainer.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="Chunk\SurfaceGenerator.cs" />
-    <Compile Include="Entity\Item.cs" />
+    <Compile Include="Entity\EntityItem.cs" />
     <Compile Include="LightSource.cs" />
     <Compile Include="Menu\MenuWorldMap.cs" />
     <Compile Include="Menu\MenuFactory.cs" />
@@ -117,6 +141,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Props.cs" />
     <Compile Include="Renderer.cs" />
+    <Compile Include="StaticSoundManager.cs" />
     <Compile Include="TextureContainer.cs" />
     <Compile Include="Tile\Tile.cs" />
     <Compile Include="Tile\TileFactory.cs" />
@@ -132,6 +157,9 @@
     <None Include="Graphics\SairaRegular.ttf" />
     <None Include="packages.config" />
     <None Include="SairaRegular.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Sound\peculiartheme.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -197,6 +225,9 @@
     <Content Include="Graphics\watersquare.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="openal32.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="SFML.Audio.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -222,6 +253,8 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Sound\SFX\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

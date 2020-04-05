@@ -29,5 +29,7 @@ namespace EngineeringCorpsCS
         public static Keyboard.Key decreasePlacementSize = Keyboard.Key.Subtract;
 
         public static Keyboard.Key backSpace = Keyboard.Key.Backspace;
+        public static Keyboard.Key nullKey = Keyboard.Key.Home; //We need to reserve one key as a key which will not be
+        //processed.  This is unfortunately due to the fact that Keyboard.Key does not provide a None enumeration value.
     }
 }
