@@ -21,18 +21,21 @@ namespace EngineeringCorpsCS
         /// Tracks the surface the entity is present on
         /// </summary>
         public SurfaceContainer surface { get; set; }
+
         /// <summary>
         /// Entity collision mask
         /// </summary>
         public CollisionLayer collisionMask { get; set; }
+
         /// <summary>
-        /// TODO: What is this??
-        /// </summary>
-        public string type { get; protected set; }
-        /// <summary>
-        /// The collision mask representing the entity physically.
+        /// The collision box representing the entity physically.
         /// </summary>
         public BoundingBox collisionBox { get; protected set; }
+
+        /// <summary>
+        /// The drawing collision box for the entity
+        /// </summary>
+        public BoundingBox drawingBox { get; protected set; }
         /// <summary>
         /// Array of drawables to be drawn representing the entity
         /// </summary>
@@ -44,6 +47,8 @@ namespace EngineeringCorpsCS
 
         public int tileWidth { get; protected set; } = 2;
         public int tileHeight { get; protected set; } = 2;
+
+        public float emissionPerSecond = 0.0f;
 
         public Vector2 position { get; protected set; }
         /// <summary>

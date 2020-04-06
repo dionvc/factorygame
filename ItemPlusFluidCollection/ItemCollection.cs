@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EngineeringCorpsCS
+namespace EngineeringCorpsCS.ItemPlusFluidCollection
 {
-    class ItemStack
+    class ItemCollection
     {
-        int count { get; set; }
     }
 }

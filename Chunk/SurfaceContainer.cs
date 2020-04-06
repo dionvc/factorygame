@@ -20,6 +20,9 @@ namespace EngineeringCorpsCS
         private int timeOfMidday; //when the clock rolls over
         private int lengthOfNight; //the total length of night as one standard deviation
         private byte levelOfDarkness; //the maximum byte value for darkness
+
+        private int emissionUpdateRate = 60;
+        private int emissionCounter = 0;
         public BoundingBox tileBox { get; protected set; }
         public TileCollection tileCollection { get; protected set; }
         public int worldSize { get; protected set; }
@@ -43,10 +46,20 @@ namespace EngineeringCorpsCS
         {
             timeOfDay++;
             timeOfDay %= timeOfMidday;
-            for(int i = 0; i < activeChunks.Count; i++)
+            if (emissionCounter > emissionUpdateRate)
             {
-                activeChunks[i].Update();
+                for (int i = 0; i < activeChunks.Count; i++)
+                {
+                    activeChunks[i].Update();
+                    if (activeChunks[i].pollutionValue >= Props.maxPollution || activeChunks[i].pollutionValue <= 0)
+                    {
+                        activeChunks.RemoveAt(i);
+                        i--;
+                    }
+                }
+                emissionCounter = 0;
             }
+            emissionCounter++;
         }
         public void GenerateTerrain(int x, int y)
         {

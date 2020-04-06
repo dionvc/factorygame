@@ -17,8 +17,8 @@ namespace EngineeringCorpsCS
             Modified
         }
         public delegate bool ParseField(string tag, string value, out string updated);
-        
-        public string tag { get; set; }
+
+        public string tag { get; set; } = "";
         ParseField parseField;
         string fieldValue;
         MenuText textField;
@@ -34,7 +34,7 @@ namespace EngineeringCorpsCS
             this.parseField = parseField;
             fieldState = FieldState.Normal;
             collisionBox = new BoundingBox(size);
-            fieldBackGround = CreateMenuGraphicArray(new FloatRect(96, 0, 96, 96), 10);
+            fieldBackGround = CreateMenuGraphicArrayWithBorder(new FloatRect(96, 0, 96, 96), 10);
             cursor = new RectangleShape(new Vector2f(1, textField.charSize - 4));
             cursorCounter = 0;
             cursorRefresh = 30;

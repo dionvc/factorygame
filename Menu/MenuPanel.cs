@@ -17,21 +17,23 @@ namespace EngineeringCorpsCS
             Normal
         }
         PanelState panelState;
-        public delegate void Action();
+        public delegate void PanelAction(string tag);
         /// <summary>
         /// Key which closes the menu panel.  Defaults to none.
         /// </summary>
-        public Keyboard.Key closePanelKey { get; set; } = Keyboard.Key.F15;
-        public Action ClosePanelAction { get; set; } = null;
+        public Keyboard.Key closePanelKey { get; set; } = InputBindings.nullKey;
+        public PanelAction ClosePanelAction { get; set; } = null;
+
+        public string tag { get; set; } = "";
 
         VertexArray vertexArray;
-        public MenuPanel(Vector2f relativePosition, Vector2f componentSize, FloatRect bounds, float borderSize)
+        public MenuPanel(Vector2f relativePosition, Vector2f componentSize, FloatRect bounds, float borderSize, PanelAction closePanelAction)
         {
             this.size = componentSize;
             this.position = relativePosition;
             collisionBox = new BoundingBox(this.size);
             panelState = PanelState.Normal;
-            vertexArray = CreateMenuGraphicArray(bounds, borderSize);
+            vertexArray = CreateMenuGraphicArrayWithBorder(bounds, borderSize);
         }
 
         
@@ -66,9 +68,9 @@ namespace EngineeringCorpsCS
                 container.PushMenuToFront(this);
             }
             base.HandleInput(input);
-            if(input.GetKeyPressed(closePanelKey, true))
+            if(closePanelKey != InputBindings.nullKey && input.GetKeyPressed(closePanelKey, true))
             {
-                ClosePanelAction?.Invoke();
+                ClosePanelAction?.Invoke(tag);
                 container.RemoveMenu(this);
                 return;
             }
@@ -90,10 +92,17 @@ namespace EngineeringCorpsCS
                 this.Translate(input.GetMouseDiff());
             }
         }
-        
-        public void ClosePanel()
+
+        public void ClosePanel(string tag)
         {
-            ClosePanelAction?.Invoke();
+            if (tag == "")
+            {
+                ClosePanelAction?.Invoke(this.tag);
+            }
+            else
+            {
+                ClosePanelAction?.Invoke(tag);
+            }
             container.RemoveMenu(this);
         }
     }

@@ -34,7 +34,7 @@ namespace EngineeringCorpsCS
         public int seed { get; protected set; }
         public SurfaceGenerator(TileCollection tiles)
         {
-            surfaceSize = 2048;
+            surfaceSize = Props.maxSurfaceSize * Props.tileSize;
             moistureFactor = 1.0f;
             temperatureFactor = 1.0f;
             elevationFactor = 1.0f;

@@ -19,8 +19,8 @@ namespace EngineeringCorpsCS
         Transform transform;
         Renderer renderer;
         Camera camera;
-        int refreshCounter = 30;
-        int refreshRate = 30;
+        int refreshCounter = 60;
+        int refreshRate = 60;
         Vector2 controlTranslation;
         float mapScale = 1.0f;
         int minimapXRange = 5;
@@ -47,8 +47,8 @@ namespace EngineeringCorpsCS
             refreshCounter++;
             if (refreshCounter >= refreshRate || renderer.modifiedVertexArrays == true)
             {
-                minimapXRange = (int)Math.Ceiling(size.X/ Props.tileSize / 1.5 / mapScale);
-                minimapYRange = (int)Math.Ceiling(size.Y/ Props.tileSize / 1.5 / mapScale);
+                minimapXRange = (int)Math.Ceiling(size.X/ Props.chunkSize / 1.5 / mapScale);
+                minimapYRange = (int)Math.Ceiling(size.Y/ Props.chunkSize / 1.5 / mapScale);
                 renderer.GenerateMinimapTextures(camera.focusedEntity.surface, camera.focusedEntity.position + new Vector2(-controlTranslation.x * Props.tileSize, -controlTranslation.y * Props.tileSize), minimapXRange, minimapYRange, vertexArrays);
                 refreshCounter = 0;
                 if(getPollution == true)
@@ -104,13 +104,13 @@ namespace EngineeringCorpsCS
                 if (input.GetMouseScrollDelta(false) != 0)
                 {
                     mapScale += (input.GetMouseScrollDelta(true) / InputBindings.scrollSensitivity);
-                    mapScale = mapScale < 0.5f ? 0.5f : mapScale;
-                    mapScale = mapScale > 8.0f ? 8.0f : mapScale;
+                    mapScale = mapScale < Props.worldMapZoomMin ? Props.worldMapZoomMin : mapScale;
+                    mapScale = mapScale > Props.worldMapZoomMax ? Props.worldMapZoomMax : mapScale;
                 }
             }
         }
 
-        public void TogglePollution()
+        public void TogglePollution(string tag)
         {
             getPollution = !getPollution;
             refreshCounter = refreshRate;

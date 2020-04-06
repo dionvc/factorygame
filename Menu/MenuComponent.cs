@@ -41,7 +41,7 @@ namespace EngineeringCorpsCS
         /// <param name="vertexArray"></param>
         /// <param name="bounds"></param>
         /// <param name="borderSize"></param>
-        public VertexArray CreateMenuGraphicArray(FloatRect bounds, float borderSize)
+        public VertexArray CreateMenuGraphicArrayWithBorder(FloatRect bounds, float borderSize)
         {
             VertexArray vertexArray = new VertexArray(PrimitiveType.Triangles);
             float pR = 0.5f;
@@ -134,6 +134,54 @@ namespace EngineeringCorpsCS
             this.pivot2 = pivot2;
             this.pivot3 = inside;
             this.margin = margin;
+        }
+
+        virtual public void SetInitialPosition()
+        {
+            if(parent == null)
+            {
+                return;
+            }
+            if (pivot3 == "inside")
+            {
+                position = new Vector2f(parent.size.X / 2 - size.X / 2, parent.size.Y / 2 - size.Y / 2);
+                if (pivot1 == "top" || pivot2 == "top")
+                {
+                    position += new Vector2f(0, size.Y / 2 + margin - parent.size.Y / 2);
+                }
+                if (pivot1 == "bottom" || pivot2 == "bottom")
+                {
+                    position += new Vector2f(0, parent.size.Y / 2 - size.Y / 2 - margin);
+                }
+                if (pivot1 == "left" || pivot2 == "left")
+                {
+                    position += new Vector2f(margin + size.X / 2 - parent.size.X / 2, 0);
+                }
+                if (pivot1 == "right" || pivot2 == "right")
+                {
+                    position += new Vector2f(parent.size.X / 2 - size.X / 2 - margin, 0);
+                }
+            }
+            else
+            {
+                position = new Vector2f(parent.size.X / 2 - size.X / 2, parent.size.Y / 2 - size.Y / 2);
+                if (pivot1 == "top" || pivot2 == "top")
+                {
+                    position += new Vector2f(0, -size.Y / 2 - margin - parent.size.Y / 2);
+                }
+                if (pivot1 == "bottom" || pivot2 == "bottom")
+                {
+                    position += new Vector2f(0, parent.size.Y / 2 + margin + size.Y / 2);
+                }
+                if (pivot1 == "left" || pivot2 == "left")
+                {
+                    position += new Vector2f(-size.X - parent.size.X / 2 - margin, 0);
+                }
+                if (pivot1 == "right" || pivot2 == "right")
+                {
+                    position += new Vector2f(parent.size.X / 2 + margin, 0);
+                }
+            }
         }
 
         virtual public void SetInitialPosition(View GUIView)

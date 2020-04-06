@@ -87,14 +87,14 @@ namespace EngineeringCorpsCS
             subscriberList = new List<IInputSubscriber>();
             subscriberMenuList = new List<IInputSubscriber>();
         }
-        public void Update()
+        public void Update(Program.GameState gameState)
         {
             //reconsider updating in an event
             mouseDiff = mousePos;
             mousePos = Mouse.GetPosition(window);
 
             //essentials
-            HandleInput();
+            HandleInput(gameState);
             FlushInput();
         }
 
@@ -233,20 +233,20 @@ namespace EngineeringCorpsCS
             return subscribedCamera;
         }
 
-        public void HandleInput()
+        public void HandleInput(Program.GameState gameState)
         {
             window.SetView(subscribedCamera.GetGUIView());
             for(int i = 0; i < subscriberMenuList.Count; i++)
             {
                 subscriberMenuList[i].HandleInput(this);
             }
-            window.SetView(subscribedCamera.GetGameView());
-            for (int i = 0; i < subscriberList.Count; i++)
+            if (gameState == Program.GameState.inGame)
             {
-                subscriberList[i].HandleInput(this);
-            }
-            if (subscribedCamera != null)
-            {
+                window.SetView(subscribedCamera.GetGameView());
+                for (int i = 0; i < subscriberList.Count; i++)
+                {
+                    subscriberList[i].HandleInput(this);
+                }
                 subscribedCamera.HandleInput(this);
             }
         }

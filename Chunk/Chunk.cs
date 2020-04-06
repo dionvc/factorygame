@@ -11,7 +11,7 @@ namespace EngineeringCorpsCS
     //store pollution data
     class Chunk
     {
-        public float pollutionValue { get; protected set; } = 1.0f;
+        public float pollutionValue { get; protected set; } = 0.0f;
         private byte[] terrain;
         public List<Entity> entityList { get; protected set; } //Collection of entities for drawing (entities will be dynamically sorted)
         public List<Entity> entityCollisionList { get; protected set; } //Collection of entities for collision (2+ different chunks may contain the same entity)
@@ -94,7 +94,7 @@ namespace EngineeringCorpsCS
         {
             foreach(Entity e in entityList)
             {
-                pollutionValue += 0.1f;// e.pollutionEmission;
+                pollutionValue += e.emissionPerSecond;// e.pollutionEmission;
             }
             pollutionValue = pollutionValue > Props.maxPollution ? Props.maxPollution - 1 : pollutionValue;
         }

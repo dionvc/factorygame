@@ -17,13 +17,15 @@ namespace EngineeringCorpsCS
             Held,
             Released
         }
-        public delegate void ButtonAction();
+        public delegate void ButtonAction(string tag);
         ButtonAction action;
         ButtonState buttonState;
         Color buttonHeld = Color.Green;
         Color buttonNormal = Color.Yellow;
         Color buttonHover = Color.Magenta;
         Color buttonColor = Color.Yellow;
+
+        public string tag { get; set; } = "";
         public MenuButton(Vector2f componentSize, ButtonAction action)
         {
             Initialize(componentSize);
@@ -42,7 +44,7 @@ namespace EngineeringCorpsCS
         override public void HandleInput(InputManager input)
         {
             base.HandleInput(input);
-            //TODO: move to translate and store absolute position of component precomputed?
+
             Vector2f mousePos = input.GetMousePosition();
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
@@ -68,7 +70,7 @@ namespace EngineeringCorpsCS
             }
             if (buttonState == ButtonState.Held && input.GetMouseReleased(InputBindings.primary, false))
             {
-                action?.Invoke();
+                action?.Invoke(tag);
                 buttonState = ButtonState.Normal;
                 buttonColor = buttonNormal;
             }

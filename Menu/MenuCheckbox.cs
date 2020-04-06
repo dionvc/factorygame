@@ -8,13 +8,13 @@ using SFML.System;
 
 namespace EngineeringCorpsCS
 {
-    enum CheckboxState
-    {
-        Checked,
-        Unchecked
-    }
     class MenuCheckbox : MenuComponent
     {
+        enum CheckboxState
+        {
+            Checked,
+            Unchecked
+        }
         public delegate bool ApplyState(string tag, bool state);
         public MenuCheckbox(Vector2f componentSize, bool initialState)
         {

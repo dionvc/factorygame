@@ -44,7 +44,7 @@ namespace EngineeringCorpsCS
             base.Draw(gui, origin, guiState);
         }
 
-        public void SetInitialPosition()
+        public void SetTextPosition()
         {
             //do not change the position of the text component, but instead the positions of the text objects contained
             float centerX = size.X / 2;
@@ -75,8 +75,8 @@ namespace EngineeringCorpsCS
                 }
                 if (pivot1 == "right" || pivot2 == "right")
                 {
-                    textComponents[i].Origin = new Vector2f(textComponents[i].GetLocalBounds().Width, 0);
-                    textPositions[i] += new Vector2f(size.X / 2 - margin, 0);
+                    textComponents[i].Origin += new Vector2f(textComponents[i].GetLocalBounds().Width / 2.0f, 0) ;
+                    textPositions[i] += new Vector2f(size.X - margin, 0);
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace EngineeringCorpsCS
                     }
                 }
             }
-            SetInitialPosition();
+            SetTextPosition();
         }
 
         public void ComputeSize()
