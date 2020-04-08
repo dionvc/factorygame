@@ -24,6 +24,10 @@ namespace EngineeringCorpsCS
 
         public static Keyboard.Key showMinimap = Keyboard.Key.N;
         public static Keyboard.Key showWorldMap = Keyboard.Key.M;
+        public static Keyboard.Key showInventory = Keyboard.Key.E;
+
+        public static Keyboard.Key returnItem = Keyboard.Key.Q;
+        public static Keyboard.Key dropItem = Keyboard.Key.F;
 
         public static Keyboard.Key increasePlacementSize = Keyboard.Key.Add;
         public static Keyboard.Key decreasePlacementSize = Keyboard.Key.Subtract;

@@ -12,17 +12,15 @@ namespace EngineeringCorpsCS
     {
         public enum DrawLayer
         {
-            None = 0,
-            Terrain = 1,            //All terrain is drawn on one layer
-            TerrainDecor = 2,       //Terrain decor is drawn before paths
-            TerrainPath = 3,        //Placed paths
-            Resource = 4,           //Some resources may have visible signs above ground
-            EntityUnderItem = 5,
-            Item = 6,
-            EntitySorted = 7,
-            Overlay = 8,
-            Air = 8,
-            IconOverlay = 9
+            None = 0,               //Object not drawn
+            TerrainDecor = 1,       //Terrain decor is drawn before paths
+            TerrainPath = 2,        //Placed paths
+            Resource = 3,           //Some resources may have visible signs above ground
+            EntityUnderItem = 4,    //Some entities may want to appear below an item
+            Item = 5,               //just the entities
+            EntitySorted = 6,       //Regular entity layer
+            Air = 7,                //Stuff that is in the air
+            IconOverlay = 8         //Would be useful for player hints
         }
 
         public Vector2f drawOffset { get; set; }
@@ -33,6 +31,5 @@ namespace EngineeringCorpsCS
         public abstract Sprite GetSprite();
         public abstract void Update();
         public abstract void SetAnimationSpeed(float animationSpeed);
-        public abstract void SetBehavior(string behavior);
     }
 }

@@ -10,10 +10,10 @@ namespace EngineeringCorpsCS
 {
     class AnimationRotated : Drawable
     {
-        enum AnimationBehavior {
-            Forward = 1,
-            Backward = 1,
-            ForwardAndBackward = -1
+        public enum AnimationBehavior {
+            Forward,
+            Backward,
+            ForwardAndBackward
         }
         Sprite animationFrame;
         Texture[] textureRefs; //all the textures making up the animation (in order)
@@ -27,7 +27,19 @@ namespace EngineeringCorpsCS
         int currentState = 0; //current state (< states)
         float tickAccumulator = 0; //accumulates frames to subtract from
         int incrementAmount = 1;
-        AnimationBehavior behavior;
+        int behaviorIncrement = 1;
+        AnimationBehavior _behavior;
+        public AnimationBehavior behavior {
+            get
+            {
+                return _behavior;
+            }
+            set
+            {
+                _behavior = value;
+                SetBehavior(_behavior);
+            }
+        }
 
         //TODO: add color
         
@@ -53,7 +65,6 @@ namespace EngineeringCorpsCS
             this.drawOffset = drawOffset;
             animationFrame.Origin = new Vector2f(frameSize.X/2 + textureOffset.X, frameSize.Y/2 + textureOffset.Y);
             animationFrame.Scale = scale;
-            SetBehavior(behavior);
         }
 
         /// <summary>
@@ -75,7 +86,6 @@ namespace EngineeringCorpsCS
             this.frames = framesPerState;
             this.animationSpeed = animationSpeed;
             animationFrame.Origin = new Vector2f(frameSize.X / 2, frameSize.Y / 2);
-            SetBehavior(behavior);
         }
 
 
@@ -98,7 +108,7 @@ namespace EngineeringCorpsCS
                     }
                     if (currentFrame >= frames - 1 || currentFrame <= 0)
                     {
-                        incrementAmount *= (int)behavior;
+                        incrementAmount *= behaviorIncrement;
                         currentFrame = (currentFrame + frames) % (frames);
                         
                     }
@@ -157,24 +167,21 @@ namespace EngineeringCorpsCS
         /// Sets the behavior of the animation (Forward, Backward, Forward and Backward)
         /// </summary>
         /// <param name="behavior"></param>
-        override public void SetBehavior(string behavior)
+        private void SetBehavior(AnimationBehavior behavior)
         {
             switch (behavior)
             {
-                case ("f"):
-                case ("Forward"):
-                    this.behavior = AnimationBehavior.Forward;
+                case (AnimationBehavior.Forward):
                     this.incrementAmount = 1;
+                    this.behaviorIncrement = 1;
                     break;
-                case ("b"):
-                case ("Backward"):
-                    this.behavior = AnimationBehavior.Backward;
+                case (AnimationBehavior.Backward):
                     this.incrementAmount = -1;
+                    this.behaviorIncrement = 1;
                     break;
-                case ("fb"):
-                case ("ForwardAndBackward"):
-                    this.behavior = AnimationBehavior.ForwardAndBackward;
+                case (AnimationBehavior.ForwardAndBackward):
                     this.incrementAmount = 1;
+                    this.behaviorIncrement = -1;
                     break;
                 default:
                     this.behavior = AnimationBehavior.Forward;

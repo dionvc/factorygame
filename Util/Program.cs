@@ -74,6 +74,7 @@ namespace EngineeringCorpsCS
         //Debug variable
         Clock clock;
         float fps;
+        Queue<float> fpsQueue;
 
         private List<Player> players;
         private LightSource testLightSource1;
@@ -83,7 +84,7 @@ namespace EngineeringCorpsCS
         {
             //Window initialization (all of this stays here I think)
             window = new RenderWindow(new VideoMode(1280, 720), "Engineering Corps");
-            window.SetFramerateLimit(0);
+            window.SetFramerateLimit(60);
             window.Closed += (s, a) => window.Close();
             window.SetActive();
             Image icon = new Image("Graphics/GUI/EngineeringCorpsIcon.png");
@@ -113,18 +114,13 @@ namespace EngineeringCorpsCS
             window.Resized += renderer.HandleResize;
             window.Resized += menuContainer.RepositionMenus;
             input.menuFactory = menuFactory;
-            renderer.SubscribeToInput(input);
-            this.SubscribeToInput(input);
+            
             //Game prototypes
             tileCollection = new TileCollection(textureContainer);
         }
         public void StartMenu()
         {
-            TextureContainerPacker tCP = new TextureContainerPacker();
-            tCP.LoadTextures();
-            Sprite test = tCP.GetTextureAsSprite("guiTilesheet");
             StaticSoundManager.Play();
-            input.menuFactory.CreateTestInventory();
             input.menuFactory.CreateMainMenu(camera);
             while (window.IsOpen && gameState == GameState.mainMenu)
             {
@@ -132,7 +128,6 @@ namespace EngineeringCorpsCS
                 window.DispatchEvents();
                 input.Update(gameState);
                 renderer.RenderGUI(window, camera);
-                window.Draw(test);
                 window.Display();
             }
         }
@@ -167,9 +162,11 @@ namespace EngineeringCorpsCS
             #endregion
             //Attaching the camera to something!
             camera.focusedEntity = players[15];
+            //TestTilePlacer tilePlacer = new TestTilePlacer(surfaceContainer, renderer, textureContainer);
+            //tilePlacer.SubscribeToInput(input);
+            this.SubscribeToInput(input);
+            renderer.SubscribeToInput(input);
             menuFactory.CreateMinimap(camera);
-            TestTilePlacer tilePlacer = new TestTilePlacer(surfaceContainer, renderer, textureContainer);
-            tilePlacer.SubscribeToInput(input);
         }
 
         public void FinalizeGame()
@@ -186,10 +183,17 @@ namespace EngineeringCorpsCS
         {
             InitializeGame();
             clock = new Clock();
+            fpsQueue = new Queue<float>(10);
+            for(int i = 0; i < 30; i ++)
+            {
+                fpsQueue.Enqueue(60.0f);
+            }
             while (window.IsOpen && (gameState == GameState.inGame || gameState == GameState.paused))
             {
                 //Check fps
                 fps = 1.0f / clock.ElapsedTime.AsSeconds();
+                fpsQueue.Enqueue(fps);
+                fpsQueue.Dequeue();
                 clock.Restart();
                 //prepare for drawing and dispatch window events
                 window.Clear();
@@ -215,6 +219,10 @@ namespace EngineeringCorpsCS
                 renderer.RenderWorld(window, camera, surfaceContainer);
                 //drawing menus (main menu, pause, ingame, etc)
                 renderer.RenderGUI(window, camera);
+                //Draw the player's held item (very ugly to have to put it here but couldnt think of anything better)
+                if (camera.focusedEntity is Player) {
+                    renderer.RenderHeldItem(window, camera, ((Player)camera.focusedEntity).heldItem, input);
+                }
                 //Cull far away vertexarrays from renderer cache
                 renderer.CheckCullVertexCache(camera, surfaceContainer);
                 window.Display();
@@ -267,7 +275,8 @@ namespace EngineeringCorpsCS
 
         public string GetFPS()
         {
-            return fps.ToString();
+            float fps = fpsQueue.Average();
+            return fps.ToString("0.0");
         }
     }
 }

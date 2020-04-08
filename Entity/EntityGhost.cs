@@ -12,7 +12,7 @@ namespace EngineeringCorpsCS
         {
             this.position = position;
             this.collisionBox = box;
-            this.collisionMask = CollisionLayer.TerrainSolid;
+            this.collisionMask = CollisionLayer.TerrainSolid | CollisionLayer.EntityPhysical;
             this.surface = surface;
         }
     }

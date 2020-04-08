@@ -50,11 +50,6 @@ namespace EngineeringCorpsCS
                 //Pack the subdirectory into the atlases
                 PackSubdirectory(directories[i]);
             }
-
-            for(int i = 0; i < textureAtlases.Count; i ++)
-            {
-                textureAtlases[i].atlas.CopyToImage().SaveToFile("atlas-" + i + ".png");
-            }
         }
 
         /// <summary>

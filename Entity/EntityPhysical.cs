@@ -24,7 +24,8 @@ namespace EngineeringCorpsCS
                 }
             } 
         }
-        public float fullHealth;
+        public float fullHealth { get; protected set; }
+        public string miningResult { get; protected set; }
         override public void OnClick()
         {
 

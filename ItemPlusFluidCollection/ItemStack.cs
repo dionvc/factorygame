@@ -11,7 +11,10 @@ namespace EngineeringCorpsCS
     /// </summary>
     class ItemStack
     {
-        int itemID;
+        /// <summary>
+        /// The underlying item
+        /// </summary>
+        public Item item { get; protected set; }
         int count;
     }
 }

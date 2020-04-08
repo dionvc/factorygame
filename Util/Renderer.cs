@@ -141,9 +141,9 @@ namespace EngineeringCorpsCS
                 test.Draw(drawSprite);
             }
             Sprite sprite = test.Finalize();
-            sprite.Position = new Vector2f(origin.X, origin.Y);
-            sprite.Scale = sprite.Scale * camera.GetGameViewScale();
+            window.SetView(camera.GetGUIView());
             window.Draw(sprite);
+            window.SetView(camera.GetGameView());
             drawList.Clear();
             #endregion entity drawing
 
@@ -301,6 +301,19 @@ namespace EngineeringCorpsCS
             Sprite GUISprite = new Sprite(GUI.Texture);
             window.Draw(GUISprite);
             cullCounter++;
+        }
+
+        public void RenderHeldItem(RenderWindow window, Camera camera, ItemStack heldItem, InputManager input)
+        {
+            if(heldItem == null)
+            {
+                return;
+            }
+            window.SetView(camera.GetGUIView());
+            Vector2f pos = input.GetMousePosition();
+            RectangleShape item = new RectangleShape(new Vector2f(32,32));
+            item.Position = pos;
+            window.Draw(item);
         }
 
         public void HandleResize(Object s, SizeEventArgs e)

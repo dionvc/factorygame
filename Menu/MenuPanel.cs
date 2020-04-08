@@ -31,6 +31,7 @@ namespace EngineeringCorpsCS
         {
             this.size = componentSize;
             this.position = relativePosition;
+            this.ClosePanelAction = closePanelAction;
             collisionBox = new BoundingBox(this.size);
             panelState = PanelState.Normal;
             vertexArray = CreateMenuGraphicArrayWithBorder(bounds, borderSize);
@@ -95,13 +96,13 @@ namespace EngineeringCorpsCS
 
         public void ClosePanel(string tag)
         {
-            if (tag == "")
+            if (tag == null)
             {
-                ClosePanelAction?.Invoke(this.tag);
+                ClosePanelAction.Invoke(this.tag);
             }
             else
             {
-                ClosePanelAction?.Invoke(tag);
+                ClosePanelAction.Invoke(tag);
             }
             container.RemoveMenu(this);
         }

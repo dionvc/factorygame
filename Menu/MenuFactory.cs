@@ -218,14 +218,9 @@ namespace EngineeringCorpsCS
             menuContainer.AttachMenu(worldMenu);
         }
 
-        public void CreateTestInventory()
+        public void CreateTestInventory(Player accessingPlayer, ItemStack[] inventory)
         {
-            ItemStack[] inventory = new ItemStack[10];
-            for (int i = 0; i < inventory.Length - 2; i ++)
-            {
-                inventory[i] = new ItemStack();
-            }
-            MenuInventory inventoryMenu = new MenuInventory(new Vector2f(256, 256), inventory);
+            MenuInventory inventoryMenu = new MenuInventory(new Vector2f(256, 256), inventory, accessingPlayer);
             menuContainer.AttachMenu(inventoryMenu);
         }
     }

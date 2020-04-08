@@ -10,49 +10,52 @@ namespace EngineeringCorpsCS
 {
     class Animation: Drawable
     {
-        enum AnimationBehavior
+        public enum AnimationBehavior
         {
-            Forward = 1,
-            Backward = 1,
-            ForwardAndBackward = -1
+            Forward,
+            Backward,
+            ForwardAndBackward
         }
-        AnimationBehavior behavior;
-        Sprite animationFrame;
-        Texture[] textureRefs;
-        Vector2i size; //stores x (width), y (height) of sprite to capture from texture
-        Vector2i texturePos; //position on texture
-        Vector2i textureSize;
-        Vector2i offset; //TODO: offset of selection location in texture (for selecting a subsection of the texture) 
+        AnimationBehavior behavior
+        {
+            get
+            {
+                return behavior;
+            }
+            set
+            {
+                behavior = value;
+                SetBehavior(behavior);
+            }
+        }
+        Sprite animationSprite;
+        DrawLayer drawLayer;
+        Texture textureReference;
+        Vector2f origin;
+        IntRect textureBounds;
+        IntRect textureFrame;
         int incrementAmount = 1;
         int frames = 1;
         int currentFrame = 0;
         float animationSpeed = 0; //ticks per frame of animation (eg. 1 is 1 tick per frame, 2 is 2 ticks per frame
         float tickAccumulator = 0;
+        Color color;
+        Vector2f scale;
+        float rotation;
 
-        public Animation(Texture[] textureRefs, Vector2i frameSize, Vector2f textureOffset, Vector2f drawOffset, Vector2f scale, int framesPerState, string behavior, float animationSpeed)
+        public Animation(Texture textureReference, int width, int height, int frames, IntRect bounds, Vector2f drawOffset)
         {
-            this.animationFrame = new Sprite();
-            this.size = frameSize;
-            this.textureRefs = textureRefs;
-            this.textureSize = new Vector2i((int)this.textureRefs[0].Size.X, (int)this.textureRefs[0].Size.Y);
-            this.frames = framesPerState;
-            this.animationSpeed = animationSpeed;
-            this.drawOffset = drawOffset;
-            animationFrame.Origin = new Vector2f(frameSize.X / 2 + textureOffset.X, frameSize.Y / 2 + textureOffset.Y);
-            animationFrame.Scale = scale;
-            SetBehavior(behavior);
-        }
-
-        public Animation(Texture[] textureRefs, Vector2i frameSize, int frames, string behavior, float animationSpeed, Vector2i offset)
-        {
-            this.animationFrame = new Sprite();
-            this.size = frameSize;
-            this.textureRefs = textureRefs;
-            this.textureSize = new Vector2i((int)this.textureRefs[0].Size.X, (int)this.textureRefs[0].Size.Y);
+            this.textureReference = textureReference;
+            this.textureBounds = bounds;
             this.frames = frames;
-            this.offset = offset;
-            this.animationSpeed = animationSpeed;
-            SetBehavior(behavior);
+            this.origin = new Vector2f(width / 2, height / 2);
+            textureFrame = new IntRect(bounds.Left, bounds.Top, width, height);
+            color = new Color(255, 255, 255, 255);
+            scale = new Vector2f(1.0f, 1.0f);
+            rotation = 0.0f;
+            this.drawOffset = drawOffset;
+            animationSprite = new Sprite(textureReference);
+            animationSprite.Origin = origin;
         }
 
         override public void Update()
@@ -78,14 +81,19 @@ namespace EngineeringCorpsCS
             }
         }
 
+        public void Draw(SpriteBatch[] spriteBatch, Vector2f position)
+        {
+            textureFrame.Left = (textureFrame.Width * currentFrame) % (textureBounds.Width);
+            textureFrame.Top = (textureFrame.Width * currentFrame) / (textureBounds.Width) * textureFrame.Height;
+            spriteBatch[(int)drawLayer].Draw(textureReference, position + drawOffset, textureFrame, color, scale, origin, rotation);
+        }
+
         override public Sprite GetSprite()
         {
-            texturePos.X = (size.X * currentFrame) % (textureSize.X * textureRefs.Length);
-            texturePos.Y = (size.X * currentFrame) / (textureSize.X * textureRefs.Length) * size.Y;
-            int textureIndex = (texturePos.X / textureSize.X);
-            animationFrame.Texture = textureRefs[textureIndex];
-            animationFrame.TextureRect = new IntRect(texturePos, size);
-            return animationFrame;
+            textureFrame.Left = (textureFrame.Width * currentFrame) % (textureBounds.Width);
+            textureFrame.Top = (textureFrame.Width * currentFrame) / (textureBounds.Width) * textureFrame.Height;
+            animationSprite.TextureRect = textureFrame;
+            return animationSprite;
         }
 
         /// <summary>
@@ -99,12 +107,12 @@ namespace EngineeringCorpsCS
 
         override public void SetColor(byte r, byte g, byte b, byte a)
         {
-            animationFrame.Color = new Color(r, g, b, a);
+            this.color = new Color(r, g, b, a);
         }
 
         override public void SetScale(float x, float y)
         {
-            animationFrame.Scale = new Vector2f(x, y);
+            this.scale = new Vector2f(x, y);
         }
 
         /// <summary>
@@ -116,27 +124,17 @@ namespace EngineeringCorpsCS
             this.animationSpeed = animationSpeed;
         }
 
-        /// <summary>
-        /// Sets the behavior of the animation (Forward, Backward, Forward and Backward)
-        /// </summary>
-        /// <param name="behavior"></param>
-        override public void SetBehavior(string behavior)
+        private void SetBehavior(AnimationBehavior behavior)
         {
             switch (behavior)
             {
-                case ("f"):
-                case ("Forward"):
-                    this.behavior = AnimationBehavior.Forward;
+                case (AnimationBehavior.Forward):
                     this.incrementAmount = 1;
                     break;
-                case ("b"):
-                case ("Backward"):
-                    this.behavior = AnimationBehavior.Backward;
+                case (AnimationBehavior.Backward):
                     this.incrementAmount = -1;
                     break;
-                case ("fb"):
-                case ("ForwardAndBackward"):
-                    this.behavior = AnimationBehavior.ForwardAndBackward;
+                case (AnimationBehavior.ForwardAndBackward):
                     this.incrementAmount = 1;
                     break;
                 default:

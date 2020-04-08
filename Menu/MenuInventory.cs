@@ -30,18 +30,21 @@ namespace EngineeringCorpsCS
         //But if the player has a held item, it needs to be able to be passed back to the inventory
 
         ItemStack[] inventory;
-        ItemStack heldItem; //TODO: move to player
         VertexArray itemFrames;
-        public MenuInventory(Vector2f componentSize, ItemStack[] inventory)//, Player accessingPlayer, TextureContainer textureContainer)
+        BoundingBox frameBox;
+        Player accessingPlayer;
+        public MenuInventory(Vector2f componentSize, ItemStack[] inventory, Player accessingPlayer)// TextureContainer textureContainer)
         {
             this.inventory = inventory;
             this.size = componentSize;
+            this.accessingPlayer = accessingPlayer;
             //Need textureContainer to draw item icons
             //Need
             for(int i = 0; i < inventory.Length; i++)
             {
                 //Construct inventory frames
             }
+            frameBox = new BoundingBox(0, 0, 32, 32);
         }
 
         public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
@@ -57,7 +60,7 @@ namespace EngineeringCorpsCS
                 gui.Draw(frame);
                 if (inventory[i] != null)
                 {
-                    item.Position = origin + position + new Vector2f((i * 32) % (int)size.X, (i * 32) / (int)size.X);
+                    item.Position = origin + position + new Vector2f((i * 32) % (int)size.X, (i * 32) / (int)size.X * 32);
                     gui.Draw(item);
                 }
             }
@@ -66,6 +69,41 @@ namespace EngineeringCorpsCS
         public override void HandleInput(InputManager input)
         {
             base.HandleInput(input);
+            Vector2f mousePos = input.GetMousePosition();
+            Vector2f origin = new Vector2f(0, 0);
+            MenuComponent bubble = parent;
+            while (bubble != null)
+            {
+                origin += bubble.position;
+                bubble = bubble.parent;
+            }
+
+            if (input.GetMouseClicked(InputBindings.primary, false))
+            {
+                for(int i = 0; i < inventory.Length; i++)
+                {
+                    bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, frameBox, position + origin + new Vector2f((i * 32) % (int)size.X, ((i * 32) / (int)size.X) * 32));
+                    if(collided)
+                    {
+                        input.GetMouseClicked(InputBindings.primary, true);
+                        ItemStack temp = inventory[i];
+                        inventory[i] = accessingPlayer.heldItem;
+                        accessingPlayer.heldItem = temp;
+                    }
+
+                }
+            }
+            if(input.GetKeyPressed(InputBindings.returnItem, true) && accessingPlayer.heldItem != null)
+            {
+                for(int i = 0; i < inventory.Length; i++)
+                {
+                    if(inventory[i] == null)
+                    {
+                        inventory[i] = accessingPlayer.heldItem;
+                        accessingPlayer.heldItem = null;
+                    }
+                }
+            }
         }
     }
 }
