@@ -22,7 +22,10 @@ namespace EngineeringCorpsCS
         int refreshCounter = 60;
         int refreshRate = 60;
         Vector2 controlTranslation;
-        float mapScale = 1.0f;
+        /// <summary>
+        /// Set the mapscale for non-controllable minimaps.
+        /// </summary>
+        public float mapScale { get; set; } = Props.worldMapZoomMin;
         int minimapXRange = 5;
         int minimapYRange = 5;
         bool getPollution = true;

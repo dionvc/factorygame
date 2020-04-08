@@ -15,12 +15,11 @@ namespace EngineeringCorpsCS
         VertexArray entityBoundingBoxArray;
         Texture[] terrainTilesheets;
         RenderTexture GUI;
-        RenderTexture lighting;
-        RenderStates lightingState;
+        SpriteBatch lightingBatch;
         RenderStates[] terrainRenderStates;
         RenderStates guiState;
         List<Entity> drawList;
-        SpriteBatch test;
+        SpriteBatch entityBatch;
 
         //Collections
         Dictionary<int, VertexArray[]> terrainVertexArrays; //TODO: need to change these for multi-surface support
@@ -45,10 +44,8 @@ namespace EngineeringCorpsCS
             this.menuContainer = menuContainer;
             GUI = new RenderTexture(window.Size.X, window.Size.Y);
             guiState = new RenderStates(guiElements);
-            lighting = new RenderTexture(window.Size.X, window.Size.Y);
-            lightingState = new RenderStates(BlendMode.Multiply);
-
-            test = new SpriteBatch(window);
+            lightingBatch = new SpriteBatch(window, BlendMode.Multiply);
+            entityBatch = new SpriteBatch(window, BlendMode.Alpha);
         }
         public void InitializeForGame(TileCollection tileCollection)
         {
@@ -133,14 +130,12 @@ namespace EngineeringCorpsCS
                     return a.position.x.CompareTo(b.position.x);
                 }
             });
-            test.Initialize(camera.GetGameView());
+            entityBatch.Initialize(camera.GetGameView(), Color.Transparent);
             foreach (Entity e in drawList)
             {
-                Sprite drawSprite = e.drawArray[0].GetSprite();
-                drawSprite.Position = new Vector2f(e.position.x, e.position.y) + e.drawArray[0].drawOffset;
-                test.Draw(drawSprite);
+                e.drawArray[0].Draw(entityBatch, e.position.internalVector);
             }
-            Sprite sprite = test.Finalize();
+            Sprite sprite = entityBatch.Finalize();
             window.SetView(camera.GetGUIView());
             window.Draw(sprite);
             window.SetView(camera.GetGameView());
@@ -148,8 +143,7 @@ namespace EngineeringCorpsCS
             #endregion entity drawing
 
             #region lighting drawing
-            lighting.Clear(new Color(0, 0, 0, surface.GetDarkness()));
-            lighting.SetView(camera.GetGameView());
+            lightingBatch.Initialize(camera.GetGameView(), new Color(0, 0, 0, surface.GetDarkness()));
             for (int i = begPos[0]; i <= endPos[0]; i++)
             {
                 for (int j = begPos[1]; j <= endPos[1]; j++)
@@ -158,12 +152,11 @@ namespace EngineeringCorpsCS
                     List<LightSource> lightSources = chunk.lightSources;
                     for (int k = 0; k < lightSources.Count; k++)
                     {
-                        lighting.Draw(lightSources[k].light, lightingState);
+                        lightingBatch.Draw(lightSources[k].light);
                     }
                 }
             }
-            lighting.Display();
-            Sprite lightingSprite = new Sprite(lighting.Texture);
+            Sprite lightingSprite = lightingBatch.Finalize();
             window.SetView(camera.GetGUIView());
             window.Draw(lightingSprite);
             window.SetView(camera.GetGameView());
@@ -273,13 +266,13 @@ namespace EngineeringCorpsCS
                 for (int j = chunkIndices[1] - yRange; j <= chunkIndices[1] + yRange; j++)
                 {
                     byte val = Convert.ToByte(surface.GetInterpolatedPollution(i, j) * 255 / Props.maxPollution);
-                    Color topLeft = new Color(val, 0, 0, 128);
+                    Color topLeft = new Color(val, 0, 0, (byte)(val/2));
                     val = Convert.ToByte(surface.GetInterpolatedPollution(i + 1, j) * 255 / Props.maxPollution);
-                    Color topRight = new Color(val, 0, 0, 128);
+                    Color topRight = new Color(val, 0, 0, (byte)(val/2));
                     val = Convert.ToByte(surface.GetInterpolatedPollution(i, j + 1) * 255 / Props.maxPollution);
-                    Color botLeft = new Color(val, 0, 0, 128);
+                    Color botLeft = new Color(val, 0, 0, (byte)(val/2));
                     val = Convert.ToByte(surface.GetInterpolatedPollution(i + 1, j + 1) * 255 / Props.maxPollution);
-                    Color botRight = new Color(val, 0, 0, 128);
+                    Color botRight = new Color(val, 0, 0, (byte)(val/2));
                     int oX = i * Props.chunkSize;
                     int oY = j * Props.chunkSize;
                     vA.Append(new Vertex(new Vector2f(oX, oY), topLeft));
@@ -319,11 +312,10 @@ namespace EngineeringCorpsCS
         public void HandleResize(Object s, SizeEventArgs e)
         {
             GUI.Dispose();
-            lighting.Dispose();
             GUI = new RenderTexture(e.Width, e.Height);
-            lighting = new RenderTexture(e.Width, e.Height);
 
-            test.HandleResize(s, e);
+            lightingBatch.HandleResize(s, e);
+            entityBatch.HandleResize(s, e);
         }
 
         /// <summary>

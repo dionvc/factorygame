@@ -14,14 +14,14 @@ namespace EngineeringCorpsCS
         Renderer renderer;
         Program program;
         FontContainer fontContainer;
-        TextureContainer textureContainer;
-        public MenuFactory(MenuContainer menuContainer, Renderer renderer, Program program, TextureContainer textureContainer, FontContainer fontContainer)
+        TextureAtlases textureAtlases;
+        public MenuFactory(MenuContainer menuContainer, Renderer renderer, Program program, TextureAtlases textureAtlases, FontContainer fontContainer)
         {
             this.menuContainer = menuContainer;
             this.renderer = renderer;
             this.program = program;
             this.fontContainer = fontContainer;
-            this.textureContainer = textureContainer;
+            this.textureAtlases = textureAtlases;
         }
 
         public void CreateMainMenu(Camera camera)
@@ -108,6 +108,7 @@ namespace EngineeringCorpsCS
         {
             MenuPanel minimapPanel = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 350), new FloatRect(0, 0, 96, 96), 4, null);
             MenuWorldMap minimap = new MenuWorldMap(new Vector2f(250, 250), camera, renderer);
+            minimap.mapScale = 1.0f;
             MenuButton minimapPollutionToggle = new MenuButton(new Vector2f(50, 50), minimap.TogglePollution);
             minimapPanel.AttachComponent(minimap);
             minimapPanel.AttachComponent(minimapPollutionToggle);

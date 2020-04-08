@@ -31,6 +31,6 @@ namespace EngineeringCorpsCS
         public static uint textureAtlasSize = 4096;
         public static int textureAtlasFullMargin = 32;
         public static string graphicsPath = "/Graphics";
-        public static string[] ignoreForPacking = new string[] { "/Terrain", "/GUI" };
+        public static string[] packTogether = new string[] { "GUI" }; //These are folders to be packed together
     }
 }

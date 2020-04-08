@@ -14,17 +14,17 @@ namespace EngineeringCorpsCS
         RenderTexture spriteBatch;
         RenderStates currentRenderState;
         VertexArray spriteBatchArray;
-        public SpriteBatch(RenderWindow window)
+        public SpriteBatch(RenderWindow window, BlendMode blendMode)
         {
             spriteBatch = new RenderTexture(window.Size.X, window.Size.Y);
             spriteBatchArray = new VertexArray(PrimitiveType.Triangles);
-            currentRenderState = new RenderStates();
+            currentRenderState = new RenderStates(blendMode);
         }
 
-        public void Initialize(View gameView)
+        public void Initialize(View gameView, Color clearColor)
         {
             spriteBatch.SetView(gameView);
-            spriteBatch.Clear(Color.Transparent);
+            spriteBatch.Clear(clearColor);
         }
 
         public void Draw(Sprite drawnSprite)
@@ -94,7 +94,7 @@ namespace EngineeringCorpsCS
         {
             spriteBatch.Draw(spriteBatchArray, currentRenderState);
             spriteBatchArray.Clear();
-            currentRenderState = new RenderStates(texture);
+            currentRenderState.Texture = texture;
         }
 
         public Sprite Finalize()

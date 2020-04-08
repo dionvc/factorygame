@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SFML.System;
 
 namespace EngineeringCorpsCS
 {
@@ -10,10 +11,21 @@ namespace EngineeringCorpsCS
     {
         public float x { get; set; }
         public float y { get; set; }
+        Vector2f _internalVector;
+        public Vector2f internalVector { get
+            {
+                _internalVector.X = this.x;
+                _internalVector.Y = this.y;
+                return _internalVector;
+            } protected set
+            {
+                _internalVector = value;
+            } }
         public Vector2(float x, float y)
         {
             this.x = x;
             this.y = y;
+            internalVector = new Vector2f(x, y);
         }
 
         public Vector2(float[] xy)

@@ -12,15 +12,15 @@ namespace EngineeringCorpsCS
         private Renderer renderer;
         int placementSize = 0;
         byte tilePlace = 0;
-        private TextureContainer textureContainer;
+        private TextureAtlases textureAtlases;
         /// <summary>
         /// This is a test entity!!!
         /// </summary>
-        public TestTilePlacer(SurfaceContainer surface, Renderer renderer, TextureContainer textureContainer)
+        public TestTilePlacer(SurfaceContainer surface, Renderer renderer, TextureAtlases textureAtlases)
         {
             this.surface = surface;
             this.renderer = renderer;
-            this.textureContainer = textureContainer;
+            this.textureAtlases = textureAtlases;
         }
 
         public void SubscribeToInput(InputManager input)
@@ -73,7 +73,7 @@ namespace EngineeringCorpsCS
                 EntityGhost entityGhost = new EntityGhost(box, new Vector2(tileAligned[0], tileAligned[1]), surface);
                 if (!BoundingBox.CheckForCollision(entityGhost))
                 {
-                    new Tree(new Vector2(tileAligned[0], tileAligned[1]), surface, textureContainer);
+                    new Tree(new Vector2(tileAligned[0], tileAligned[1]), surface, textureAtlases);
                     //new Player(new Vector2(tileAligned[0], tileAligned[1]), surface, textureContainer);
                 }
             }

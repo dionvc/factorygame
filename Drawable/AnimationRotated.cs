@@ -8,21 +8,15 @@ using SFML.System;
 
 namespace EngineeringCorpsCS
 {
-    class AnimationRotated : Drawable
+    class AnimationRotated : Drawable, IAnimation
     {
-        public enum AnimationBehavior {
-            Forward,
-            Backward,
-            ForwardAndBackward
-        }
-        Sprite animationFrame;
-        Texture[] textureRefs; //all the textures making up the animation (in order)
-        Vector2i size; //stores x (width), y (height) of sprite to capture from texture
-        Vector2i texturePos; //position on texture
-        Vector2i textureSize; //size of a texture in the texture array
+        Texture texture; //all the textures making up the animation (in order)
+        Vector2f origin;
+        IntRect textureBounds;
+        IntRect textureFrame;
         int states = 1; //number of states (intended for rotation, eg for 2 states one north/south one east/west)
         int frames = 1; //Frames per state (assumption of static number of sprites across states (fair assumption)
-        float animationSpeed = 0; //measured in ticks per frame (eg, 1 is 1 tick per frame, 2 is 2 ticks per frame, 0.5 is 2 frames per tick)
+        public float animationSpeed { get; set; } = 0; //measured in ticks per frame (eg, 1 is 1 tick per frame, 2 is 2 ticks per frame, 0.5 is 2 frames per tick)
         int currentFrame = 0; //current frame of animation state
         int currentState = 0; //current state (< states)
         float tickAccumulator = 0; //accumulates frames to subtract from
@@ -53,47 +47,21 @@ namespace EngineeringCorpsCS
         /// <param name="behavior"></param>
         /// <param name="animationSpeed"></param>
         /// <param name="textureOffset"></param>
-        public AnimationRotated(Texture[] textureRefs, Vector2i frameSize, Vector2f textureOffset, Vector2f drawOffset, Vector2f scale, int rotationStates, int framesPerState, string behavior, float animationSpeed)
+        public AnimationRotated(Texture texture, int width, int height, IntRect bounds, Vector2f drawOffset, int rotationStates, int framesPerState)
         {
-            this.animationFrame = new Sprite();
-            this.size = frameSize;
-            this.textureRefs = textureRefs;
-            this.textureSize = new Vector2i((int)this.textureRefs[0].Size.X, (int)this.textureRefs[0].Size.Y);
-            this.states = rotationStates;
+            this.texture = texture;
+            this.textureBounds = bounds;
             this.frames = framesPerState;
-            this.animationSpeed = animationSpeed;
+            this.origin = new Vector2f(width / 2, height / 2);
+            textureFrame = new IntRect(bounds.Left, bounds.Top, width, height);
+            this.states = rotationStates;
             this.drawOffset = drawOffset;
-            animationFrame.Origin = new Vector2f(frameSize.X/2 + textureOffset.X, frameSize.Y/2 + textureOffset.Y);
-            animationFrame.Scale = scale;
         }
-
-        /// <summary>
-        /// Simpler initializer (should really only be used for testing purposes)
-        /// </summary>
-        /// <param name="textureRef"></param>
-        /// <param name="frameSize"></param>
-        /// <param name="rotationStates"></param>
-        /// <param name="framesPerState"></param>
-        /// <param name="behavior"></param>
-        /// <param name="animationSpeed"></param>
-        public AnimationRotated(Texture[] textureRef, Vector2i frameSize, int rotationStates, int framesPerState, string behavior, float animationSpeed)
-        {
-            this.animationFrame = new Sprite();
-            this.size = frameSize;
-            this.textureRefs = textureRef;
-            this.textureSize = new Vector2i((int)this.textureRefs[0].Size.X, (int)this.textureRefs[0].Size.Y);
-            this.states = rotationStates;
-            this.frames = framesPerState;
-            this.animationSpeed = animationSpeed;
-            animationFrame.Origin = new Vector2f(frameSize.X / 2, frameSize.Y / 2);
-        }
-
-
 
         /// <summary>
         /// Updates the animation's sprite based on its animation speed and behavior
         /// </summary>
-        override public void Update()
+        public void Update()
         {
             if (animationSpeed != 0)
             {
@@ -118,35 +86,35 @@ namespace EngineeringCorpsCS
         }
 
         /// <summary>
+        /// Draws the drawable to a spritebatcher.
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        /// <param name="position"></param>
+        override public void Draw(SpriteBatch spriteBatch, Vector2f position)
+        {
+            //Calculate the texture box for drawing
+            textureFrame.Left = textureBounds.Left + (textureFrame.Width * (currentFrame + (currentState * frames))) % (textureBounds.Width);
+            textureFrame.Top = textureBounds.Top + (textureFrame.Height * (currentFrame + (currentState * frames))) / (textureBounds.Width) * textureFrame.Height;
+            spriteBatch.Draw(texture, position + drawOffset, textureFrame, color, scale, origin, 0.0f);
+        }
+
+        /// <summary>
         /// Gets the current sprite of the animation
         /// </summary>
         /// <returns></returns>
-        override public Sprite GetSprite()
+        /*override public Sprite GetSprite()
         {
             //TODO: ?Idea?, pass in current frame of game and store that.  The delta between current and last can be used to calculate current frame
             //rather than constantly updating animation
 
 
             //Calculate the texture box when the sprite is needed
-            texturePos.X = (size.X * (currentFrame + (currentState * frames))) % (textureSize.X * textureRefs.Length);
-            texturePos.Y = (size.X * (currentFrame + (currentState * frames))) / (textureSize.X * textureRefs.Length) * size.Y;
-            int textureIndex = (texturePos.X / textureSize.X);
-            texturePos.X = (texturePos.X % (textureSize.X));
+            textureFrame.Left = (textureFrame.Width * (currentFrame + (currentState * frames))) % (textureBounds.Width);
+            textureFrame.Top = (textureFrame.Height * (currentFrame + (currentState * frames))) / (textureBounds.Width) * textureFrame.Height;
             //Console.WriteLine("TextureIndex: " + textureIndex + "\nFrame: " + currentFrame + "\nTexPos: " + texturePos.X +  ", " + texturePos.Y);
-            animationFrame.Texture = textureRefs[textureIndex];
-            animationFrame.TextureRect = new IntRect(texturePos, size);
-            return animationFrame;
-        }
-
-        override public void SetColor(byte r, byte g, byte b, byte a)
-        {
-            animationFrame.Color = new Color(r, g, b, a);
-        }
-
-        override public void SetScale(float x, float y)
-        {
-            animationFrame.Scale = new Vector2f(x, y);
-        }
+            animationSprite.TextureRect = textureFrame;
+            return animationSprite;
+        }*/
 
         /// <summary>
         /// Sets the rotation state of the rotated animation
@@ -156,11 +124,6 @@ namespace EngineeringCorpsCS
         {
             currentState = (int)Math.Round(rotation * states / 360.0f);
             currentState = currentState % states;
-        }
-
-        override public void SetAnimationSpeed(float animationSpeed)
-        {
-            this.animationSpeed = animationSpeed;
         }
 
         /// <summary>

@@ -109,6 +109,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chunk\Alliance.cs" />
+    <Compile Include="Drawable\IAnimation.cs" />
+    <Compile Include="Drawable\StaticSprite.cs" />
     <Compile Include="Drawable\SpriteBatch.cs" />
     <Compile Include="ItemPlusFluidCollection\Item.cs" />
     <Compile Include="ItemPlusFluidCollection\ItemFactory.cs" />
@@ -160,7 +162,7 @@
     <Compile Include="Tile\TileFactory.cs" />
     <Compile Include="Tile\TileCollection.cs" />
     <Compile Include="Entity\Tree.cs" />
-    <Compile Include="Util\TextureContainerPacker.cs" />
+    <Compile Include="Util\TextureAtlases.cs" />
     <Compile Include="Util\Vector2.cs" />
   </ItemGroup>
   <ItemGroup>

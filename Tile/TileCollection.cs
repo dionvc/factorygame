@@ -14,12 +14,13 @@ namespace EngineeringCorpsCS
         List<Tile> terrainPathTiles; //list of placable paths,etc
         List<byte> impassableTileTypes; //specifically for rendering do not use for anything else
         Texture cliffTilesheet;
+        IntRect cliffBounds;
         Color cliffShade = new Color(255, 255, 255);
 
-        public TileCollection(TextureContainer textureManager)
+        public TileCollection(TextureAtlases textureAtlases)
         {
-            TileFactory tileFactory = new TileFactory(textureManager);
-            cliffTilesheet = textureManager.GetTexture("cliffTilesheet");
+            TileFactory tileFactory = new TileFactory(textureAtlases);
+            cliffTilesheet = textureAtlases.GetTexture("cliffTilesheet", out cliffBounds);
             terrainTiles = tileFactory.GetTerrainTiles();
             impassableTileTypes = new List<byte>();
             for (byte i = 0; i < terrainTiles.Count; i++)
@@ -137,7 +138,7 @@ namespace EngineeringCorpsCS
                         {
                             int variantRegular = variantX % 8;
                             //Append regular tile variation
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 0, variantRegular, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 0, variantRegular, tile.shade, tile.textureRect);
                             continue;
                         }
                         #endregion
@@ -163,62 +164,62 @@ namespace EngineeringCorpsCS
                         if (((value & 24) + (value & 2)) == 2)
                         {
                             //top fade
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 2, variant, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 2, variant, tile.shade, tile.textureRect);
                         }
                         if (((value & 24) + (value & 64)) == 64)
                         {
                             //bottom fade
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 12, 2, variant, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 12, 2, variant, tile.shade, tile.textureRect);
                         }
                         if (((value & 66) + (value & 8)) == 8)
                         {
                             //left fade
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 3, variant, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 3, variant, tile.shade, tile.textureRect);
                         }
                         if (((value & 66) + (value & 16)) == 16)
                         {
                             //right fade
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 12, 3, variant, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 12, 3, variant, tile.shade, tile.textureRect);
                         }
                         if ((value & 10) == 10)
                         {
                             //inside corner topleft
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 4, variant, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 4, variant, tile.shade, tile.textureRect);
                         }
                         else if (((value & 1) + (value & 10)) == 1)
                         {
                             //outside corner topleft
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 6, variant, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 6, variant, tile.shade, tile.textureRect);
                         }
                         if ((value & 18) == 18)
                         {
                             //inside corner topright
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 12, 4, variant, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 12, 4, variant, tile.shade, tile.textureRect);
                         }
                         else if (((value & 4) + (value & 18)) == 4)
                         {
                             //outside corner topright
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 12, 6, variant, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 12, 6, variant, tile.shade, tile.textureRect);
                         }
                         if ((value & 72) == 72)
                         {
                             //inside corner bottomleft
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 5, variant, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 5, variant, tile.shade, tile.textureRect);
                         }
                         else if (((value & 32) + (value & 72)) == 32)
                         {
                             //outside corner bottomleft
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 7, variant, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 0, 7, variant, tile.shade, tile.textureRect);
                         }
                         if ((value & 80) == 80)
                         {
                             //inside corner bottomright
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 12, 5, variant, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 12, 5, variant, tile.shade, tile.textureRect);
                         }
                         else if (((value & 128) + (value & 80)) == 128)
                         {
                             //outside corner bottomright
-                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 12, 7, variant, tile.shade);
+                            AppendQuadVertices(terrainVertexArray[curType], oX, oY, 12, 7, variant, tile.shade, tile.textureRect);
                         }
                     }
                 }
@@ -287,62 +288,62 @@ namespace EngineeringCorpsCS
                     if (((value & 24) + (value & 2)) == 2)
                     {
                         //top fade
-                        AppendQuadVerticesCliff(vA, oX, oY, 0, 0, variant, cliffShade);
+                        AppendQuadVerticesCliff(vA, oX, oY, 0, 0, variant, cliffShade, cliffBounds);
                     }
                     if (((value & 24) + (value & 64)) == 64)
                     {
                         //bottom fade
-                        AppendQuadVerticesCliff(vA, oX, oY, 4, 0, variant, cliffShade);
+                        AppendQuadVerticesCliff(vA, oX, oY, 4, 0, variant, cliffShade, cliffBounds);
                     }
                     if (((value & 66) + (value & 8)) == 8)
                     {
                         //left fade
-                        AppendQuadVerticesCliff(vA, oX, oY, 8, 0, variant, cliffShade);
+                        AppendQuadVerticesCliff(vA, oX, oY, 8, 0, variant, cliffShade, cliffBounds);
                     }
                     if (((value & 66) + (value & 16)) == 16)
                     {
                         //right fade
-                        AppendQuadVerticesCliff(vA, oX, oY, 12, 0, variant, cliffShade);
+                        AppendQuadVerticesCliff(vA, oX, oY, 12, 0, variant, cliffShade, cliffBounds);
                     }
                     if ((value & 10) == 10)
                     {
                         //inside corner topleft
-                        AppendQuadVerticesCliff(vA, oX, oY, 0, 1, variant, cliffShade);
+                        AppendQuadVerticesCliff(vA, oX, oY, 0, 1, variant, cliffShade, cliffBounds);
                     }
                     else if (((value & 1) + (value & 10)) == 1)
                     {
                         //outside corner topleft
-                        AppendQuadVerticesCliff(vA, oX, oY, 0, 2, variant, cliffShade);
+                        AppendQuadVerticesCliff(vA, oX, oY, 0, 2, variant, cliffShade, cliffBounds);
                     }
                     if ((value & 18) == 18)
                     {
                         //inside corner topright
-                        AppendQuadVerticesCliff(vA, oX, oY, 4, 1, variant, cliffShade);
+                        AppendQuadVerticesCliff(vA, oX, oY, 4, 1, variant, cliffShade, cliffBounds);
                     }
                     else if (((value & 4) + (value & 18)) == 4)
                     {
                         //outside corner topright
-                        AppendQuadVerticesCliff(vA, oX, oY, 4, 2, variant, cliffShade);
+                        AppendQuadVerticesCliff(vA, oX, oY, 4, 2, variant, cliffShade, cliffBounds);
                     }
                     if ((value & 72) == 72)
                     {
                         //inside corner bottomleft
-                        AppendQuadVerticesCliff(vA, oX, oY, 8, 1, variant, cliffShade);
+                        AppendQuadVerticesCliff(vA, oX, oY, 8, 1, variant, cliffShade, cliffBounds);
                     }
                     else if (((value & 32) + (value & 72)) == 32)
                     {
                         //outside corner bottomleft
-                        AppendQuadVerticesCliff(vA, oX, oY, 8, 2, variant, cliffShade);
+                        AppendQuadVerticesCliff(vA, oX, oY, 8, 2, variant, cliffShade, cliffBounds);
                     }
                     if ((value & 80) == 80)
                     {
                         //inside corner bottomright
-                        AppendQuadVerticesCliff(vA, oX, oY, 12, 1, variant, cliffShade);
+                        AppendQuadVerticesCliff(vA, oX, oY, 12, 1, variant, cliffShade, cliffBounds);
                     }
                     else if (((value & 128) + (value & 80)) == 128)
                     {
                         //outside corner bottomright
-                        AppendQuadVerticesCliff(vA, oX, oY, 12, 2, variant, cliffShade);
+                        AppendQuadVerticesCliff(vA, oX, oY, 12, 2, variant, cliffShade, cliffBounds);
                     }
                 }
             }
@@ -359,29 +360,30 @@ namespace EngineeringCorpsCS
         /// <param name="texOY"></param>
         /// <param name="variant"></param>
         /// <param name="shade"></param>
-        private void AppendQuadVertices(VertexArray vA, int oX, int oY, int texOX, int texOY, int variant, Color shade)
+        private void AppendQuadVertices(VertexArray vA, int oX, int oY, int texOX, int texOY, int variant, Color shade, IntRect texOrigin)
         {
             //Pixel correction offset, fixes issue #2 on github
-            float pR = 0.5f;
+            float pR = 0.125f;
+            float pCT = 0.6f;
             //first triangle
             vA.Append(new Vertex(new Vector2f(oX - pR, oY - pR), shade,
-                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor + 0.5f, texOY * Props.tileSize * Props.resolutionScaleFactor + 0.5f))); //top left
+                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Left, texOY * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Top))); //top left
 
             vA.Append(new Vertex(new Vector2f(oX + Props.tileSize + pR, oY - pR), shade,
-                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor - 0.5f, texOY * Props.tileSize * Props.resolutionScaleFactor + 0.5f))); //top right
+                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor - pCT + texOrigin.Left, texOY * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Top))); //top right
 
             vA.Append(new Vertex(new Vector2f(oX - pR, oY + Props.tileSize + pR), shade,
-                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor + 0.5f, (texOY + 1) * Props.tileSize * Props.resolutionScaleFactor - 0.5f))); //bottom left
+                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Left, (texOY + 1) * Props.tileSize * Props.resolutionScaleFactor - pCT + texOrigin.Top))); //bottom left
 
             //second triangle
             vA.Append(new Vertex(new Vector2f(oX + Props.tileSize + pR, oY - pR), shade,
-                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor - 0.5f, texOY * Props.tileSize * Props.resolutionScaleFactor + 0.5f))); //top right
+                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor - pCT + texOrigin.Left, texOY * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Top))); //top right
 
             vA.Append(new Vertex(new Vector2f(oX + Props.tileSize + pR, oY + Props.tileSize + pR), shade,
-                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor - 0.5f, (texOY + 1) * Props.tileSize * Props.resolutionScaleFactor - 0.5f))); //bottom right
+                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor - pCT + texOrigin.Left, (texOY + 1) * Props.tileSize * Props.resolutionScaleFactor - pCT + texOrigin.Top))); //bottom right
 
             vA.Append(new Vertex(new Vector2f(oX - pR, oY + Props.tileSize + pR), shade,
-                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor + 0.5f, (texOY + 1) * Props.tileSize * Props.resolutionScaleFactor - 0.5f))); //bottom left
+                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Left, (texOY + 1) * Props.tileSize * Props.resolutionScaleFactor - pCT + texOrigin.Top))); //bottom left
         }
 
         /// <summary>
@@ -394,29 +396,30 @@ namespace EngineeringCorpsCS
         /// <param name="texOY"></param>
         /// <param name="variant"></param>
         /// <param name="shade"></param>
-        private void AppendQuadVerticesCliff(VertexArray vA, int oX, int oY, int texOX, int texOY, int variant, Color shade)
+        private void AppendQuadVerticesCliff(VertexArray vA, int oX, int oY, int texOX, int texOY, int variant, Color shade, IntRect texOrigin)
         {
             //Pixel correction offset, fixes issue #2 on github
             float pR = 0.5f;
+            float pCT = 0.125f;
             //first triangle
             vA.Append(new Vertex(new Vector2f(oX - pR, oY - pR), shade,
-                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor, texOY * 2 * Props.tileSize * Props.resolutionScaleFactor))); //top left
+                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Left, texOY * 2 * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Top))); //top left
 
             vA.Append(new Vertex(new Vector2f(oX + Props.tileSize + pR, oY - pR), shade,
-                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor, texOY * 2 * Props.tileSize * Props.resolutionScaleFactor))); //top right
+                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Left, texOY * 2 * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Top))); //top right
 
             vA.Append(new Vertex(new Vector2f(oX - pR, oY + 2 * Props.tileSize + pR), shade,
-                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor, (texOY + 1) * 2 * Props.tileSize * Props.resolutionScaleFactor))); //bottom left
+                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Left, (texOY + 1) * 2 * Props.tileSize * Props.resolutionScaleFactor - pCT + texOrigin.Top))); //bottom left
 
             //second triangle
             vA.Append(new Vertex(new Vector2f(oX + Props.tileSize + pR, oY - pR), shade,
-                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor, texOY * 2 * Props.tileSize * Props.resolutionScaleFactor))); //top right
+                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Left, texOY * 2 * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Top))); //top right
 
             vA.Append(new Vertex(new Vector2f(oX + Props.tileSize + pR, oY + 2 * Props.tileSize + pR), shade,
-                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor, (texOY + 1) * 2 * Props.tileSize * Props.resolutionScaleFactor))); //bottom right
+                new Vector2f((texOX + variant + 1) * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Left, (texOY + 1) * 2 * Props.tileSize * Props.resolutionScaleFactor - pCT + texOrigin.Top))); //bottom right
 
             vA.Append(new Vertex(new Vector2f(oX - pR, oY + 2 * Props.tileSize + pR), shade,
-                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor, (texOY + 1) * 2 * Props.tileSize * Props.resolutionScaleFactor))); //bottom left
+                new Vector2f((texOX + variant) * Props.tileSize * Props.resolutionScaleFactor + pCT + texOrigin.Left, (texOY + 1) * 2 * Props.tileSize * Props.resolutionScaleFactor - pCT + texOrigin.Top))); //bottom left
         }
 
         /// <summary>

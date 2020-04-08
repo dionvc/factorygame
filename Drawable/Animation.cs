@@ -8,57 +8,45 @@ using SFML.System;
 
 namespace EngineeringCorpsCS
 {
-    class Animation: Drawable
+    class Animation : Drawable, IAnimation
     {
-        public enum AnimationBehavior
-        {
-            Forward,
-            Backward,
-            ForwardAndBackward
-        }
-        AnimationBehavior behavior
-        {
-            get
-            {
-                return behavior;
-            }
-            set
-            {
-                behavior = value;
-                SetBehavior(behavior);
-            }
-        }
-        Sprite animationSprite;
-        DrawLayer drawLayer;
-        Texture textureReference;
+        Texture texture;
         Vector2f origin;
         IntRect textureBounds;
         IntRect textureFrame;
         int incrementAmount = 1;
         int frames = 1;
         int currentFrame = 0;
-        float animationSpeed = 0; //ticks per frame of animation (eg. 1 is 1 tick per frame, 2 is 2 ticks per frame
+        public float animationSpeed { get; set; } = 0; //ticks per frame of animation (eg. 1 is 1 tick per frame, 2 is 2 ticks per frame
         float tickAccumulator = 0;
-        Color color;
-        Vector2f scale;
-        float rotation;
-
-        public Animation(Texture textureReference, int width, int height, int frames, IntRect bounds, Vector2f drawOffset)
+        float rotation = 0.0f;
+        int behaviorIncrement = 1;
+        AnimationBehavior _behavior;
+        public AnimationBehavior behavior
         {
-            this.textureReference = textureReference;
+            get
+            {
+                return _behavior;
+            }
+            set
+            {
+                _behavior = value;
+                SetBehavior(_behavior);
+            }
+        }
+
+        public Animation(Texture texture, int width, int height, int frames, IntRect bounds, Vector2f drawOffset)
+        {
+            this.texture = texture;
             this.textureBounds = bounds;
             this.frames = frames;
             this.origin = new Vector2f(width / 2, height / 2);
             textureFrame = new IntRect(bounds.Left, bounds.Top, width, height);
-            color = new Color(255, 255, 255, 255);
-            scale = new Vector2f(1.0f, 1.0f);
             rotation = 0.0f;
             this.drawOffset = drawOffset;
-            animationSprite = new Sprite(textureReference);
-            animationSprite.Origin = origin;
         }
 
-        override public void Update()
+        public void Update()
         {
             if (animationSpeed != 0)
             {
@@ -81,20 +69,25 @@ namespace EngineeringCorpsCS
             }
         }
 
-        public void Draw(SpriteBatch[] spriteBatch, Vector2f position)
+        /// <summary>
+        /// Draws the drawable to a spritebatcher
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        /// <param name="position"></param>
+        override public void Draw(SpriteBatch spriteBatch, Vector2f position)
         {
-            textureFrame.Left = (textureFrame.Width * currentFrame) % (textureBounds.Width);
-            textureFrame.Top = (textureFrame.Width * currentFrame) / (textureBounds.Width) * textureFrame.Height;
-            spriteBatch[(int)drawLayer].Draw(textureReference, position + drawOffset, textureFrame, color, scale, origin, rotation);
+            textureFrame.Left = textureBounds.Left + (textureFrame.Width * currentFrame) % (textureBounds.Width);
+            textureFrame.Top = textureBounds.Top + (textureFrame.Width * currentFrame) / (textureBounds.Width) * textureFrame.Height;
+            spriteBatch.Draw(texture, position + drawOffset, textureFrame, color, scale, origin, rotation);
         }
 
-        override public Sprite GetSprite()
+        /*override public Sprite GetSprite()
         {
             textureFrame.Left = (textureFrame.Width * currentFrame) % (textureBounds.Width);
             textureFrame.Top = (textureFrame.Width * currentFrame) / (textureBounds.Width) * textureFrame.Height;
             animationSprite.TextureRect = textureFrame;
             return animationSprite;
-        }
+        }*/
 
         /// <summary>
         /// Does nothing as Animation does not need rotation
@@ -102,40 +95,28 @@ namespace EngineeringCorpsCS
         /// <param name="rotation"></param>
         override public void SetRotation(float rotation)
         {
-            //does nothing
-        }
-
-        override public void SetColor(byte r, byte g, byte b, byte a)
-        {
-            this.color = new Color(r, g, b, a);
-        }
-
-        override public void SetScale(float x, float y)
-        {
-            this.scale = new Vector2f(x, y);
+            this.rotation = rotation;
         }
 
         /// <summary>
-        /// Set the speed of the animation in ticks per frame
+        /// Sets the behavior of the animation (Forward, Backward, Forward and Backward)
         /// </summary>
-        /// <param name="animationSpeed"></param>
-        override public void SetAnimationSpeed(float animationSpeed)
-        {
-            this.animationSpeed = animationSpeed;
-        }
-
+        /// <param name="behavior"></param>
         private void SetBehavior(AnimationBehavior behavior)
         {
             switch (behavior)
             {
                 case (AnimationBehavior.Forward):
                     this.incrementAmount = 1;
+                    this.behaviorIncrement = 1;
                     break;
                 case (AnimationBehavior.Backward):
                     this.incrementAmount = -1;
+                    this.behaviorIncrement = 1;
                     break;
                 case (AnimationBehavior.ForwardAndBackward):
                     this.incrementAmount = 1;
+                    this.behaviorIncrement = -1;
                     break;
                 default:
                     this.behavior = AnimationBehavior.Forward;

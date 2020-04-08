@@ -22,14 +22,19 @@ namespace EngineeringCorpsCS
             Air = 7,                //Stuff that is in the air
             IconOverlay = 8         //Would be useful for player hints
         }
-
+        public enum AnimationBehavior
+        {
+            Forward,
+            Backward,
+            ForwardAndBackward
+        }
+        public DrawLayer drawLayer { get; set; }
         public Vector2f drawOffset { get; set; }
+        public Vector2f scale { get; set; } = new Vector2f(1.0f, 1.0f);
+
+        public Color color { get; set; } = new Color(255, 255, 255, 255);
 
         public abstract void SetRotation(float rotation);
-        public abstract void SetScale(float x, float y);
-        public abstract void SetColor(byte r, byte g, byte b, byte a);
-        public abstract Sprite GetSprite();
-        public abstract void Update();
-        public abstract void SetAnimationSpeed(float animationSpeed);
+        public abstract void Draw(SpriteBatch spriteBatch, Vector2f position);
     }
 }

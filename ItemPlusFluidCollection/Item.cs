@@ -15,6 +15,13 @@ namespace EngineeringCorpsCS
     {
         string name;
         string placeResult;
-        Sprite itemIcon;
+        public StaticSprite itemSprite { get; protected set; }
+
+        public Item(string name, StaticSprite itemSprite, string placeResult)
+        {
+            this.name = name;
+            this.itemSprite = itemSprite;
+            this.placeResult = placeResult;
+        }
     }
 }

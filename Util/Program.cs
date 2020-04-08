@@ -59,7 +59,7 @@ namespace EngineeringCorpsCS
         }
         //Essentials
         private RenderWindow window;
-        private TextureContainer textureContainer;
+        private TextureAtlases textureAtlases;
         private FontContainer fontContainer;
         private InputManager input; //the client's input system
         private Camera camera;
@@ -77,8 +77,8 @@ namespace EngineeringCorpsCS
         Queue<float> fpsQueue;
 
         private List<Player> players;
-        private LightSource testLightSource1;
         private List<Tree> tree;
+        private LightSource testLightSource1;
 
         public void InitializeWindow()
         {
@@ -95,8 +95,8 @@ namespace EngineeringCorpsCS
         {
             //TODO: loading screen
             //Repository, Managers, Resource collections creation
-            textureContainer = new TextureContainer();
-            textureContainer.LoadTextures();
+            textureAtlases = new TextureAtlases();
+            textureAtlases.LoadTextures(Props.packTogether);
             fontContainer = new FontContainer();
             fontContainer.LoadFonts();
             //TODO: End loading screen
@@ -108,15 +108,15 @@ namespace EngineeringCorpsCS
             
             camera = new Camera();
             camera.SubscribeToInput(input);
-            renderer = new Renderer(window, menuContainer, textureContainer.GetTexture("guiTilesheet"));
-            menuFactory = new MenuFactory(menuContainer, renderer, this, textureContainer, fontContainer);
+            renderer = new Renderer(window, menuContainer, textureAtlases.GetTexture("guiTilesheet", out _));
+            menuFactory = new MenuFactory(menuContainer, renderer, this, textureAtlases, fontContainer);
             window.Resized += camera.HandleResize;
             window.Resized += renderer.HandleResize;
             window.Resized += menuContainer.RepositionMenus;
             input.menuFactory = menuFactory;
             
             //Game prototypes
-            tileCollection = new TileCollection(textureContainer);
+            tileCollection = new TileCollection(textureAtlases);
         }
         public void StartMenu()
         {
@@ -144,7 +144,7 @@ namespace EngineeringCorpsCS
             tree = new List<Tree>();
             for (int i = 0; i < 16; i++)
             {
-                players.Add(new Player(new Vector2(1024 + 48 * i, 1024 + 48 * i), surfaceContainer, textureContainer));
+                players.Add(new Player(new Vector2(1024 + 48 * i, 1024 + 48 * i), surfaceContainer, textureAtlases));
             }
             foreach (Player p in players)
             {
@@ -153,17 +153,15 @@ namespace EngineeringCorpsCS
             for(int i = 0; i < 64; i++) {
                 for (int j = 0; j < 64; j++)
                 {
-                    tree.Add(new Tree(new Vector2(2064 + (128) * i, 128 * j), surfaceContainer, textureContainer));
+                    tree.Add(new Tree(new Vector2(2064 + (128) * i, 128 * j), surfaceContainer, textureAtlases));
                 }
             }
-            testLightSource1 = new LightSource(new Vector2(1024, 1024), surfaceContainer, 2000.0f, textureContainer.GetTexture("lightsource"), players[15]);
-            LightSource testLightSource2 = new LightSource(new Vector2(2048, 2048), surfaceContainer, 2000.0f, textureContainer.GetTexture("lightsource"), players[14]);
+            IntRect bounds;
+            testLightSource1 = new LightSource(new Vector2(1024, 1024), surfaceContainer, 2000.0f, textureAtlases.GetTexture("lightsource", out bounds), bounds, players[15]);
             players[15].SubscribeToInput(input);
             #endregion
             //Attaching the camera to something!
             camera.focusedEntity = players[15];
-            //TestTilePlacer tilePlacer = new TestTilePlacer(surfaceContainer, renderer, textureContainer);
-            //tilePlacer.SubscribeToInput(input);
             this.SubscribeToInput(input);
             renderer.SubscribeToInput(input);
             menuFactory.CreateMinimap(camera);

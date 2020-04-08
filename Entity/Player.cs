@@ -15,16 +15,18 @@ namespace EngineeringCorpsCS
         ItemStack[] inventory;
         public ItemStack heldItem { get; set; } = null;
         EntityGhost heldItemGhost;
-        TextureContainer textureContainer;
-        public Player(Vector2 pos, SurfaceContainer surface, TextureContainer textureContainer)
+        TextureAtlases textureAtlases;
+        AnimationRotated walking;
+        public Player(Vector2 pos, SurfaceContainer surface, TextureAtlases textureAtlases)
         {
-            this.textureContainer = textureContainer;
+            this.textureAtlases = textureAtlases;
             position = pos;
             collisionBox = new BoundingBox(16, 16);
             surface.InitiateEntityInChunks(this);
             velocity = new Vector2(0, 0);
-            Texture[] playerTextures = new Texture[] { textureContainer.GetTexture("orcrunning") };
-            AnimationRotated walking = new AnimationRotated(playerTextures, new Vector2i(128, 128), new Vector2f(0, 0), new Vector2f(0, 0), new Vector2f(1, 1), 8, 8, "Forward", 0.0f);
+            IntRect bounds;
+            Texture playerTexture = textureAtlases.GetTexture("orcrunning", out bounds);
+            walking = new AnimationRotated(playerTexture, 128, 128, bounds, new Vector2f(0, -32), 8, 8);
             walking.behavior = AnimationRotated.AnimationBehavior.Forward;
             drawArray = new Drawable[] { walking };
             collisionMask = CollisionLayer.EntityPhysical | CollisionLayer.TerrainSolid;
@@ -48,8 +50,8 @@ namespace EngineeringCorpsCS
                 rotation = velocity.GetRotation() + 180.0f;
             }
             drawArray[0].SetRotation(rotation);
-            drawArray[0].Update();
-            drawArray[0].SetAnimationSpeed(60/velocity.GetMagnitude());
+            walking.Update();
+            walking.animationSpeed = 60/velocity.GetMagnitude();
             velocity.Set(0, 0);
         }
         override public void OnClick()
@@ -97,7 +99,7 @@ namespace EngineeringCorpsCS
                 EntityGhost entityGhost = new EntityGhost(box, new Vector2(tileAligned[0], tileAligned[1]), surface);
                 if (!BoundingBox.CheckForCollision(entityGhost))
                 {
-                    new Tree(new Vector2(tileAligned[0], tileAligned[1]), surface, textureContainer);
+                    new Tree(new Vector2(tileAligned[0], tileAligned[1]), surface, textureAtlases);
                     //new Player(new Vector2(tileAligned[0], tileAligned[1]), surface, textureContainer);
                 }
             }

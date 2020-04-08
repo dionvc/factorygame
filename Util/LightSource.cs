@@ -17,14 +17,14 @@ namespace EngineeringCorpsCS
         public Sprite light;
         private Entity attachedEntity;
 
-        public LightSource(Vector2 position, SurfaceContainer surface, float lightRange, Texture texture, Entity attachedEntity)
+        public LightSource(Vector2 position, SurfaceContainer surface, float lightRange, Texture texture, IntRect bounds, Entity attachedEntity)
         {
             this.position = position;
             this.surface = surface;
             this.lightRange = lightRange;
             this.attachedEntity = attachedEntity;
             surface.UpdateLightSource(this);
-            light = new Sprite(texture);
+            light = new Sprite(texture, bounds);
             light.Scale = new Vector2f(lightRange / light.TextureRect.Width, lightRange / light.TextureRect.Height);
             light.Position = new Vector2f(position.x, position.y);
         }
