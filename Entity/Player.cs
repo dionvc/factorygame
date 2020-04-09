@@ -91,7 +91,7 @@ namespace EngineeringCorpsCS
                 input.menuFactory.CreateTestInventory(this, inventory);
             }
 
-            if(heldItem != null && input.GetMouseClicked(InputBindings.primary, true))
+            if(heldItem != null && input.GetMouseHeld(InputBindings.primary, true))
             {
                 float[] mousePos = input.GetMousePositionAsFloat();
                 int[] tileAligned = new int[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
@@ -104,7 +104,7 @@ namespace EngineeringCorpsCS
                 }
             }
 
-            if(input.GetMouseClicked(InputBindings.secondary, true))
+            if(input.GetMouseHeld(InputBindings.secondary, true))
             {
                 float[] mousePos = input.GetMousePositionAsFloat();
                 int[] tileAligned = new int[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };

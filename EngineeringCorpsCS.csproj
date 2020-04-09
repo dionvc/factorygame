@@ -129,6 +129,7 @@
     <Compile Include="Entity\EntityGhost.cs" />
     <Compile Include="Entity\EntityPhysical.cs" />
     <Compile Include="Entity\TestTilePlacer.cs" />
+    <Compile Include="Util\EntityUpdateSystem.cs" />
     <Compile Include="Util\FontContainer.cs" />
     <Compile Include="Input\IInputSubscriber.cs" />
     <Compile Include="Input\InputBindings.cs" />

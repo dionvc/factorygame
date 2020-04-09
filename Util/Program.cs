@@ -120,7 +120,7 @@ namespace EngineeringCorpsCS
         }
         public void StartMenu()
         {
-            StaticSoundManager.Play();
+            StaticSoundManager.PlayMusic();
             input.menuFactory.CreateMainMenu(camera);
             while (window.IsOpen && gameState == GameState.mainMenu)
             {
@@ -130,6 +130,7 @@ namespace EngineeringCorpsCS
                 renderer.RenderGUI(window, camera);
                 window.Display();
             }
+            StaticSoundManager.StopMusic();
         }
 
         public void InitializeGame()
