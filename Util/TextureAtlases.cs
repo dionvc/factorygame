@@ -105,6 +105,10 @@ namespace EngineeringCorpsCS
             //First get the images
             List<KeyValuePair<String, Image>> textureSet = new List<KeyValuePair<string, Image>>();
             List<string> textureFileNames = new List<string>(Directory.EnumerateFiles(directoryPath, "*.png", SearchOption.AllDirectories));
+            if(textureFileNames.Count == 0)
+            {
+                return;
+            }
             foreach (string textureFileName in textureFileNames)
             {
                 textureSet.Add(new KeyValuePair<string,Image>(Path.GetFileNameWithoutExtension(textureFileName), new Image(textureFileName)));

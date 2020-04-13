@@ -39,6 +39,10 @@ namespace EngineeringCorpsCS
         /// </summary>
         public bool modifiedVertexArrays { get; protected set; } = false;
 
+
+        int renderedEntityCount = 0;
+        int renderedSpriteCount = 0;
+
         public Renderer(RenderWindow window, MenuContainer menuContainer, Texture guiElements)
         {
             this.menuContainer = menuContainer;
@@ -99,6 +103,8 @@ namespace EngineeringCorpsCS
             #endregion terrain drawing
 
             #region entity drawing
+            renderedEntityCount = 0;
+            renderedSpriteCount = 0;
             for (int i = begPos[0]; i <= endPos[0]; i++)
             {
                 for (int j = begPos[1]; j <= endPos[1]; j++)
@@ -133,7 +139,12 @@ namespace EngineeringCorpsCS
             entityBatch.Initialize(camera.GetGameView(), Color.Transparent);
             foreach (Entity e in drawList)
             {
-                e.drawArray[0].Draw(entityBatch, e.position.internalVector);
+                renderedEntityCount++;
+                for (int i = 0; i < e.drawArray.Length; i++)
+                {
+                    e.drawArray[i].Draw(entityBatch, e.position.internalVector);
+                    renderedSpriteCount++;
+                }
             }
             Sprite sprite = entityBatch.Finalize();
             window.SetView(camera.GetGUIView());
@@ -518,6 +529,16 @@ namespace EngineeringCorpsCS
         public void ToggleCullingMinimap(string tag)
         {
             cullMinimap = !cullMinimap;
+        }
+
+        public string GetRenderedEntityCount()
+        {
+            return renderedEntityCount.ToString();
+        }
+
+        public string GetRenderedSpriteCount()
+        {
+            return renderedSpriteCount.ToString();
         }
     }
 }

@@ -14,6 +14,7 @@ namespace EngineeringCorpsCS
         RenderTexture spriteBatch;
         RenderStates currentRenderState;
         VertexArray spriteBatchArray;
+        public int maxVertexCount = 20000; 
         public SpriteBatch(RenderWindow window, BlendMode blendMode)
         {
             spriteBatch = new RenderTexture(window.Size.X, window.Size.Y);
@@ -37,6 +38,11 @@ namespace EngineeringCorpsCS
             if(currentRenderState.Texture == null || !ReferenceEquals(currentRenderState.Texture, texture))
             {
                 SwitchTextures(texture);
+            }
+            if(spriteBatchArray.VertexCount > maxVertexCount)
+            {
+                spriteBatch.Draw(spriteBatchArray, currentRenderState);
+                spriteBatchArray.Clear();
             }
             /* Could implement a capacity before restarting drawing
             if (count*4 >= capacity)

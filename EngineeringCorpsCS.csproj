@@ -112,6 +112,7 @@
     <Compile Include="Drawable\IAnimation.cs" />
     <Compile Include="Drawable\StaticSprite.cs" />
     <Compile Include="Drawable\SpriteBatch.cs" />
+    <Compile Include="Entity\Remains.cs" />
     <Compile Include="ItemPlusFluidCollection\Item.cs" />
     <Compile Include="ItemPlusFluidCollection\ItemFactory.cs" />
     <Compile Include="ItemPlusFluidCollection\ItemCollection.cs" />
@@ -191,9 +192,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="EngineeringCorpsIcon.ico" />
-    <Content Include="Graphics\DebugTextures\1.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Graphics\DebugTextures\2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -212,7 +210,13 @@
     <Content Include="Graphics\DebugTextures\orc_archer_0.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\DebugTextures\test\1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Graphics\DebugTextures\Tree01.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\DebugTextures\Tree01leaves.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\DebugTextures\WavesAlpha.png">

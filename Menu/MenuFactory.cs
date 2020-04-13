@@ -96,7 +96,7 @@ namespace EngineeringCorpsCS
             MenuPanel debugMenu = new MenuPanel(new Vector2f(720, 0), new Vector2f(300, 150), new FloatRect(0, 0, 96, 96), 4, null);
             MenuButton boundingBoxButton = new MenuButton(new Vector2f(100, 100), renderer.ToggleBoundingBoxRendering);
             MenuText boundingBoxButtonText = new MenuText(new Vector2f(100,100), debugFont, "Bounding Boxes", 24, 0.6f);
-            MenuDynamicText fps = new MenuDynamicText(new Vector2f(100, 50), debugFont, "Fps: {0}", 24, new MenuDynamicText.DynamicString[] { program.GetFPS });
+            MenuDynamicText fps = new MenuDynamicText(new Vector2f(100, 50), debugFont, "FPS: {0}\nRendered Entity Count: {1}\n,Rendered Sprite Count: {2}", 24, new MenuDynamicText.DynamicString[] { program.GetFPS, renderer.GetRenderedEntityCount, renderer.GetRenderedSpriteCount });
             debugMenu.AttachComponent(boundingBoxButton);
             debugMenu.AttachComponent(fps);
             boundingBoxButton.AttachComponent(boundingBoxButtonText);

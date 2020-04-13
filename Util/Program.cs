@@ -75,6 +75,7 @@ namespace EngineeringCorpsCS
         Clock clock;
         float fps;
         Queue<float> fpsQueue;
+        public int frame;
 
         private List<Player> players;
         private List<Tree> tree;
@@ -183,6 +184,7 @@ namespace EngineeringCorpsCS
             InitializeGame();
             clock = new Clock();
             fpsQueue = new Queue<float>(10);
+            frame = 0;
             for(int i = 0; i < 30; i ++)
             {
                 fpsQueue.Enqueue(60.0f);
@@ -225,6 +227,7 @@ namespace EngineeringCorpsCS
                 //Cull far away vertexarrays from renderer cache
                 renderer.CheckCullVertexCache(camera, surfaceContainer);
                 window.Display();
+                frame++;
             }
             FinalizeGame();
         }

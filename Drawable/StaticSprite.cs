@@ -14,7 +14,7 @@ namespace EngineeringCorpsCS
         IntRect textureFrame;
         float rotation;
         Vector2f origin;
-        public Sprite staticSprite;
+        Sprite staticSprite;
 
         public StaticSprite(Texture texture, IntRect bounds, DrawLayer drawLayer)
         {

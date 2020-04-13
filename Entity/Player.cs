@@ -49,7 +49,7 @@ namespace EngineeringCorpsCS
             {
                 rotation = velocity.GetRotation() + 180.0f;
             }
-            drawArray[0].SetRotation(rotation);
+            walking.SetRotation(rotation);
             walking.Update();
             walking.animationSpeed = 60/velocity.GetMagnitude();
             velocity.Set(0, 0);
@@ -107,9 +107,9 @@ namespace EngineeringCorpsCS
             if(input.GetMouseHeld(InputBindings.secondary, true))
             {
                 float[] mousePos = input.GetMousePositionAsFloat();
-                int[] tileAligned = new int[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
+                //int[] tileAligned = new int[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
                 BoundingBox box = new BoundingBox(-15, -15, 15, 15);
-                EntityGhost entityGhost = new EntityGhost(box, new Vector2(tileAligned[0], tileAligned[1]), surface);
+                EntityGhost entityGhost = new EntityGhost(box, new Vector2(mousePos[0], mousePos[1]), surface);
                 List<EntityPhysical> list = BoundingBox.GetCollisionListOfType<EntityPhysical>(entityGhost);
                 if (list.Count > 0)
                 {

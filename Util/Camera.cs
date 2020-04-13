@@ -52,8 +52,8 @@ namespace EngineeringCorpsCS
 
         public void HandleResize(Object s, SizeEventArgs e)
         {
-            float rW = (float)Math.Pow(2, Math.Round(Math.Log(e.Width) / Math.Log(2)));
-            float rH = (float)Math.Pow(2, Math.Round(Math.Log(e.Height) / Math.Log(2)));
+            int rW = (int)Math.Pow(2, Math.Round(Math.Log(e.Width) / Math.Log(2)));
+            int rH = (int)Math.Pow(2, Math.Round(Math.Log(e.Height) / Math.Log(2)));
             gameView.Size = new Vector2f(rW, rH);
             gameViewSize = gameView.Size;
             guiView = new View(new Vector2f(e.Width/2, e.Height/2), new Vector2f(e.Width, e.Height));
@@ -82,7 +82,7 @@ namespace EngineeringCorpsCS
                     viewScale = Props.cameraZoomMax;
                 }
                 
-                gameView.Size = gameViewSize * ((float)Math.Round(viewScale)/2);
+                gameView.Size = new Vector2f((int)(gameViewSize.X * (float)Math.Round(viewScale)/2), (int)(gameViewSize.Y * (float)Math.Round(viewScale) / 2));
             }
             if(input.GetKeyPressed(InputBindings.showWorldMap, true))
             {
