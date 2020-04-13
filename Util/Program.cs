@@ -85,7 +85,7 @@ namespace EngineeringCorpsCS
         {
             //Window initialization (all of this stays here I think)
             window = new RenderWindow(new VideoMode(1280, 720), "Engineering Corps");
-            window.SetFramerateLimit(60);
+            window.SetFramerateLimit(0);
             window.Closed += (s, a) => window.Close();
             window.SetActive();
             Image icon = new Image("Graphics/GUI/EngineeringCorpsIcon.png");

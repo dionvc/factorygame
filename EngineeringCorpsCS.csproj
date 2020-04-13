@@ -213,6 +213,9 @@
     <Content Include="Graphics\DebugTextures\test\1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\DebugTextures\tree.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Graphics\DebugTextures\Tree01.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

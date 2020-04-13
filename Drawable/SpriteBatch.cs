@@ -24,6 +24,7 @@ namespace EngineeringCorpsCS
 
         public void Initialize(View gameView, Color clearColor)
         {
+            spriteBatchArray.Clear();
             spriteBatch.SetView(gameView);
             spriteBatch.Clear(clearColor);
         }
@@ -41,8 +42,8 @@ namespace EngineeringCorpsCS
             }
             if(spriteBatchArray.VertexCount > maxVertexCount)
             {
-                spriteBatch.Draw(spriteBatchArray, currentRenderState);
-                spriteBatchArray.Clear();
+                //spriteBatch.Draw(spriteBatchArray, currentRenderState);
+                //spriteBatchArray.Clear();
             }
             /* Could implement a capacity before restarting drawing
             if (count*4 >= capacity)
@@ -106,7 +107,6 @@ namespace EngineeringCorpsCS
         public Sprite Finalize()
         {
             spriteBatch.Draw(spriteBatchArray, currentRenderState);
-            spriteBatchArray.Clear();
             spriteBatch.Display();
             return new Sprite(spriteBatch.Texture);
         }

@@ -35,7 +35,18 @@ namespace EngineeringCorpsCS
             collisionBox = new BoundingBox(32, 32);
             surface.InitiateEntityInChunks(this);
             IntRect bounds;
-            drawArray = new Drawable[] { new Animation(textureAtlases.GetTexture("Tree01", out bounds), bounds.Width, bounds.Height, 1, bounds, new Vector2f(0, -112)), new Animation(textureAtlases.GetTexture("Tree01leaves", out bounds), bounds.Width, bounds.Height, 1, bounds, new Vector2f(0, -112)) };
+            Animation trunk = new Animation(textureAtlases.GetTexture("tree", out bounds), 128, bounds.Height, 1, bounds, new Vector2f(0, -112));
+            Animation leaves = new Animation(textureAtlases.GetTexture("tree", out bounds), 128, bounds.Height, 1, bounds, new Vector2f(0, -112));
+            Random r = new Random();
+            leaves.currentFrame = r.Next(0,4);
+            if (leaves.currentFrame != 0)
+            {
+                drawArray = new Drawable[] { trunk, leaves };
+            }
+            else
+            {
+                drawArray = new Drawable[] { trunk };
+            }
             collisionMask = CollisionLayer.EntityPhysical;
             mapColor = new Color(32, 160, 0);
         }

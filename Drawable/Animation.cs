@@ -16,7 +16,7 @@ namespace EngineeringCorpsCS
         IntRect textureFrame;
         int incrementAmount = 1;
         int frames = 1;
-        int currentFrame = 0;
+        public int currentFrame { get; set; } = 0;
         public float animationSpeed { get; set; } = 0; //ticks per frame of animation (eg. 1 is 1 tick per frame, 2 is 2 ticks per frame
         float tickAccumulator = 0;
         float rotation = 0.0f;
