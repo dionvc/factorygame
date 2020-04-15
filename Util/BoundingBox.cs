@@ -10,14 +10,17 @@ namespace EngineeringCorpsCS
     class BoundingBox
     {
         //Vector representation
-        Vector2 topLeft { get; set; }
-        Vector2 botRight { get; set; }
+        Vector2 topLeft;
+        Vector2 botRight;
         //Constants
-        float radiusApproximation { get; set; }
-        float halfWidth { get; set; }
-        float width { get; set; }
-        float halfHeight { get; set; }
-        float height { get; set; }
+        float radiusApproximation;
+        float halfWidth;
+        float width;
+        float halfHeight;
+        float height;
+
+        Vector2 center;
+        Vector2 rotatedCenter;
 
         //external representation rotated
         int rotation;
@@ -108,13 +111,14 @@ namespace EngineeringCorpsCS
 
         private void CalculateConstants()
         {
-            float r1 = topLeft.GetMagnitude();
-            float r2 = botRight.GetMagnitude();
+            float r1 = (topLeft - center).GetMagnitude();
+            float r2 = (botRight - center).GetMagnitude();
             radiusApproximation = Math.Max(r1, r2);
             height = Math.Abs(botRight.y - topLeft.y);
             width = Math.Abs(botRight.x - topLeft.x);
             halfHeight = height / 2;
             halfWidth = width / 2;
+            
         }
 
         /// <summary>
@@ -124,6 +128,7 @@ namespace EngineeringCorpsCS
         /// <param name="rotation"></param>
         public void SetRotation(int rotation)
         {
+            center = new Vector2((botRight.x + topLeft.x)/2, (botRight.y + topLeft.y)/2);
             this.rotation = rotation;
             //Create the missing vectors from the provided vectors
             topRightR = new Vector2(botRight.x, topLeft.y);
@@ -133,6 +138,7 @@ namespace EngineeringCorpsCS
             botRightR = botRight.Rotate(rotation);
             topRightR.VRotate(rotation);
             botLeftR.VRotate(rotation);
+            rotatedCenter = center.Rotate(rotation);
 
             //calculate new normals
             normals[0].x = topRightR.x - topLeftR.x;
@@ -192,42 +198,45 @@ namespace EngineeringCorpsCS
         {
             //Push back vector
             pushBackSelf = new Vector2(0,0);
+            Vector2 d = new Vector2(posOther.x + other.center.x - posSelf.x - selfVelocity.x - self.center.x, posOther.y + other.center.y - posSelf.y - selfVelocity.y - self.center.y);
             #region Circle culling check
-            Vector2 d = new Vector2(posOther.x - posSelf.x - selfVelocity.x, posOther.y - posSelf.y - selfVelocity.y);
             if ((self.radiusApproximation + other.radiusApproximation) < d.GetMagnitude())
             {
                 return false;
             }
             #endregion Circle culling check
 
-            #region SimpleCollisionCheck (Broken)
-            /*
+            #region SimpleCollisionCheck
+            
             //2nd check AABB if both have theta = 0
             if (self.rotation == 0 && other.rotation == 0)
             {
-                if (posSelf.x + selfVelocity.x < posOther.x + other.width &&
-                    posSelf.x + selfVelocity.x + self.width > posOther.x &&
-                    posSelf.y + selfVelocity.y < posOther.y + other.height &&
-                    posSelf.y + selfVelocity.y + self.height > posOther.y)
+                if (posSelf.x + selfVelocity.x - self.center.x - self.halfWidth < posOther.x + other.center.x + other.halfWidth &&
+                    posSelf.x + selfVelocity.x + self.center.x + self.halfWidth > posOther.x - other.center.x - other.halfWidth &&
+                    posSelf.y - self.center.y - self.halfHeight < posOther.y + other.center.y + other.halfHeight &&
+                    posSelf.y + self.center.y + self.halfHeight > posOther.y - other.center.y - other.halfHeight)
                 {
-                    float overlapY = self.halfHeight + other.halfHeight - Math.Abs(d.y);
+                    //first try moving in the x direction and if it overlaps then push that back
                     float overlapX = self.halfWidth + other.halfWidth - Math.Abs(d.x);
-                    if (overlapX < overlapY) //push back along X
+                    if (posSelf.x < posOther.x)
                     {
-                        if (posSelf.x + selfVelocity.x < posOther.x)
-                        {
-                            overlapX *= -1;
-                        }
-                        pushBackSelf.x = overlapX;
+                        overlapX *= -1;
                     }
-                    else //push back along Y
+                    pushBackSelf.x = overlapX;
+                    return true;
+                }
+                else if (posSelf.x - self.center.x - self.halfWidth < posOther.x + other.center.x + other.halfWidth &&
+                        posSelf.x + self.center.x + self.halfWidth > posOther.x - other.center.x - other.halfWidth &&
+                        posSelf.y + selfVelocity.y - self.center.y - self.halfHeight < posOther.y + other.center.y + other.halfHeight &&
+                        posSelf.y + selfVelocity.y + self.center.y + self.halfHeight > posOther.y - other.center.y - other.halfHeight)
+                {
+                    //otherwise try moving the y direction and if it overlaps then push that back
+                    float overlapY = self.halfHeight + other.halfHeight - Math.Abs(d.y);
+                    if(posSelf.y < posOther.y)
                     {
-                        if (posSelf.y + selfVelocity.y < posOther.y)
-                        {
-                            overlapY *= -1;
-                        }
-                        pushBackSelf.y = overlapY;
+                        overlapY *= -1;
                     }
+                    pushBackSelf.y = overlapY;
                     return true;
                 }
                 else
@@ -235,7 +244,6 @@ namespace EngineeringCorpsCS
                     return false;
                 }
             }
-            */
             #endregion
 
             #region Separating Axis Theorem check (final and most intensive check for accuracy)
@@ -318,43 +326,24 @@ namespace EngineeringCorpsCS
         /// <returns>Truth on whether there was a collision</returns>
         public static bool CheckCollision(BoundingBox self, BoundingBox other, Vector2 posSelf, Vector2 selfVelocity, Vector2 posOther)
         {
-
+            Vector2 d = new Vector2(posOther.x + other.center.x - posSelf.x - selfVelocity.x - self.center.x, posOther.y + other.center.y - posSelf.y - selfVelocity.y - self.center.y);
             #region Circle culling check
-            Vector2 d = new Vector2(posOther.x - posSelf.x - selfVelocity.x, posOther.y - posSelf.y - selfVelocity.y);
             if ((self.radiusApproximation + other.radiusApproximation) < d.GetMagnitude())
             {
                 return false;
             }
             #endregion Circle culling check
 
-            #region SimpleCollisionCheck (Broken)
-            /*
+            #region SimpleCollisionCheck
+
             //2nd check AABB if both have theta = 0
             if (self.rotation == 0 && other.rotation == 0)
             {
-                if (posSelf.x + selfVelocity.x < posOther.x + other.width &&
-                    posSelf.x + selfVelocity.x + self.width > posOther.x &&
-                    posSelf.y + selfVelocity.y < posOther.y + other.height &&
-                    posSelf.y + selfVelocity.y + self.height > posOther.y)
+                if (posSelf.x - self.center.x - self.halfWidth < posOther.x + other.center.x + other.halfWidth &&
+                    posSelf.x + self.center.x + self.halfWidth > posOther.x - other.center.x - other.halfWidth &&
+                    posSelf.y - self.center.y - self.halfHeight < posOther.y + other.center.y + other.halfHeight &&
+                    posSelf.y + self.center.y + self.halfHeight > posOther.y - other.center.y - other.halfHeight)
                 {
-                    float overlapY = self.halfHeight + other.halfHeight - Math.Abs(d.y);
-                    float overlapX = self.halfWidth + other.halfWidth - Math.Abs(d.x);
-                    if (overlapX < overlapY) //push back along X
-                    {
-                        if (posSelf.x + selfVelocity.x < posOther.x)
-                        {
-                            overlapX *= -1;
-                        }
-                        pushBackSelf.x = overlapX;
-                    }
-                    else //push back along Y
-                    {
-                        if (posSelf.y + selfVelocity.y < posOther.y)
-                        {
-                            overlapY *= -1;
-                        }
-                        pushBackSelf.y = overlapY;
-                    }
                     return true;
                 }
                 else
@@ -362,7 +351,74 @@ namespace EngineeringCorpsCS
                     return false;
                 }
             }
-            */
+            #endregion
+
+            #region Separating Axis Theorem check (final and most intensive check for accuracy)
+            Vector2[] axis1 = self.GetNormals();
+            Vector2[] axis2 = other.GetNormals();
+
+            //Checking axis' of box1
+            for (int i = 0; i < 2; i++)
+            {
+                //Project half vectors onto normal vector
+                float sP = Math.Abs(d.Dot(axis1[i]));
+                float vP = Math.Abs(self.halfWidth * axis1[0].Dot(axis1[i])) + Math.Abs(self.halfHeight * axis1[1].Dot(axis1[i])) + Math.Abs(other.halfWidth * axis2[0].Dot(axis1[i])) + Math.Abs(other.halfHeight * axis2[1].Dot(axis1[i]));
+                if (sP > vP)
+                {
+                    return false; //if the projection doesnt overlap then there is no collision
+                }
+            }
+            //Checking axis' of box2
+            for (int i = 0; i < 2; i++)
+            {
+                //Project half vectors onto normal vector
+                float sP = Math.Abs(d.Dot(axis2[i]));
+                float vP = Math.Abs(self.halfWidth * axis1[0].Dot(axis2[i])) + Math.Abs(self.halfHeight * axis1[1].Dot(axis2[i])) + Math.Abs(other.halfWidth * axis2[0].Dot(axis2[i])) + Math.Abs(other.halfHeight * axis2[1].Dot(axis2[i]));
+                if (sP > vP)
+                {
+                    return false; //if the projection doesnt overlap then there is no collision
+                }
+            }
+            //No need for push back calculations.  Yay :)
+            #endregion SAT Check
+            return true; //all checks failed, boxes collide
+        }
+
+        /// <summary>
+        /// Returns whether a collision between two collision boxes has occurred.
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="other"></param>
+        /// <param name="posSelf"></param>
+        /// <param name="posOther"></param>
+        /// <returns></returns>
+        public static bool CheckCollision(BoundingBox self, BoundingBox other, Vector2 posSelf, Vector2 posOther)
+        {
+            Vector2 d = new Vector2(posOther.x + other.center.x - posSelf.x - self.center.x, posOther.y + other.center.y - posSelf.y - self.center.y);
+            #region Circle culling check
+            if ((self.radiusApproximation + other.radiusApproximation) < d.GetMagnitude())
+            {
+                return false;
+            }
+            #endregion Circle culling check
+
+            #region SimpleCollisionCheck
+            
+            //2nd check AABB if both have theta = 0
+            if (self.rotation == 0 && other.rotation == 0)
+            {
+                if (posSelf.x - self.center.x - self.halfWidth < posOther.x + other.center.x + other.halfWidth &&
+                    posSelf.x + self.center.x + self.halfWidth > posOther.x - other.center.x - other.halfWidth &&
+                    posSelf.y - self.center.y - self.halfHeight < posOther.y + other.center.y + other.halfHeight &&
+                    posSelf.y + self.center.y + self.halfHeight > posOther.y - other.center.y - other.halfHeight)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
             #endregion
 
             #region Separating Axis Theorem check (final and most intensive check for accuracy)
@@ -620,7 +676,7 @@ namespace EngineeringCorpsCS
                 {
                     if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !ReferenceEquals(collisionList[j],entity))
                     {
-                        if (BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, new Vector2(0,0), collisionList[j].position))
+                        if (BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, collisionList[j].position))
                         {
                             return true;
                         }
@@ -637,7 +693,7 @@ namespace EngineeringCorpsCS
                     if ((entity.collisionMask & tile.collisionMask) != 0)
                     {
                         Vector2 tilePos = entity.surface.WorldToTileVector(chunkList[i], tileList[i][j]);
-                        if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, new Vector2(0,0), tilePos))
+                        if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, tilePos))
                         {
                             return true;
                         }
@@ -669,7 +725,7 @@ namespace EngineeringCorpsCS
                 {
                     if ((collisionList[j].collisionMask & entity.collisionMask) != 0 && !ReferenceEquals(collisionList[j], entity))
                     {
-                        if (BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, new Vector2(0, 0), collisionList[j].position))
+                        if (BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, collisionList[j].position))
                         {
                             entities.Add(collisionList[j]);
                         }
@@ -683,7 +739,7 @@ namespace EngineeringCorpsCS
                     if ((entity.collisionMask & tile.collisionMask) != 0)
                     {
                         Vector2 tilePos = entity.surface.WorldToTileVector(chunkList[i], tileList[i][j]);
-                        if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, new Vector2(0, 0), tilePos))
+                        if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, tilePos))
                         {
                             tileIndices.Add(tileList[i][j]);
                         }
@@ -716,7 +772,7 @@ namespace EngineeringCorpsCS
                 {
                     TypeToTest checkEntity = collisionList[j] as TypeToTest;
                     if (checkEntity != null && (collisionList[j].collisionMask & entity.collisionMask) != 0 && !ReferenceEquals(collisionList[j], entity) &&
-                        BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, new Vector2(0, 0), collisionList[j].position))
+                        BoundingBox.CheckCollision(entity.collisionBox, collisionList[j].collisionBox, entity.position, collisionList[j].position))
                     {
                         list.Add(checkEntity);
                     }

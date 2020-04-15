@@ -34,6 +34,13 @@ namespace EngineeringCorpsCS
             this.y = xy[1];
         }
 
+        public Vector2(Vector2f pos)
+        {
+            internalVector = pos;
+            this.x = pos.X;
+            this.y = pos.Y;
+        }
+
         /// <summary>
         /// Sets the vector2 to some quantity.
         /// </summary>
@@ -47,6 +54,11 @@ namespace EngineeringCorpsCS
 
         public static Vector2 operator +(Vector2 a, Vector2 b) {
             return new Vector2(a.x + b.x, a.y + b.y);
+        }
+
+        public static Vector2 operator -(Vector2 a, Vector2 b)
+        {
+            return new Vector2(a.x - b.x, a.y - b.y);
         }
 
         /// <summary>

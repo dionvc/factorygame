@@ -11,24 +11,35 @@ namespace EngineeringCorpsCS
         /// <summary>
         /// The health of the entity.
         /// </summary>
-        public float health { 
-            get => health;
-            set {
-                if (health > fullHealth) 
+        public int health
+        {
+            get => _health;
+            set
+            {
+                if (health > fullHealth)
                 {
-                    health = fullHealth;
-                } 
+                    _health = fullHealth;
+                }
                 else
                 {
-                    health = value;
+                    _health = value;
                 }
-            } 
+            }
         }
-        public float fullHealth { get; protected set; }
+        private int _health = 100;
+        public int fullHealth { get; protected set; } = 100;
         public string miningResult { get; protected set; }
         override public void OnClick()
         {
 
+        }
+
+        /// <summary>
+        /// Used to create particles, play sounds, and create remains when an entity with health is destroyed
+        /// </summary>
+        virtual public void OnDestroyed()
+        {
+            surface.RemoveEntity(this);
         }
     }
 }

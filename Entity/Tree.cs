@@ -31,21 +31,30 @@ namespace EngineeringCorpsCS
         /// <param name="textureAtlases"></param>
         public Tree(Vector2 pos, SurfaceContainer surface, TextureAtlases textureAtlases)
         {
+            
+            minable = true;
             position = pos;
-            collisionBox = new BoundingBox(32, 32);
+            collisionBox = new BoundingBox(16, 16);
+            drawingBox = new BoundingBox(128, 192);
             surface.InitiateEntityInChunks(this);
             IntRect bounds;
-            Animation trunk = new Animation(textureAtlases.GetTexture("tree", out bounds), 128, bounds.Height, 1, bounds, new Vector2f(0, -112));
-            Animation leaves = new Animation(textureAtlases.GetTexture("tree", out bounds), 128, bounds.Height, 1, bounds, new Vector2f(0, -112));
+            Animation trunk = new Animation(textureAtlases.GetTexture("tree", out bounds), 128, bounds.Height, 1, bounds, new Vector2f(0, -64));
+            trunk.drawLayer = Drawable.DrawLayer.EntitySorted;
+            Animation leaves = new Animation(textureAtlases.GetTexture("tree", out bounds), 128, bounds.Height, 1, bounds, new Vector2f(0, -64));
+            leaves.drawLayer = Drawable.DrawLayer.EntitySorted;
+            Animation shadow = new Animation(textureAtlases.GetTexture("treeshadow", out bounds), 192, bounds.Height, 1, bounds, new Vector2f(32, 0));
+            shadow.drawLayer = Drawable.DrawLayer.Shadow;
             Random r = new Random();
-            leaves.currentFrame = r.Next(0,4);
-            if (leaves.currentFrame != 0)
+            int rand = r.Next(0, 4);
+            leaves.currentFrame = rand;
+            shadow.currentFrame = rand;
+            if (rand != 0)
             {
-                drawArray = new Drawable[] { trunk, leaves };
+                drawArray = new Drawable[] {shadow, trunk, leaves};
             }
             else
             {
-                drawArray = new Drawable[] { trunk };
+                drawArray = new Drawable[] {shadow, trunk};
             }
             collisionMask = CollisionLayer.EntityPhysical;
             mapColor = new Color(32, 160, 0);

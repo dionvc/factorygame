@@ -9,6 +9,33 @@ namespace EngineeringCorpsCS
 {
     abstract class Entity : Base
     {
+        public struct MiningProps
+        {
+            string[] results;
+            int[] counts;
+            int miningTime;
+            int fluid;
+            string fluidRequired;
+
+            public MiningProps(string[] results, int[] counts, int miningTime, int fluidCount, string fluidRequired)
+            {
+                this.results = results;
+                this.counts = counts;
+                this.miningTime = miningTime;
+                this.fluid = fluidCount;
+                this.fluidRequired = fluidRequired;
+            }
+
+            public MiningProps(string result, int count, int miningTime, int fluidCount, string fluidRequired)
+            {
+                this.results = new string[] { result };
+                this.counts = new int[] { count };
+                this.miningTime = miningTime;
+                this.fluid = fluidCount;
+                this.fluidRequired = fluidRequired;
+            }
+        }
+
         /// <summary>
         /// Tracks the chunks the entity is stored in for collision
         /// </summary>
@@ -50,10 +77,21 @@ namespace EngineeringCorpsCS
 
         public float emissionPerSecond = 0.0f;
 
+        public bool minable = false;
+        public MiningProps miningProps;
+
         public Vector2 position { get; protected set; }
         /// <summary>
         /// Defines behavior of entity upon being clicked.  Example: Open a menu.
         /// </summary>
         abstract public void OnClick();
+
+        /// <summary>
+        /// Used to enforce mineability of objects
+        /// </summary>
+        virtual public void OnMined()
+        {
+            surface.RemoveEntity(this);
+        }
     }
 }

@@ -246,7 +246,7 @@
     <Content Include="Graphics\Terrain\lavaTilesheet.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Graphics\watersquare.png">
+    <Content Include="Graphics\DebugTextures\treeshadow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="openal32.dll">

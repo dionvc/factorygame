@@ -77,24 +77,25 @@ namespace EngineeringCorpsCS
  
             float pX = -origin.X;
             float pY = -origin.Y;
+            float pCT = 0.6f;
             //Top left
-            spriteBatchArray.Append(new Vertex(new Vector2f(pX * _cos - pY * _sin + position.X, pX * _sin + pY * _cos + position.Y), color, new Vector2f(rec.Left, rec.Top)));
+            spriteBatchArray.Append(new Vertex(new Vector2f(pX * _cos - pY * _sin + position.X, pX * _sin + pY * _cos + position.Y), color, new Vector2f(rec.Left + pCT, rec.Top + pCT)));
             pX += scale.X;
             //Top right
-            spriteBatchArray.Append(new Vertex(new Vector2f(pX * _cos - pY * _sin + position.X, pX * _sin + pY * _cos + position.Y), color, new Vector2f(rec.Left + rec.Width, rec.Top)));
+            spriteBatchArray.Append(new Vertex(new Vector2f(pX * _cos - pY * _sin + position.X, pX * _sin + pY * _cos + position.Y), color, new Vector2f(rec.Left + rec.Width - pCT, rec.Top + pCT)));
             pX -= scale.X;
             pY += scale.Y;
             //Bottom left
-            spriteBatchArray.Append(new Vertex(new Vector2f(pX * _cos - pY * _sin + position.X, pX * _sin + pY * _cos + position.Y), color, new Vector2f(rec.Left, rec.Top + rec.Height)));
+            spriteBatchArray.Append(new Vertex(new Vector2f(pX * _cos - pY * _sin + position.X, pX * _sin + pY * _cos + position.Y), color, new Vector2f(rec.Left + pCT, rec.Top + rec.Height - pCT)));
             pX += scale.X;
             pY -= scale.Y;
             //Top right
-            spriteBatchArray.Append(new Vertex(new Vector2f(pX * _cos - pY * _sin + position.X, pX * _sin + pY * _cos + position.Y), color, new Vector2f(rec.Left + rec.Width, rec.Top)));
+            spriteBatchArray.Append(new Vertex(new Vector2f(pX * _cos - pY * _sin + position.X, pX * _sin + pY * _cos + position.Y), color, new Vector2f(rec.Left + rec.Width - pCT, rec.Top + pCT)));
             pY += scale.Y;
             //Bottom right
-            spriteBatchArray.Append(new Vertex(new Vector2f(pX * _cos - pY * _sin + position.X, pX * _sin + pY * _cos + position.Y), color, new Vector2f(rec.Left + rec.Width, rec.Top + rec.Height)));
+            spriteBatchArray.Append(new Vertex(new Vector2f(pX * _cos - pY * _sin + position.X, pX * _sin + pY * _cos + position.Y), color, new Vector2f(rec.Left + rec.Width - pCT, rec.Top + rec.Height - pCT)));
             pX -= scale.X;
-            spriteBatchArray.Append(new Vertex(new Vector2f(pX * _cos - pY * _sin + position.X, pX * _sin + pY * _cos + position.Y), color, new Vector2f(rec.Left, rec.Top + rec.Height)));
+            spriteBatchArray.Append(new Vertex(new Vector2f(pX * _cos - pY * _sin + position.X, pX * _sin + pY * _cos + position.Y), color, new Vector2f(rec.Left + pCT, rec.Top + rec.Height - pCT)));
         }
 
         private void SwitchTextures(Texture texture)

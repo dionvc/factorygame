@@ -77,36 +77,70 @@ namespace EngineeringCorpsCS
         Queue<float> fpsQueue;
         public int frame;
 
+        Image icon;
+
         private List<Player> players;
-        private List<Tree> tree;
         private LightSource testLightSource1;
 
         public void InitializeWindow()
         {
             //Window initialization (all of this stays here I think)
             window = new RenderWindow(new VideoMode(1280, 720), "Engineering Corps");
-            window.SetFramerateLimit(0);
+            window.SetFramerateLimit(60);
             window.Closed += (s, a) => window.Close();
             window.SetActive();
-            Image icon = new Image("Graphics/GUI/EngineeringCorpsIcon.png");
+            icon = new Image("Graphics/GUI/EngineeringCorpsIcon.png");
             window.SetIcon(icon.Size.X, icon.Size.Y, icon.Pixels);
             gameState = GameState.mainMenu;
         }
         public void InitializeResources()
         {
-            //TODO: loading screen
-            //Repository, Managers, Resource collections creation
+            Texture loadingTexture = new Texture(icon);
+            Sprite loadingTitle = new Sprite(loadingTexture);
+            Font loadingFont = new Font("Fonts/SairaRegular.ttf");
+            Text loadingText = new Text("",loadingFont);
+            loadingText.DisplayedString = "Constructing Texture Atlases...";
+            loadingText.Origin = new Vector2f(loadingText.GetGlobalBounds().Width / 2, loadingText.GetGlobalBounds().Height/2);
+            loadingText.Position = new Vector2f(window.Size.X / 2, window.Size.Y / 2);
+            loadingTitle.Origin = new Vector2f(loadingTexture.Size.X/2, loadingTexture.Size.Y / 2);
+            loadingTitle.Position = new Vector2f(window.Size.X / 2, window.Size.Y / 4);
+
+
+            window.Clear(Color.Black);
+            window.Draw(loadingTitle);
+            window.Draw(loadingText);
+            window.Display();
             textureAtlases = new TextureAtlases();
             textureAtlases.LoadTextures(Props.packTogether);
+
+
+            loadingText.DisplayedString = "Loading Fonts...";
+            loadingText.Origin = new Vector2f(loadingText.GetGlobalBounds().Width / 2, loadingText.GetGlobalBounds().Height / 2);
+            window.Clear(Color.Black);
+            window.Draw(loadingTitle);
+            window.Draw(loadingText);
+            window.Display();
             fontContainer = new FontContainer();
             fontContainer.LoadFonts();
             //TODO: End loading screen
 
             //Input, menu, display systems
             //TODO: Investigate this cyclic couple of the menu system and input.  Input definitely needs access to menufactory.  Menucontainer may not need access to input.
+            loadingText.DisplayedString = "Initializing Input...";
+            loadingText.Origin = new Vector2f(loadingText.GetGlobalBounds().Width / 2, loadingText.GetGlobalBounds().Height / 2);
+            window.Clear(Color.Black);
+            window.Draw(loadingTitle);
+            window.Draw(loadingText);
+            window.Display();
             input = new InputManager(window);
+
+            loadingText.DisplayedString = "Initializing Rendering...";
+            loadingText.Origin = new Vector2f(loadingText.GetGlobalBounds().Width / 2, loadingText.GetGlobalBounds().Height / 2);
+            window.Clear(Color.Black);
+            window.Draw(loadingTitle);
+            window.Draw(loadingText);
+            window.Display();
             menuContainer = new MenuContainer(input);
-            
             camera = new Camera();
             camera.SubscribeToInput(input);
             renderer = new Renderer(window, menuContainer, textureAtlases.GetTexture("guiTilesheet", out _));
@@ -115,8 +149,14 @@ namespace EngineeringCorpsCS
             window.Resized += renderer.HandleResize;
             window.Resized += menuContainer.RepositionMenus;
             input.menuFactory = menuFactory;
-            
+
             //Game prototypes
+            loadingText.DisplayedString = "Initializing Collections...";
+            loadingText.Origin = new Vector2f(loadingText.GetGlobalBounds().Width / 2, loadingText.GetGlobalBounds().Height / 2);
+            window.Clear(Color.Black);
+            window.Draw(loadingTitle);
+            window.Draw(loadingText);
+            window.Display();
             tileCollection = new TileCollection(textureAtlases);
         }
         public void StartMenu()
@@ -143,7 +183,6 @@ namespace EngineeringCorpsCS
             renderer.InitializeForGame(tileCollection);
             #region test entities
             players = new List<Player>();
-            tree = new List<Tree>();
             for (int i = 0; i < 16; i++)
             {
                 players.Add(new Player(new Vector2(1024 + 48 * i, 1024 + 48 * i), surfaceContainer, textureAtlases));
@@ -151,12 +190,6 @@ namespace EngineeringCorpsCS
             foreach (Player p in players)
             {
                 //p.SubscribeToInput(input);
-            }
-            for(int i = 0; i < 64; i++) {
-                for (int j = 0; j < 64; j++)
-                {
-                    tree.Add(new Tree(new Vector2(2064 + (128) * i, 128 * j), surfaceContainer, textureAtlases));
-                }
             }
             IntRect bounds;
             testLightSource1 = new LightSource(new Vector2(1024, 1024), surfaceContainer, 2000.0f, textureAtlases.GetTexture("lightsource", out bounds), bounds, players[15]);

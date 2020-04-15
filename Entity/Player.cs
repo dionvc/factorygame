@@ -22,11 +22,13 @@ namespace EngineeringCorpsCS
             this.textureAtlases = textureAtlases;
             position = pos;
             collisionBox = new BoundingBox(16, 16);
+            drawingBox = new BoundingBox(-64, -64, 64, 64);
             surface.InitiateEntityInChunks(this);
             velocity = new Vector2(0, 0);
             IntRect bounds;
             Texture playerTexture = textureAtlases.GetTexture("orcrunning", out bounds);
             walking = new AnimationRotated(playerTexture, 128, 128, bounds, new Vector2f(0, -32), 8, 8);
+            walking.drawLayer = Drawable.DrawLayer.EntitySorted;
             walking.behavior = AnimationRotated.AnimationBehavior.Forward;
             drawArray = new Drawable[] { walking };
             collisionMask = CollisionLayer.EntityPhysical | CollisionLayer.TerrainSolid;
@@ -96,10 +98,10 @@ namespace EngineeringCorpsCS
                 float[] mousePos = input.GetMousePositionAsFloat();
                 int[] tileAligned = new int[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
                 BoundingBox box = new BoundingBox(-15, -15, 15, 15);
-                EntityGhost entityGhost = new EntityGhost(box, new Vector2(tileAligned[0], tileAligned[1]), surface);
+                EntityGhost entityGhost = new EntityGhost(box, new Vector2(mousePos[0], mousePos[1]), surface);
                 if (!BoundingBox.CheckForCollision(entityGhost))
                 {
-                    new Tree(new Vector2(tileAligned[0], tileAligned[1]), surface, textureAtlases);
+                    new Tree(new Vector2(mousePos[0], mousePos[1]), surface, textureAtlases);
                     //new Player(new Vector2(tileAligned[0], tileAligned[1]), surface, textureContainer);
                 }
             }
@@ -110,8 +112,8 @@ namespace EngineeringCorpsCS
                 //int[] tileAligned = new int[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
                 BoundingBox box = new BoundingBox(-15, -15, 15, 15);
                 EntityGhost entityGhost = new EntityGhost(box, new Vector2(mousePos[0], mousePos[1]), surface);
-                List<EntityPhysical> list = BoundingBox.GetCollisionListOfType<EntityPhysical>(entityGhost);
-                if (list.Count > 0)
+                List<Entity> list = BoundingBox.GetCollisionListOfType<Entity>(entityGhost);
+                if (list.Count > 0 && list[0].minable == true)
                 {
                     surface.RemoveEntity(list[0]);
                 }

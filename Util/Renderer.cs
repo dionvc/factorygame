@@ -13,13 +13,14 @@ namespace EngineeringCorpsCS
     {
         //Graphics variables
         VertexArray entityBoundingBoxArray;
+        VertexArray drawingBoundingBoxArray;
         Texture[] terrainTilesheets;
         RenderTexture GUI;
         SpriteBatch lightingBatch;
         RenderStates[] terrainRenderStates;
         RenderStates guiState;
         List<Entity> drawList;
-        SpriteBatch entityBatch;
+        SpriteBatch[] entityBatch;
 
         //Collections
         Dictionary<int, VertexArray[]> terrainVertexArrays; //TODO: need to change these for multi-surface support
@@ -33,6 +34,7 @@ namespace EngineeringCorpsCS
         bool cullMinimap = true;
         int cullCounter = 0;
         int cullRate = 60;
+        BoundingBox windowBox;
 
         /// <summary>
         /// Indicates whether the internal vertex arrays have been modified.  Necessary to avoid protected memory access violations.
@@ -49,7 +51,11 @@ namespace EngineeringCorpsCS
             GUI = new RenderTexture(window.Size.X, window.Size.Y);
             guiState = new RenderStates(guiElements);
             lightingBatch = new SpriteBatch(window, BlendMode.Multiply);
-            entityBatch = new SpriteBatch(window, BlendMode.Alpha);
+            entityBatch = new SpriteBatch[9];
+            for(int i = 0; i < entityBatch.Length; i++)
+            {
+                entityBatch[i] = new SpriteBatch(window, BlendMode.Alpha);
+            }
         }
         public void InitializeForGame(TileCollection tileCollection)
         {
@@ -60,6 +66,7 @@ namespace EngineeringCorpsCS
 
             //dynamic vertex array
             entityBoundingBoxArray = new VertexArray(PrimitiveType.Lines);
+            drawingBoundingBoxArray = new VertexArray(PrimitiveType.Lines);
 
             //internal references (tile collection is a single time instantiated array of reusable objects.
             this.tileCollection = tileCollection;
@@ -75,10 +82,11 @@ namespace EngineeringCorpsCS
         public void RenderWorld(RenderWindow window, Camera camera, SurfaceContainer surface)
         {
             window.SetView(camera.GetGameView()); //Set view
-            Vector2f origin = window.MapPixelToCoords(new Vector2i(0, 0), camera.GetGameView());
+            Vector2f origin = window.MapPixelToCoords(new Vector2i(0,0), camera.GetGameView());
             Vector2f extent = window.MapPixelToCoords(new Vector2i((int)window.Size.X, (int)window.Size.Y), camera.GetGameView());
             int[] begPos = surface.WorldToChunkCoords(origin.X, origin.Y);
             int[] endPos = surface.WorldToChunkCoords(extent.X, extent.Y);
+            windowBox = new BoundingBox(0,0, extent.X - origin.X, extent.Y - origin.Y);
             #region terrain drawing
             for (int i = begPos[0]; i <= endPos[0]; i++)
             {
@@ -109,14 +117,11 @@ namespace EngineeringCorpsCS
             {
                 for (int j = begPos[1]; j <= endPos[1]; j++)
                 {
-
                     Chunk chunk = surface.GetChunk(i, j);
                     List<Entity> entityList = chunk.entityList;
                     for (int k = 0; k < entityList.Count; k++)
                     {
-                        //TODO: add Drawing box check for culling
-                        if (entityList[k].position.x > origin.X && entityList[k].position.x < extent.X
-                            && entityList[k].position.y > origin.Y && entityList[k].position.y < extent.Y)
+                        if (BoundingBox.CheckCollision(windowBox, entityList[k].drawingBox, new Vector2(origin), entityList[k].position))
                         {
                             drawList.Add(entityList[k]);
                         }
@@ -136,19 +141,28 @@ namespace EngineeringCorpsCS
                     return a.position.x.CompareTo(b.position.x);
                 }
             });
-            entityBatch.Initialize(camera.GetGameView(), Color.Transparent);
+            for (int i = 0; i < entityBatch.Length; i++)
+            {
+                entityBatch[i].Initialize(camera.GetGameView(), Color.Transparent);
+            }
             foreach (Entity e in drawList)
             {
                 renderedEntityCount++;
                 for (int i = 0; i < e.drawArray.Length; i++)
                 {
-                    e.drawArray[i].Draw(entityBatch, e.position.internalVector);
-                    renderedSpriteCount++;
+                    if (e.drawArray[i].drawLayer != Drawable.DrawLayer.None)
+                    {
+                        e.drawArray[i].Draw(entityBatch[(int)e.drawArray[i].drawLayer - 1], e.position.internalVector);
+                        renderedSpriteCount++;
+                    }
                 }
             }
-            Sprite sprite = entityBatch.Finalize();
             window.SetView(camera.GetGUIView());
-            window.Draw(sprite);
+            for (int i = 0; i < entityBatch.Length; i++)
+            {
+                Sprite sprite = entityBatch[i].Finalize();
+                window.Draw(sprite);
+            }
             window.SetView(camera.GetGameView());
             drawList.Clear();
             #endregion entity drawing
@@ -199,18 +213,35 @@ namespace EngineeringCorpsCS
                         for (int k = 0; k < entityList.Count; k++)
                         {
                             float[] pointsEntity = entityList[k].collisionBox.GetPoints();
+                            float[] drawingPointsEntity = entityList[k].drawingBox.GetPoints();
                             Vector2 position = entityList[k].position;
                             for (int l = 0; l < pointsEntity.Length; l += 2)
                             {
                                 entityBoundingBoxArray.Append(new Vertex(new Vector2f(pointsEntity[l] + position.x, pointsEntity[l + 1] + position.y), Color.Red));
                                 entityBoundingBoxArray.Append(new Vertex(new Vector2f(pointsEntity[(l + 2) % 8] + position.x, pointsEntity[(l + 3) % 8] + position.y), Color.Red));
                             }
+                            for (int l = 0; l < drawingPointsEntity.Length; l += 2)
+                            {
+                                drawingBoundingBoxArray.Append(new Vertex(new Vector2f(drawingPointsEntity[l] + position.x, drawingPointsEntity[l + 1] + position.y), Color.Blue));
+                                drawingBoundingBoxArray.Append(new Vertex(new Vector2f(drawingPointsEntity[(l + 2) % 8] + position.x, drawingPointsEntity[(l + 3) % 8] + position.y), Color.Blue));
+                            }
                         }
                         #endregion Entity bounding box drawing
                     }
                 }
                 window.Draw(entityBoundingBoxArray);
+                window.Draw(drawingBoundingBoxArray);
                 entityBoundingBoxArray.Clear();
+                drawingBoundingBoxArray.Clear();
+                VertexArray windowBoxArray = new VertexArray(PrimitiveType.Lines);
+                float[] pointsWindow = windowBox.GetPoints();
+                for (int l = 0; l < pointsWindow.Length; l += 2)
+                {
+                    windowBoxArray.Append(new Vertex(new Vector2f(pointsWindow[l] + origin.X, pointsWindow[l + 1] + origin.Y), Color.Magenta));
+                    windowBoxArray.Append(new Vertex(new Vector2f(pointsWindow[(l + 2) % 8] + origin.X, pointsWindow[(l + 3) % 8] + origin.Y), Color.Magenta));
+                }
+                window.Draw(windowBoxArray);
+                windowBoxArray.Clear();
             }
             #endregion bounding box drawing
             
@@ -246,8 +277,9 @@ namespace EngineeringCorpsCS
                         VertexArray entityArray = new VertexArray(PrimitiveType.Triangles);
                         int oX = i * Props.chunkSize;
                         int oY = j * Props.chunkSize;
-                        foreach (Entity e in entityList)
+                        for(int l = 0; l < entityList.Count; l++)
                         {
+                            Entity e = entityList[l];
                             int[] pos = SurfaceContainer.WorldToAbsoluteTileCoords(e.position.x, e.position.y);
                             float halfWidth = e.tileWidth / 2;
                             float halfHeight = e.tileHeight / 2;
@@ -326,7 +358,10 @@ namespace EngineeringCorpsCS
             GUI = new RenderTexture(e.Width, e.Height);
 
             lightingBatch.HandleResize(s, e);
-            entityBatch.HandleResize(s, e);
+            for (int i = 0; i < entityBatch.Length; i++)
+            {
+                entityBatch[i].HandleResize(s, e);
+            }
         }
 
         /// <summary>
