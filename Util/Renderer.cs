@@ -177,7 +177,10 @@ namespace EngineeringCorpsCS
                     List<LightSource> lightSources = chunk.lightSources;
                     for (int k = 0; k < lightSources.Count; k++)
                     {
-                        lightingBatch.Draw(lightSources[k].light);
+                        if (lightSources[k].on == true)
+                        {
+                            lightingBatch.Draw(lightSources[k].light);
+                        }
                     }
                 }
             }

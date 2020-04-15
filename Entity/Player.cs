@@ -17,6 +17,8 @@ namespace EngineeringCorpsCS
         EntityGhost heldItemGhost;
         TextureAtlases textureAtlases;
         AnimationRotated walking;
+        LightSourceDirectional directionalLight;
+        LightSourceRadial radialLight;
         public Player(Vector2 pos, SurfaceContainer surface, TextureAtlases textureAtlases)
         {
             this.textureAtlases = textureAtlases;
@@ -39,6 +41,13 @@ namespace EngineeringCorpsCS
             {
                 inventory[i] = new ItemStack();
             }
+
+            radialLight = new LightSourceRadial(new Vector2(1024, 1024), surface, 1000.0f, textureAtlases.GetTexture("lightsource", out bounds), bounds);
+            radialLight.on = false;
+            radialLight.attachedEntity = this;
+            directionalLight = new LightSourceDirectional(new Vector2(1024, 1024), surface, 2000.0f, 1024, textureAtlases.GetTexture("directionallight", out bounds), bounds);
+            directionalLight.on = true;
+            directionalLight.attachedEntity = this;
         }
         /// <summary>
         /// TODO: Add inheritance structure
@@ -55,6 +64,9 @@ namespace EngineeringCorpsCS
             walking.Update();
             walking.animationSpeed = 60/velocity.GetMagnitude();
             velocity.Set(0, 0);
+            radialLight.Update();
+            directionalLight.Update();
+            directionalLight.SetDirection(270 + rotation);
         }
         override public void OnClick()
         {

@@ -110,6 +110,8 @@
   <ItemGroup>
     <Compile Include="Chunk\Alliance.cs" />
     <Compile Include="Drawable\IAnimation.cs" />
+    <Compile Include="Drawable\LightSourceDirectional.cs" />
+    <Compile Include="Drawable\LightSourceRadial.cs" />
     <Compile Include="Drawable\StaticSprite.cs" />
     <Compile Include="Drawable\SpriteBatch.cs" />
     <Compile Include="Entity\Remains.cs" />
@@ -117,6 +119,7 @@
     <Compile Include="ItemPlusFluidCollection\ItemFactory.cs" />
     <Compile Include="ItemPlusFluidCollection\ItemCollection.cs" />
     <Compile Include="ItemPlusFluidCollection\ItemStack.cs" />
+    <Compile Include="Menu\EntityFactory.cs" />
     <Compile Include="Menu\MenuCheckbox.cs" />
     <Compile Include="Menu\MenuDynamicText.cs" />
     <Compile Include="Menu\MenuField.cs" />
@@ -143,7 +146,7 @@
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="Chunk\SurfaceGenerator.cs" />
     <Compile Include="Entity\EntityItem.cs" />
-    <Compile Include="Util\LightSource.cs" />
+    <Compile Include="Drawable\LightSource.cs" />
     <Compile Include="Menu\MenuWorldMap.cs" />
     <Compile Include="Menu\MenuFactory.cs" />
     <Compile Include="Menu\MenuContainer.cs" />
@@ -229,6 +232,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\GUI\guiTilesheet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Lightmasks\directionallight.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\Lightmasks\lightsource.png">

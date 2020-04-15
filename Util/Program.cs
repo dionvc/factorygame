@@ -79,8 +79,7 @@ namespace EngineeringCorpsCS
 
         Image icon;
 
-        private List<Player> players;
-        private LightSource testLightSource1;
+        private Player player;
 
         public void InitializeWindow()
         {
@@ -179,24 +178,15 @@ namespace EngineeringCorpsCS
             //Pop all menus
             menuContainer.RemoveAllMenus();
             //Game systems intialization
-            surfaceContainer = new SurfaceContainer(tileCollection, surfaceGenerator, 3000, 1000, 196) ;
+            surfaceContainer = new SurfaceContainer(tileCollection, surfaceGenerator, 6000, 3000, 255) ;
             renderer.InitializeForGame(tileCollection);
             #region test entities
-            players = new List<Player>();
-            for (int i = 0; i < 16; i++)
-            {
-                players.Add(new Player(new Vector2(1024 + 48 * i, 1024 + 48 * i), surfaceContainer, textureAtlases));
-            }
-            foreach (Player p in players)
-            {
-                //p.SubscribeToInput(input);
-            }
-            IntRect bounds;
-            testLightSource1 = new LightSource(new Vector2(1024, 1024), surfaceContainer, 2000.0f, textureAtlases.GetTexture("lightsource", out bounds), bounds, players[15]);
-            players[15].SubscribeToInput(input);
+
+            player = new Player(new Vector2(1024, 1024), surfaceContainer, textureAtlases);
+            player.SubscribeToInput(input);
             #endregion
             //Attaching the camera to something!
-            camera.focusedEntity = players[15];
+            camera.focusedEntity = player;
             this.SubscribeToInput(input);
             renderer.SubscribeToInput(input);
             menuFactory.CreateMinimap(camera);
@@ -206,7 +196,7 @@ namespace EngineeringCorpsCS
         {
             //Pop all menus
             menuContainer.RemoveAllMenus();
-            players.Clear();
+            player = null;
             camera.focusedEntity = null;
             input.ClearGameSubscribers();
             renderer.DetachGameWorld();
@@ -239,12 +229,7 @@ namespace EngineeringCorpsCS
                 if (gameState != GameState.paused)
                 {
                     //update entities
-                    foreach (Player p in players)
-                    {
-                        p.Update();
-                    }
-                    List<Player> test = BoundingBox.GetCollisionListOfType<Player>(players[15]);
-                    testLightSource1.Update();
+                    player.Update();
                     surfaceContainer.Update();
                 }
                 //update camera

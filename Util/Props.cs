@@ -10,7 +10,7 @@ namespace EngineeringCorpsCS
     {
         //These constants are pretty vital to the functionality of the game and are justifiable as globals.
         //Graphics stuff
-        public const int chunkSize = 64; //size of chunk in tiles
+        public const int chunkSize = 32; //size of chunk in tiles
         public const int tileSize = 32; //tilesize in pixels
         public const int resolutionScaleFactor = 2; //The scale factor (resolution factor) of tiles and entities versus their actual size
         //Example: With tilesize of 32 and resolutionscalefactor of 2, tiles will have 64x64 pixel sizes but 32x32 world units size

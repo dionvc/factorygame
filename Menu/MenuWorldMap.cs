@@ -26,8 +26,8 @@ namespace EngineeringCorpsCS
         /// Set the mapscale for non-controllable minimaps.
         /// </summary>
         public float mapScale { get; set; } = Props.worldMapZoomMin;
-        int minimapXRange = 5;
-        int minimapYRange = 5;
+        int minimapXRange = 2;
+        int minimapYRange = 2;
         bool getPollution = true;
         public bool controllable { get; set; } = false;
         public int controlSpeed { get; set; } = 4;
@@ -50,8 +50,8 @@ namespace EngineeringCorpsCS
             refreshCounter++;
             if (refreshCounter >= refreshRate || renderer.modifiedVertexArrays == true)
             {
-                minimapXRange = (int)Math.Ceiling(size.X/ Props.chunkSize / 1.5 / mapScale);
-                minimapYRange = (int)Math.Ceiling(size.Y/ Props.chunkSize / 1.5 / mapScale);
+                minimapXRange = (int)Math.Ceiling(size.X/ Props.chunkSize / 2 / mapScale);
+                minimapYRange = (int)Math.Ceiling(size.Y/ Props.chunkSize / 2 / mapScale);
                 renderer.GenerateMinimapTextures(camera.focusedEntity.surface, camera.focusedEntity.position + new Vector2(-controlTranslation.x * Props.tileSize, -controlTranslation.y * Props.tileSize), minimapXRange, minimapYRange, vertexArrays);
                 refreshCounter = 0;
                 if(getPollution == true)

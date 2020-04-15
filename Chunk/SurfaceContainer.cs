@@ -39,7 +39,7 @@ namespace EngineeringCorpsCS
             this.timeOfMidday = timeOfMidday;
             this.lengthOfNight = lengthOfNight;
             this.levelOfDarkness = levelOfDarkness;
-            timeOfDay = 1000;
+            timeOfDay = 0;
         }
 
         public void Update()
