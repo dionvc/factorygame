@@ -39,6 +39,7 @@ namespace EngineeringCorpsCS
         private Vector2i mouseDiff;
         /// This client's menuFactory.  Menu's are created by input, so they are closely coupled.
         public MenuFactory menuFactory { get; set; }
+        public EntityCollection entityCollection { get; set; }
 
         private string keyString;
         private bool keyStringConsumed;

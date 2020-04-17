@@ -22,6 +22,7 @@ namespace EngineeringCorpsCS
         Animation leaves; //A leaf animation that will change the leaf density based on the state of the animation
         Animation shadow; //A shadow animation containing the various shadows of the tree
         TreeState treeState;
+        TextureAtlases textureAtlas;
 
         /// <summary>
         /// Creates a tree
@@ -29,14 +30,13 @@ namespace EngineeringCorpsCS
         /// <param name="pos"></param>
         /// <param name="surface"></param>
         /// <param name="textureAtlases"></param>
-        public Tree(Vector2 pos, SurfaceContainer surface, TextureAtlases textureAtlases)
+        public Tree(TextureAtlases textureAtlases, string name)
         {
-            
+            this.name = name;
+            this.textureAtlas = textureAtlases;
             minable = true;
-            position = pos;
             collisionBox = new BoundingBox(16, 16);
             drawingBox = new BoundingBox(128, 192);
-            surface.InitiateEntityInChunks(this);
             IntRect bounds;
             Animation trunk = new Animation(textureAtlases.GetTexture("tree", out bounds), 128, bounds.Height, 1, bounds, new Vector2f(0, -64));
             trunk.drawLayer = Drawable.DrawLayer.EntitySorted;
@@ -60,7 +60,7 @@ namespace EngineeringCorpsCS
             mapColor = new Color(32, 160, 0);
         }
 
-        public void Update()
+        public override void Update()
         {
             if(surface.GetChunk(centeredChunk, false).pollutionValue > 50)
             {
@@ -91,6 +91,11 @@ namespace EngineeringCorpsCS
                 case (TreeState.Chopped):
                     break;
             }
+        }
+
+        public override Entity Clone()
+        {
+            return new Tree(textureAtlas, this.name);
         }
     }
 }

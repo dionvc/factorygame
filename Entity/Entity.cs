@@ -36,6 +36,20 @@ namespace EngineeringCorpsCS
             }
         }
 
+        virtual public void InitializeEntity(Vector2 position, SurfaceContainer surface)
+        {
+            this.surface = surface;
+            this.position = position;
+            this.surface.InitiateEntityInChunks(this);
+        }
+
+        virtual public void Update()
+        {
+
+        }
+
+        abstract public Entity Clone();
+
         /// <summary>
         /// Tracks the chunks the entity is stored in for collision
         /// </summary>

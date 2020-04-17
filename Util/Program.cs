@@ -71,15 +71,14 @@ namespace EngineeringCorpsCS
         SurfaceContainer surfaceContainer;
         SurfaceGenerator surfaceGenerator;
         TileCollection tileCollection;
+        EntityCollection entityCollection;
         //Debug variable
         Clock clock;
         float fps;
         Queue<float> fpsQueue;
         public int frame;
 
-        Image icon;
-
-        private Player player;
+        private Entity player;
 
         public void InitializeWindow()
         {
@@ -88,12 +87,13 @@ namespace EngineeringCorpsCS
             window.SetFramerateLimit(60);
             window.Closed += (s, a) => window.Close();
             window.SetActive();
-            icon = new Image("Graphics/GUI/EngineeringCorpsIcon.png");
+            Image icon = new Image("Graphics/GUI/EngineeringCorpsIcon.png");
             window.SetIcon(icon.Size.X, icon.Size.Y, icon.Pixels);
             gameState = GameState.mainMenu;
         }
         public void InitializeResources()
         {
+            Image icon = new Image("Graphics/GUI/EngineeringCorpsIcon.png");
             Texture loadingTexture = new Texture(icon);
             Sprite loadingTitle = new Sprite(loadingTexture);
             Font loadingFont = new Font("Fonts/SairaRegular.ttf");
@@ -157,6 +157,9 @@ namespace EngineeringCorpsCS
             window.Draw(loadingText);
             window.Display();
             tileCollection = new TileCollection(textureAtlases);
+            entityCollection = new EntityCollection(textureAtlases);
+            entityCollection.LoadPrototypes();
+            input.entityCollection = entityCollection;
         }
         public void StartMenu()
         {
@@ -182,10 +185,25 @@ namespace EngineeringCorpsCS
             renderer.InitializeForGame(tileCollection);
             #region test entities
 
-            player = new Player(new Vector2(1024, 1024), surfaceContainer, textureAtlases);
-            player.SubscribeToInput(input);
+            player = entityCollection.InstantiatePrototype("player", new Vector2(1024, 1024), surfaceContainer);
+            IInputSubscriber playerSubscriber = player as IInputSubscriber;
+            if (playerSubscriber != null)
+            {
+                playerSubscriber.SubscribeToInput(input);
+            }
             #endregion
             //Attaching the camera to something!
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    Vector2[] poissonDiscDistribution = PoissonDiscDistribution.GetDistribution(128, i * 8192 + j, 10);
+                    for (int k = 0; k < poissonDiscDistribution.Length; k++)
+                    {
+                        entityCollection.InstantiatePrototype("pineTree1", poissonDiscDistribution[k].Add(new Vector2(1024 * (i), 1024 * (j))), surfaceContainer);
+                    }
+                }
+            }
             camera.focusedEntity = player;
             this.SubscribeToInput(input);
             renderer.SubscribeToInput(input);
@@ -198,6 +216,8 @@ namespace EngineeringCorpsCS
             menuContainer.RemoveAllMenus();
             player = null;
             camera.focusedEntity = null;
+            camera.viewedSurface = null;
+            surfaceContainer = null;
             input.ClearGameSubscribers();
             renderer.DetachGameWorld();
         }
@@ -208,6 +228,12 @@ namespace EngineeringCorpsCS
             clock = new Clock();
             fpsQueue = new Queue<float>(10);
             frame = 0;
+            PathingTest pathTest = new PathingTest(tileCollection);
+            Vector2f target = new Vector2f(2048 * 3, 2048 * 3);
+            RectangleShape targetBox = new RectangleShape(new Vector2f(32, 32));
+            targetBox.Position = target;
+            targetBox.FillColor = Color.Green;
+            PathNode path = pathTest.GetPath(surfaceContainer, new Vector2(2048, 2048), new Vector2(2048 * 3, 2048 * 3), 10000, Base.CollisionLayer.TerrainSolid);
             for(int i = 0; i < 30; i ++)
             {
                 fpsQueue.Enqueue(60.0f);
@@ -235,7 +261,13 @@ namespace EngineeringCorpsCS
                 //update camera
                 camera.Update();
                 //drawing game world (terrain, entities)
-                renderer.RenderWorld(window, camera, surfaceContainer);
+                if (camera.focusedEntity != null)
+                {
+                    renderer.RenderWorld(window, camera, camera.viewedSurface);
+                    window.SetView(camera.GetGameView());
+                    pathTest.DrawPath(window, path);
+                    window.Draw(targetBox);
+                }
                 //drawing menus (main menu, pause, ingame, etc)
                 renderer.RenderGUI(window, camera);
                 //Draw the player's held item (very ugly to have to put it here but couldnt think of anything better)

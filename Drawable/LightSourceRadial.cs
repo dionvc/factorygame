@@ -12,14 +12,13 @@ namespace EngineeringCorpsCS
     {
         public LightSourceRadial(Vector2 position, SurfaceContainer surface, float lightRange, Texture texture, IntRect bounds)
         {
+            this.texture = texture;
+            this.bounds = bounds;
             this.position = position;
             this.surface = surface;
-            this.lightRange = lightRange;
             surface.UpdateLightSource(this);
-            light = new Sprite(texture, bounds);
-            light.Scale = new Vector2f(lightRange / light.TextureRect.Width, lightRange / light.TextureRect.Height);
-            light.Position = new Vector2f(position.x, position.y);
-            light.Origin = new Vector2f(light.TextureRect.Width / 2, light.TextureRect.Height/2);
+            lightScale = new Vector2f(lightRange / bounds.Width, lightRange / bounds.Height);
+            origin = new Vector2f(bounds.Width / 2, bounds.Height/2);
         }
     }
 }

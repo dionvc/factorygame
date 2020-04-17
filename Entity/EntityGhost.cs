@@ -15,5 +15,10 @@ namespace EngineeringCorpsCS
             this.collisionMask = CollisionLayer.TerrainSolid | CollisionLayer.EntityPhysical;
             this.surface = surface;
         }
+
+        public override Entity Clone()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

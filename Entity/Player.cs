@@ -19,13 +19,12 @@ namespace EngineeringCorpsCS
         AnimationRotated walking;
         LightSourceDirectional directionalLight;
         LightSourceRadial radialLight;
-        public Player(Vector2 pos, SurfaceContainer surface, TextureAtlases textureAtlases)
+        public Player(TextureAtlases textureAtlases, string name)
         {
+            this.name = name;
             this.textureAtlases = textureAtlases;
-            position = pos;
             collisionBox = new BoundingBox(16, 16);
             drawingBox = new BoundingBox(-64, -64, 64, 64);
-            surface.InitiateEntityInChunks(this);
             velocity = new Vector2(0, 0);
             IntRect bounds;
             Texture playerTexture = textureAtlases.GetTexture("orcrunning", out bounds);
@@ -41,18 +40,12 @@ namespace EngineeringCorpsCS
             {
                 inventory[i] = new ItemStack();
             }
-
-            radialLight = new LightSourceRadial(new Vector2(1024, 1024), surface, 1000.0f, textureAtlases.GetTexture("lightsource", out bounds), bounds);
-            radialLight.on = false;
-            radialLight.attachedEntity = this;
-            directionalLight = new LightSourceDirectional(new Vector2(1024, 1024), surface, 2000.0f, 1024, textureAtlases.GetTexture("directionallight", out bounds), bounds);
-            directionalLight.on = true;
-            directionalLight.attachedEntity = this;
+            
         }
         /// <summary>
         /// TODO: Add inheritance structure
         /// </summary>
-        public void Update()
+        public override void Update()
         {
             ///TODO: Move this
             BoundingBox.ApplyPhysicalCollision(this, velocity);
@@ -113,8 +106,7 @@ namespace EngineeringCorpsCS
                 EntityGhost entityGhost = new EntityGhost(box, new Vector2(mousePos[0], mousePos[1]), surface);
                 if (!BoundingBox.CheckForCollision(entityGhost))
                 {
-                    new Tree(new Vector2(mousePos[0], mousePos[1]), surface, textureAtlases);
-                    //new Player(new Vector2(tileAligned[0], tileAligned[1]), surface, textureContainer);
+                    Entity tree = input.entityCollection.InstantiatePrototype("pineTree1", new Vector2(mousePos[0], mousePos[1]), surface);
                 }
             }
 
@@ -130,6 +122,23 @@ namespace EngineeringCorpsCS
                     surface.RemoveEntity(list[0]);
                 }
             }
+        }
+
+        public override Entity Clone()
+        {
+            return new Player(this.textureAtlases, this.name);
+        }
+
+        public override void InitializeEntity(Vector2 position, SurfaceContainer surface)
+        {
+            base.InitializeEntity(position, surface);
+            IntRect bounds;
+            radialLight = new LightSourceRadial(new Vector2(1024, 1024), surface, 256.0f, textureAtlases.GetTexture("lightsource", out bounds), bounds);
+            radialLight.on = true;
+            radialLight.attachedEntity = this;
+            directionalLight = new LightSourceDirectional(new Vector2(1024, 1024), surface, 2000.0f, 1024, textureAtlases.GetTexture("directionallight", out bounds), bounds);
+            directionalLight.on = true;
+            directionalLight.attachedEntity = this;
         }
     }
 }

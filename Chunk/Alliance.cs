@@ -8,8 +8,13 @@ namespace EngineeringCorpsCS
 {
     class Alliance
     {
-        bool[] exploredChunks;
-        bool[] visibleChunks;
+        int[] exploredChunks;
+        int[] visibleChunks;
         string AllianceName;
+
+        public Alliance(string name)
+        {
+
+        }
     }
 }

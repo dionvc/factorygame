@@ -12,5 +12,10 @@ namespace EngineeringCorpsCS
         {
             
         }
+
+        public override Entity Clone()
+        {
+            return new EntityItem();
+        }
     }
 }

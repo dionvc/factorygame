@@ -28,10 +28,10 @@ namespace EngineeringCorpsCS
             internalVector = new Vector2f(x, y);
         }
 
-        public Vector2(float[] xy)
+        public Vector2(float radius, int angle, bool placeHolder)
         {
-            this.x = xy[0];
-            this.y = xy[1];
+            this.x = radius * (float)Math.Cos(angle);
+            this.y = radius * (float)Math.Sin(angle);
         }
 
         public Vector2(Vector2f pos)
@@ -65,10 +65,11 @@ namespace EngineeringCorpsCS
         /// Permanently adds a Vector2 to the calling Vector2
         /// </summary>
         /// <param name="other"></param>
-        public void Add(Vector2 other)
+        public Vector2 Add(Vector2 other)
         {
             this.x += other.x;
             this.y += other.y;
+            return this;
         }
         
         /// <summary>
@@ -164,6 +165,14 @@ namespace EngineeringCorpsCS
         public float GetMagnitude()
         {
             return (float) Math.Sqrt((this.x * this.x) + (this.y * this.y));
+        }
+
+        public float GetDistance(Vector2 other)
+        {
+            float xDiff = this.x - other.x;
+            float yDiff = this.y - other.y;
+            return (float)Math.Sqrt((xDiff * xDiff) + (yDiff * yDiff));
+
         }
 
         /// <summary>

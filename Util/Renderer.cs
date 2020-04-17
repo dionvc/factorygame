@@ -179,7 +179,7 @@ namespace EngineeringCorpsCS
                     {
                         if (lightSources[k].on == true)
                         {
-                            lightingBatch.Draw(lightSources[k].light);
+                            lightSources[k].Draw(lightingBatch);
                         }
                     }
                 }
@@ -283,7 +283,7 @@ namespace EngineeringCorpsCS
                         for(int l = 0; l < entityList.Count; l++)
                         {
                             Entity e = entityList[l];
-                            int[] pos = SurfaceContainer.WorldToAbsoluteTileCoords(e.position.x, e.position.y);
+                            int[] pos = surface.WorldToAbsoluteTileCoords(e.position.x, e.position.y);
                             float halfWidth = e.tileWidth / 2;
                             float halfHeight = e.tileHeight / 2;
                             entityArray.Append(new Vertex(new Vector2f(pos[0] - halfWidth , pos[1] - halfHeight), e.mapColor));

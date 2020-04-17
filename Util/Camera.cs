@@ -16,7 +16,7 @@ namespace EngineeringCorpsCS
         View gameView;
         View guiView;
         float viewScale;
-        SurfaceContainer viewedSurface;
+        public SurfaceContainer viewedSurface { get; set; }
         Vector2f gameViewSize;
         public Camera()
         {
@@ -87,6 +87,10 @@ namespace EngineeringCorpsCS
             if(input.GetKeyPressed(InputBindings.showWorldMap, true))
             {
                 input.menuFactory.CreateWorldMap(this);
+            }
+            if(focusedEntity != null)
+            {
+
             }
             //Handle clicking on things that are in view here with consideration to focusedentity
         }

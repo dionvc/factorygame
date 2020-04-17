@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EngineeringCorpsCS
 {
-    class EntityPhysical: Entity
+    abstract class EntityPhysical: Entity
     {
         /// <summary>
         /// The health of the entity.

@@ -308,6 +308,17 @@ namespace EngineeringCorpsCS
             }
             return chunk.GetTile(iN, jN);
         }
+
+        public byte GetTileFromWorldInt(int tileX, int tileY)
+        {
+            Chunk chunk = GetChunk(tileX / Props.chunkSize, tileY / Props.chunkSize);
+            if (chunk == null)
+            {
+                return 0;
+            }
+            return chunk.GetTile(tileX % Props.chunkSize, tileY % Props.chunkSize);
+        }
+
         public Vector2 WorldToTileVector(int chunkIndex, int tileIndex)
         {
             float x = 16.5f + (chunkIndex / worldSize) * Props.chunkSize * Props.tileSize;
@@ -399,7 +410,7 @@ namespace EngineeringCorpsCS
             int yR = (int)Math.Floor(y/Props.tileSize);
             return new int[] { xR/Props.chunkSize, yR/Props.chunkSize, xR % Props.chunkSize, yR % Props.chunkSize };
         }
-        public static int[] WorldToAbsoluteTileCoords(float x, float y)
+        public int[] WorldToAbsoluteTileCoords(float x, float y)
         {
             int xR = (int)Math.Floor(x / Props.tileSize);
             int yR = (int)Math.Floor(y / Props.tileSize);
