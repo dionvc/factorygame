@@ -408,6 +408,8 @@ namespace EngineeringCorpsCS
         {
             int xR = (int)Math.Floor(x/Props.tileSize);
             int yR = (int)Math.Floor(y/Props.tileSize);
+            xR = xR < 0 ? 0 : xR;
+            yR = yR < 0 ? 0 : yR;
             return new int[] { xR/Props.chunkSize, yR/Props.chunkSize, xR % Props.chunkSize, yR % Props.chunkSize };
         }
         public int[] WorldToAbsoluteTileCoords(float x, float y)

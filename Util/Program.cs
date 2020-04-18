@@ -193,6 +193,8 @@ namespace EngineeringCorpsCS
             }
             #endregion
             //Attaching the camera to something!
+            EntityGhost treePlaceGhost = new EntityGhost(new BoundingBox(16, 16), new Vector2(0, 0), surfaceContainer);
+            treePlaceGhost.collisionMask = Base.CollisionLayer.TerrainSolid | Base.CollisionLayer.EntityPhysical;
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
@@ -200,7 +202,11 @@ namespace EngineeringCorpsCS
                     Vector2[] poissonDiscDistribution = PoissonDiscDistribution.GetDistribution(128, i * 8192 + j, 10);
                     for (int k = 0; k < poissonDiscDistribution.Length; k++)
                     {
-                        entityCollection.InstantiatePrototype("pineTree1", poissonDiscDistribution[k].Add(new Vector2(1024 * (i), 1024 * (j))), surfaceContainer);
+                        treePlaceGhost.position = poissonDiscDistribution[k].Add(new Vector2(1024 * (i), 1024 * (j)));
+                        if (!BoundingBox.CheckForCollision(treePlaceGhost))
+                        {
+                            entityCollection.InstantiatePrototype("pineTree1", treePlaceGhost.position.Copy(), surfaceContainer);
+                        }
                     }
                 }
             }
@@ -228,12 +234,12 @@ namespace EngineeringCorpsCS
             clock = new Clock();
             fpsQueue = new Queue<float>(10);
             frame = 0;
-            PathingTest pathTest = new PathingTest(tileCollection);
+            Pathing pathTest = new Pathing(tileCollection);
             Vector2f target = new Vector2f(2048 * 3, 2048 * 3);
             RectangleShape targetBox = new RectangleShape(new Vector2f(32, 32));
             targetBox.Position = target;
             targetBox.FillColor = Color.Green;
-            PathNode path = pathTest.GetPath(surfaceContainer, new Vector2(2048, 2048), new Vector2(2048 * 3, 2048 * 3), 10000, Base.CollisionLayer.TerrainSolid);
+            PathNode path = pathTest.GetPath(surfaceContainer, new Vector2(2048, 2048), new Vector2(2048 * 3, 2048 * 3), 500, Base.CollisionLayer.TerrainSolid, Base.CollisionLayer.TerrainSolid & Base.CollisionLayer.Terrain, 2.0f);
             for(int i = 0; i < 30; i ++)
             {
                 fpsQueue.Enqueue(60.0f);
@@ -261,12 +267,17 @@ namespace EngineeringCorpsCS
                 //update camera
                 camera.Update();
                 //drawing game world (terrain, entities)
-                if (camera.focusedEntity != null)
+                if (camera.viewedSurface != null)
                 {
                     renderer.RenderWorld(window, camera, camera.viewedSurface);
                     window.SetView(camera.GetGameView());
-                    pathTest.DrawPath(window, path);
+                    //debug pathtesting
+                    if (path != null)
+                    {
+                        pathTest.DrawPath(window, path);
+                    }
                     window.Draw(targetBox);
+                    //end debug pathtesting
                 }
                 //drawing menus (main menu, pause, ingame, etc)
                 renderer.RenderGUI(window, camera);

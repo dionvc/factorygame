@@ -16,30 +16,35 @@ namespace EngineeringCorpsCS
         public float begin;
         public float pathCost;
         public int[] coords;
-        public PathNode(PathNode parentNode, float pathCost, float begin, float heuristic, int[] coords)
+        public PathNode(PathNode parentNode, float frictionCost, float begin, float heuristic, int[] coords)
         {
             this.parentNode = parentNode;
             this.coords = coords;
-            this.cost = heuristic + begin;
+            this.cost = heuristic + begin + frictionCost;
             this.heuristic = heuristic;
             this.begin = begin;
-            this.pathCost = pathCost;
+            this.pathCost = frictionCost;
         }
     }
-    class PathingTest
+    class Pathing
     {
         
         TileCollection tileCollection;
+        float frictionFactor = 2.0f;
 
-        public PathingTest(TileCollection tileCollection)
+        public Pathing(TileCollection tileCollection)
         {
             this.tileCollection = tileCollection;
         }
-        public PathNode GetPath(SurfaceContainer surface, Vector2 start, Vector2 target, int pathTimeout, Base.CollisionLayer collisionMask)
+        public PathNode GetPath(SurfaceContainer surface, Vector2 start, Vector2 target, int pathTimeout, Base.CollisionLayer unwalkableMask, Base.CollisionLayer collisionMask, float frictionFactor)
         {
+            this.frictionFactor = frictionFactor;
+            int frictionMask = (int)(collisionMask & Base.CollisionLayer.Terrain); //a nonzero value means the pathcost is higher for lower frictions
+            frictionMask = frictionMask / (1 + frictionMask); //Normalize the frictionmask to 0 or 1 using +1 trick
             int[] startCoords = surface.WorldToAbsoluteTileCoords(start.x, start.y);
             int[] endCoords = surface.WorldToAbsoluteTileCoords(target.x, target.y);
             float heuristic = CalculateHeuristic(startCoords, endCoords);
+
             PathNode startNode = new PathNode(null, 0, 0, heuristic, startCoords);
             List<PathNode> openList = new List<PathNode>();
             List<PathNode> closedList = new List<PathNode>();
@@ -70,19 +75,42 @@ namespace EngineeringCorpsCS
                     for (int j = curNode.coords[1] - 1; j <= curNode.coords[1] + 1; j++)
                     {
                         bool ignore = false;
-                        for(int k = 0; k < closedList.Count; k++)
+                        if (i < 0 || j < 0) //Check if coords are outside worldSize
                         {
-                            if(closedList[k].coords[0] == i && closedList[k].coords[1] == j)
+                            ignore = true;
+                        }
+                        if (ignore == false) //else check that coords are not already in closedList
+                        {
+                            for (int k = 0; k < closedList.Count; k++)
                             {
-                                ignore = true;
+                                if (closedList[k].coords[0] == i && closedList[k].coords[1] == j)
+                                {
+                                    ignore = true;
+                                    break;
+                                }
                             }
                         }
-                        Tile tile = tileCollection.GetTerrainTile(surface.GetTileFromWorldInt(i, j));
-                        if ((collisionMask & tile.collisionMask) == 0 && !ignore)
+                        if(ignore == false) //else check that coords are not already in openList
                         {
-                            int[] coords = new int[] { i, j };
-                            PathNode newNode = new PathNode(curNode, tile.frictionModifier, curNode.begin + 1 ,CalculateHeuristic(coords, endCoords), coords);
-                            openList.Add(newNode);
+                            for(int k = 0; k < openList.Count; k++)
+                            {
+                                if (openList[k].coords[0] == i && openList[k].coords[1] == j)
+                                {
+                                    ignore = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!ignore) //if neither of the preceding conditiosn set ignore to false, add tile to open list on path search
+                        {
+                            Tile tile = tileCollection.GetTerrainTile(surface.GetTileFromWorldInt(i, j));
+                            int solidMask = (int)((collisionMask & unwalkableMask) & tile.collisionMask); // a zero value when the tile is walkable
+                            if (solidMask == 0)
+                            {
+                                int[] coords = new int[] { i, j };
+                                PathNode newNode = new PathNode(curNode, frictionMask * (frictionFactor * (1 / tile.frictionModifier)), curNode.begin + 1, CalculateHeuristic(coords, endCoords), coords);
+                                openList.Add(newNode);
+                            }
                         }
                     }
                 }
@@ -99,9 +127,9 @@ namespace EngineeringCorpsCS
             final.Position = new Vector2f(node.coords[0] * Props.tileSize, node.coords[1] * Props.tileSize);
             while(node.parentNode != null)
             {
-                pathArray.Append(new Vertex(new Vector2f(node.coords[0] * Props.tileSize, node.coords[1] * Props.tileSize), new Color((byte)(255 - startColor), 0, --startColor)));
+                pathArray.Append(new Vertex(new Vector2f((node.coords[0] + 0.5f) * Props.tileSize, (node.coords[1] + 0.5f) * Props.tileSize), new Color((byte)(255 - startColor), 0, --startColor)));
                 node = node.parentNode;
-                pathArray.Append(new Vertex(new Vector2f(node.coords[0] * Props.tileSize, node.coords[1] * Props.tileSize), new Color((byte)(255 - startColor), 0, --startColor)));
+                pathArray.Append(new Vertex(new Vector2f((node.coords[0] + 0.5f) * Props.tileSize, (node.coords[1] + 0.5f) * Props.tileSize), new Color((byte)(255 - startColor), 0, --startColor)));
             }
             RectangleShape start = new RectangleShape(new Vector2f(32, 32));
             start.FillColor = Color.Cyan;

@@ -114,7 +114,7 @@
     <Compile Include="Drawable\LightSourceRadial.cs" />
     <Compile Include="Drawable\StaticSprite.cs" />
     <Compile Include="Drawable\SpriteBatch.cs" />
-    <Compile Include="Entity\PathingTest.cs" />
+    <Compile Include="Util\Pathing.cs" />
     <Compile Include="Entity\Remains.cs" />
     <Compile Include="ItemPlusFluidCollection\Item.cs" />
     <Compile Include="ItemPlusFluidCollection\ItemFactory.cs" />

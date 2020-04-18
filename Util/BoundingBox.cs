@@ -670,6 +670,10 @@ namespace EngineeringCorpsCS
             for (int i = 0; i < chunkList.Length; i++)
             {
                 Chunk chunk = entity.surface.GetChunk(chunkList[i], false);
+                if(chunk == null)
+                {
+                    continue;
+                }
                 //entity collision checks
                 List<Entity> collisionList = chunk.entityCollisionList;
                 for (int j = 0; j < collisionList.Count; j++)

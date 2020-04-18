@@ -94,7 +94,7 @@ namespace EngineeringCorpsCS
         public bool minable = false;
         public MiningProps miningProps;
 
-        public Vector2 position { get; protected set; }
+        public Vector2 position { get; set; }
         /// <summary>
         /// Defines behavior of entity upon being clicked.  Example: Open a menu.
         /// </summary>
