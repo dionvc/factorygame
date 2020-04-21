@@ -672,7 +672,7 @@ namespace EngineeringCorpsCS
                 Chunk chunk = entity.surface.GetChunk(chunkList[i], false);
                 if(chunk == null)
                 {
-                    continue;
+                    return true;
                 }
                 //entity collision checks
                 List<Entity> collisionList = chunk.entityCollisionList;
@@ -698,6 +698,50 @@ namespace EngineeringCorpsCS
                     {
                         Vector2 tilePos = entity.surface.WorldToTileVector(chunkList[i], tileList[i][j]);
                         if (BoundingBox.CheckCollision(entity.collisionBox, entity.surface.tileBox, entity.position, tilePos))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool CheckForPlacementCollision(BoundingBox collisionBox, Vector2 position, SurfaceContainer surface, Base.CollisionLayer collisionMask)
+        {
+            int[] chunkList = BoundingBox.GetChunkBounds(collisionBox, position, surface);
+            int[][] tileList = BoundingBox.GetTileBounds(collisionBox, position);
+            for (int i = 0; i < chunkList.Length; i++)
+            {
+                Chunk chunk = surface.GetChunk(chunkList[i], false);
+                if (chunk == null)
+                {
+                    continue;
+                }
+                //entity collision checks
+                List<Entity> collisionList = chunk.entityCollisionList;
+                for (int j = 0; j < collisionList.Count; j++)
+                {
+                    if ((collisionList[j].collisionMask & collisionMask) != 0)
+                    {
+                        if (BoundingBox.CheckCollision(collisionBox, collisionList[j].collisionBox, position, collisionList[j].position))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                //tile collision checks
+                //Perhaps switch to continually checking whether the player is colliding with a tile at his position until he isnt colliding with a tile?
+                //Would fix the situation where getting stuck in water still allows movement within
+                //TODO: try solution outline above
+                for (int j = 0; j < tileList[i].Length; j++)
+                {
+                    Tile tile = surface.tileCollection.GetTerrainTile(chunk.GetTile(tileList[i][j]));
+                    if ((collisionMask & tile.collisionMask) != 0)
+                    {
+                        Vector2 tilePos = surface.WorldToTileVector(chunkList[i], tileList[i][j]);
+                        if (BoundingBox.CheckCollision(collisionBox, surface.tileBox, position, tilePos))
                         {
                             return true;
                         }

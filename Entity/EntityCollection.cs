@@ -37,6 +37,21 @@ namespace EngineeringCorpsCS
             return null;
         }
 
+        /// <summary>
+        /// Returns the actual prototype.  Recommended not to modify the returned entity (it will affect all future instances, which may be desirable).
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public Entity GetPrototype(string name)
+        {
+            Entity prototype;
+            if(entityPrototypes.TryGetValue(name, out prototype))
+            {
+                return prototype;
+            }
+            return null;
+        }
+
         private Entity CreatePlayer()
         {
             Player playerPrototype = new Player(textureAtlases, "player");
@@ -46,6 +61,7 @@ namespace EngineeringCorpsCS
         private Entity CreatePineTree1()
         {
             Tree pineTree1 = new Tree(textureAtlases, "pineTree1");
+            pineTree1.collisionMask = Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
             return pineTree1;
         }
     }

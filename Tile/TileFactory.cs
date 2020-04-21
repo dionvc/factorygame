@@ -36,7 +36,7 @@ namespace EngineeringCorpsCS
             Base.CollisionLayer collisionMask = Base.CollisionLayer.TerrainSolid;
             IntRect bounds;
             Texture tileSheet = textureAtlases.GetTexture("", out bounds);
-            return new Tile(tileSheet, bounds, index, "Deep Water", 0, defaultShade, new Color(0,45,200), collisionMask, 1.0f, -0.25f, 0.0f);
+            return new Tile(tileSheet, bounds, index, "Deep Water", 0, defaultShade, new Color(0,45,200), collisionMask, 1.0f, 0.25f, 0.0f);
         }
 
         public Tile CreateBeachSand(byte index)
@@ -52,7 +52,7 @@ namespace EngineeringCorpsCS
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Terrain;
             IntRect bounds;
             Texture tileSheet = textureAtlases.GetTexture("desertTilesheet", out bounds);
-            return new Tile(tileSheet, bounds, index, "Desert", 0.85f, defaultShade, new Color(160,64,0), collisionMask, -0.75f, 0.25f, 0.75f);
+            return new Tile(tileSheet, bounds, index, "Desert", 0.85f, defaultShade, new Color(160,64,0), collisionMask, 0.75f, 0.25f, 0.75f);
         }
 
         public Tile CreateVoid(byte index)
@@ -60,7 +60,7 @@ namespace EngineeringCorpsCS
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Void | Base.CollisionLayer.TerrainSolid;
             IntRect bounds;
             Texture tileSheet = textureAtlases.GetTexture("", out bounds);
-            return new Tile(tileSheet, bounds, index, "Void", 0, defaultShade, new Color(0,0,0), collisionMask, 0.0f, -1.5f, 0.2f);
+            return new Tile(tileSheet, bounds, index, "Void", 0, defaultShade, new Color(0,0,0), collisionMask, 0.0f, 1.0f, 0.2f);
         }
 
         public Tile CreateGrass(byte index)
@@ -76,7 +76,7 @@ namespace EngineeringCorpsCS
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Terrain;
             IntRect bounds;
             Texture tileSheet = textureAtlases.GetTexture("snowTilesheet", out bounds);
-            return new Tile(tileSheet, bounds, index, "Snow", 0.9f, defaultShade, new Color(12, 12, 12), collisionMask, 0.6f, 0.2f, -0.5f);
+            return new Tile(tileSheet, bounds, index, "Snow", 0.9f, defaultShade, new Color(12, 12, 12), collisionMask, 0.6f, 0.2f, 0.5f);
         }
     }
 }

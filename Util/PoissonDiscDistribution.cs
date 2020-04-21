@@ -14,9 +14,9 @@ namespace EngineeringCorpsCS
         /// <param name="chunkOrigin"></param>
         /// <param name="sampleDistance"></param>
         /// <returns></returns>
-        public static Vector2[] GetDistribution(float sampleDistance, int chunkIndex, int samplingMaximum)
+        public static Vector2[] GetDistribution(float sampleDistance, long seed, int samplingMaximum)
         {
-            Random r = new Random(chunkIndex);
+            Random r = new Random((int)seed % int.MaxValue);
             int size = (int)(((Props.chunkSize) * Props.tileSize) / sampleDistance);
             List<int> activeList = new List<int>();
             List<Vector2> samples = new List<Vector2>();

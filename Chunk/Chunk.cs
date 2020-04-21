@@ -40,6 +40,10 @@ namespace EngineeringCorpsCS
                 }
             }
         }
+        public void GenerateEntities(int x, int y, SurfaceGenerator surfaceGenerator, SurfaceContainer surface)
+        {
+            surfaceGenerator.GenerateEntities(x, y, surface);
+        }
         public void SetTile(int x, int y, byte tile)
         {
             terrain[x * Props.chunkSize + y] = tile;

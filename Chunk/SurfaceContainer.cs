@@ -14,6 +14,7 @@ namespace EngineeringCorpsCS
         Chunk[] chunks;
         List<Chunk> activeChunks;
         SurfaceGenerator surfaceGenerator;
+        Dictionary<int[], List<Entity>> queuedCollisionEntities;
         //note: the clock is modeled with midday being 0:00 so that a bell curve can be easily modeled around midnight
         //midnight is assumed to be at halfway through the day
         private int timeOfDay;
@@ -40,6 +41,8 @@ namespace EngineeringCorpsCS
             this.lengthOfNight = lengthOfNight;
             this.levelOfDarkness = levelOfDarkness;
             timeOfDay = 0;
+
+            queuedCollisionEntities = new Dictionary<int[], List<Entity>>();
         }
 
         public void Update()
@@ -66,6 +69,15 @@ namespace EngineeringCorpsCS
             Chunk chunk = new Chunk();
             chunk.GenerateTerrain((x) * Props.chunkSize, (y) * Props.chunkSize, surfaceGenerator);
             SetChunk(x * worldSize + y, chunk);
+            List<Entity> queuedEntities;
+            if (queuedCollisionEntities.TryGetValue(new int[] { x, y }, out queuedEntities))
+            {
+                for(int i = 0; i < queuedEntities.Count; i++)
+                {
+                    chunk.AddEntityCollisionCheck(queuedEntities[i]);
+                }
+            }
+            chunk.GenerateEntities(x, y, surfaceGenerator, this);
             activeChunks.Add(chunk);
         }
         public Chunk GetChunk(int x, int y)
@@ -131,13 +143,32 @@ namespace EngineeringCorpsCS
         public void InitiateEntityInChunks(Entity entity)
         {
             int chunkIndex = WorldToChunkIndex(entity.position);
+            int[] cXY = WorldToChunkCoords(entity.position);
             entity.centeredChunk = chunkIndex;
             entity.surface = this;
             GetChunk(chunkIndex, true).AddEntityToChunk(entity);
             int[] newCollisionChunks = BoundingBox.GetChunkBounds(entity.collisionBox, entity.position, entity.surface);
             foreach (int x in newCollisionChunks)
             {
-                GetChunk(x, true).AddEntityCollisionCheck(entity);
+                Chunk collisionChunk = GetChunk(x, false);
+                if(collisionChunk == null)
+                {
+                    List<Entity> queuedEntities;
+                    if(queuedCollisionEntities.TryGetValue(cXY, out queuedEntities))
+                    {
+                        queuedEntities.Add(entity);
+                    }
+                    else
+                    {
+                        queuedEntities = new List<Entity>();
+                        queuedEntities.Add(entity);
+                        queuedCollisionEntities.Add(cXY, queuedEntities);
+                    }
+                }
+                else
+                {
+                    collisionChunk.AddEntityCollisionCheck(entity);
+                }
             }
             entity.collisionChunks = newCollisionChunks;
         }

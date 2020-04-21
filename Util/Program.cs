@@ -193,23 +193,6 @@ namespace EngineeringCorpsCS
             }
             #endregion
             //Attaching the camera to something!
-            EntityGhost treePlaceGhost = new EntityGhost(new BoundingBox(16, 16), new Vector2(0, 0), surfaceContainer);
-            treePlaceGhost.collisionMask = Base.CollisionLayer.TerrainSolid | Base.CollisionLayer.EntityPhysical;
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                {
-                    Vector2[] poissonDiscDistribution = PoissonDiscDistribution.GetDistribution(128, i * 8192 + j, 10);
-                    for (int k = 0; k < poissonDiscDistribution.Length; k++)
-                    {
-                        treePlaceGhost.position = poissonDiscDistribution[k].Add(new Vector2(1024 * (i), 1024 * (j)));
-                        if (!BoundingBox.CheckForCollision(treePlaceGhost))
-                        {
-                            entityCollection.InstantiatePrototype("pineTree1", treePlaceGhost.position.Copy(), surfaceContainer);
-                        }
-                    }
-                }
-            }
             camera.focusedEntity = player;
             this.SubscribeToInput(input);
             renderer.SubscribeToInput(input);
@@ -314,7 +297,11 @@ namespace EngineeringCorpsCS
 
         public void CreateMapGenMenu(string tag)
         {
-            surfaceGenerator = new SurfaceGenerator(tileCollection);
+            GeneratorEntityAffinity treeCollection = new GeneratorEntityAffinity(new string[] { "pineTree1" }, new float[] { 0.5f }, new float[] { 0.5f }, new float[] { 0.5f }, new float[] { 0.3f }, new float[] { 0.3f }, new float[] { 0.3f });
+            treeCollection.SetDensity("", 96);
+            List<GeneratorEntityAffinity> list = new List<GeneratorEntityAffinity>();
+            list.Add(treeCollection);
+            surfaceGenerator = new SurfaceGenerator(tileCollection, entityCollection, list);
             menuFactory.CreateMapGenMenu(surfaceGenerator, camera);
         }
 

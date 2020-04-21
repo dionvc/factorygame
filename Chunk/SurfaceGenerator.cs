@@ -6,8 +6,38 @@ using System.Threading.Tasks;
 
 namespace EngineeringCorpsCS
 {
+    class GeneratorEntityAffinity
+    {
+        public string[] prototypeVars { get; protected set; }
+        public float[] moistureAffinities { get; protected set; }
+        public float[] elevationAffinities { get; protected set; }
+        public float[] temperatureAffinities { get; protected set; }
+        public float[] moistureRange { get; protected set; }
+        public float[] temperatureRange { get; protected set; }
+        public float[] elevationRange { get; protected set; }
+        public float density { get; protected set; }
+
+        public int prototypeCount;
+        public GeneratorEntityAffinity(string[] prototypes, float[] moistureAffinities, float[] temperatureAffinities, float[] elevationAffinities, float[] moistureRange, float[] temperatureRange, float[] elevationRange)
+        {
+            this.prototypeVars = prototypes;
+            this.moistureAffinities = moistureAffinities;
+            this.temperatureAffinities = temperatureAffinities;
+            this.elevationAffinities = elevationAffinities;
+            this.moistureRange = moistureRange;
+            this.elevationRange = elevationRange;
+            this.temperatureRange = temperatureRange;
+            prototypeCount = prototypeVars.Length;
+        }
+
+        public void SetDensity(string tag, float value)
+        {
+            density = value;
+        }
+    }
     class SurfaceGenerator
     {
+        
         //Probabilities assigned here
         //each tile type will have a probability rating for each noise type
         //The sum of the differences between the sampled noise and these probabilities will determine the tile used
@@ -27,14 +57,16 @@ namespace EngineeringCorpsCS
         FastNoise.NoiseType moistureType;
         FastNoise.NoiseType temperatureType;
         List<Tile> tileList;
+        EntityCollection entityCollection;
+        List<GeneratorEntityAffinity> entitiesGenerated;
         public int surfaceSize { get; set; }
         float moistureFactor;
         float temperatureFactor;
         float elevationFactor;
         public int seed { get; protected set; }
-        public SurfaceGenerator(TileCollection tiles)
+        public SurfaceGenerator(TileCollection tiles, EntityCollection entityCollection, List<GeneratorEntityAffinity> entities)
         {
-            surfaceSize = Props.maxSurfaceSize * Props.tileSize;
+            surfaceSize = Props.maxSurfaceSize * Props.chunkSize;
             moistureFactor = 1.0f;
             temperatureFactor = 1.0f;
             elevationFactor = 1.0f;
@@ -54,6 +86,8 @@ namespace EngineeringCorpsCS
             SetSeed(seed);
 
             tileList = tiles.GetTerrainTiles();
+            this.entityCollection = entityCollection;
+            this.entitiesGenerated = entities;
         }
 
         public byte GetTile(int nx, int ny)
@@ -68,20 +102,81 @@ namespace EngineeringCorpsCS
             + 0.25 * temperatureNoise.GetNoise(2 * nx, 2 * ny)
             + 0.25 * temperatureNoise.GetNoise(4 * nx, 4 * ny);
 
-            elevation = Math.Pow(elevation, elevationFactor); 
-            moisture = Math.Pow(moisture, moistureFactor);
-            temperature = Math.Pow(temperature, temperatureFactor);
+            elevation = 3 * Math.Pow(elevation, elevationFactor); 
+            moisture = 3 * Math.Pow(moisture, moistureFactor);
+            temperature = 3 * Math.Pow(temperature, temperatureFactor);
             byte chosenTile = 0;
             float currentMin = 2;
             foreach(Tile t in tileList)
             {
-                float tileProb = (float) (Math.Abs(t.moistureAffinity - 2 * moisture) + Math.Abs(t.temperatureAffinity - 2 * temperature) + Math.Abs(t.elevationAffinity - 2 * elevation));
+                float tileProb = (float) (Math.Abs(t.moistureAffinity - Math.Abs(moisture)) + Math.Abs(t.temperatureAffinity - Math.Abs(temperature)) + Math.Abs(t.elevationAffinity - Math.Abs(elevation)));
                 if (tileProb < currentMin) {
                     chosenTile = t.tileType;
                     currentMin = tileProb;
                 }
             }
             return chosenTile;
+        }
+
+        /// <summary>
+        /// Generates the entities to be placed into a chunk
+        /// </summary>
+        /// <param name="chunkX"></param>
+        /// <param name="chunkY"></param>
+        /// <param name="surface"></param>
+        public void GenerateEntities(int chunkX, int chunkY, SurfaceContainer surface)
+        {
+            Vector2 chunkPos = new Vector2(chunkX * Props.chunkSize * Props.tileSize, chunkY * Props.chunkSize * Props.tileSize);
+            for (int i = 0; i < entitiesGenerated.Count; i++)
+            {
+                Vector2[] poissonDiscDistribution = PoissonDiscDistribution.GetDistribution(entitiesGenerated[i].density, (chunkX * (surfaceSize / Props.chunkSize) + chunkY) + seed, 10);
+                for (int j = 0; j < poissonDiscDistribution.Length; j++)
+                {
+                    Vector2 curPos = poissonDiscDistribution[j].VAdd(chunkPos);
+                    int nx = (int)(curPos.x) / Props.tileSize;
+                    int ny = (int)(curPos.y) / Props.tileSize;
+                    double elevation = 0.5 * elevationNoise.GetNoise(1 * nx, 1 * ny)
+                    + 0.25 * elevationNoise.GetNoise(2 * nx, 2 * ny)
+                    + 0.25 * elevationNoise.GetNoise(4 * nx, 4 * ny);
+                    double moisture = 0.5 * moistureNoise.GetNoise(1 * nx, 1 * ny)
+                    + 0.25 * moistureNoise.GetNoise(2 * nx, 2 * ny)
+                    + 0.25 * moistureNoise.GetNoise(4 * nx, 4 * ny);
+                    double temperature = 0.5 * temperatureNoise.GetNoise(1 * nx, 1 * ny)
+                    + 0.25 * temperatureNoise.GetNoise(2 * nx, 2 * ny)
+                    + 0.25 * temperatureNoise.GetNoise(4 * nx, 4 * ny);
+                    elevation = 3 * Math.Pow(elevation, elevationFactor);
+                    moisture = 3 * Math.Pow(moisture, moistureFactor);
+                    temperature = 3 * Math.Pow(temperature, temperatureFactor);
+
+                    float lowestAffinity = 2;
+                    int lowestPrototype = 0;
+
+                    for (int k = 0; k < entitiesGenerated[i].prototypeVars.Length; k++)
+                    {
+                        float entityProb = (float)(Math.Abs(entitiesGenerated[i].elevationAffinities[k] - Math.Abs(elevation)) +
+                           Math.Abs(entitiesGenerated[i].moistureAffinities[k] - Math.Abs(moisture)) +
+                           Math.Abs(entitiesGenerated[i].temperatureAffinities[k] - Math.Abs(temperature)));
+                        if (entityProb < lowestAffinity)
+                        {
+                            lowestAffinity = entityProb;
+                            lowestPrototype = k;
+                        }
+                    }
+                    float moistureDiff = (float)(Math.Abs(entitiesGenerated[i].moistureAffinities[lowestPrototype] - Math.Abs(moisture)));
+                    float elevationDiff = (float)(Math.Abs(entitiesGenerated[i].elevationAffinities[lowestPrototype] - Math.Abs(elevation)));
+                    float temperatureDiff = (float)(Math.Abs(entitiesGenerated[i].temperatureAffinities[lowestPrototype] - Math.Abs(temperature)));
+                    if (entitiesGenerated[i].moistureRange[lowestPrototype % entitiesGenerated[i].prototypeCount] > elevationDiff
+                        && entitiesGenerated[i].temperatureRange[lowestPrototype % entitiesGenerated[i].prototypeCount] > temperatureDiff
+                        && entitiesGenerated[i].elevationRange[lowestPrototype % entitiesGenerated[i].prototypeCount] > moistureDiff)
+                    {
+                        Entity prototype = entityCollection.GetPrototype(entitiesGenerated[i].prototypeVars[lowestPrototype]);
+                        if (prototype != null && !BoundingBox.CheckForPlacementCollision(prototype.collisionBox, curPos, surface, prototype.collisionMask))
+                        {
+                            entityCollection.InstantiatePrototype(prototype.name, curPos, surface);
+                        }
+                    }
+                }
+            }
         }
 
         public void SetSeed(int seed)
