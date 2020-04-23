@@ -297,7 +297,7 @@ namespace EngineeringCorpsCS
 
         public void CreateMapGenMenu(string tag)
         {
-            GeneratorEntityAffinity treeCollection = new GeneratorEntityAffinity(new string[] { "pineTree1" }, new float[] { 0.5f }, new float[] { 0.5f }, new float[] { 0.5f }, new float[] { 0.3f }, new float[] { 0.3f }, new float[] { 0.3f });
+            GeneratorEntityAffinity treeCollection = new GeneratorEntityAffinity(new string[] { "pineTree1" }, new float[] { 0.5f }, new float[] { 0.5f }, new float[] { 0.5f }, new float[] { 0.6f }, new float[] { 0.6f }, new float[] { 0.6f });
             treeCollection.SetDensity("", 96);
             List<GeneratorEntityAffinity> list = new List<GeneratorEntityAffinity>();
             list.Add(treeCollection);

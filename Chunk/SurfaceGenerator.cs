@@ -109,7 +109,7 @@ namespace EngineeringCorpsCS
             float currentMin = 2;
             foreach(Tile t in tileList)
             {
-                float tileProb = (float) (Math.Abs(t.moistureAffinity - Math.Abs(moisture)) + Math.Abs(t.temperatureAffinity - Math.Abs(temperature)) + Math.Abs(t.elevationAffinity - Math.Abs(elevation)));
+                float tileProb = (float) (Math.Abs(t.moistureAffinity - moisture) + Math.Abs(t.temperatureAffinity - temperature) + Math.Abs(t.elevationAffinity - elevation));
                 if (tileProb < currentMin) {
                     chosenTile = t.tileType;
                     currentMin = tileProb;
@@ -153,18 +153,18 @@ namespace EngineeringCorpsCS
 
                     for (int k = 0; k < entitiesGenerated[i].prototypeVars.Length; k++)
                     {
-                        float entityProb = (float)(Math.Abs(entitiesGenerated[i].elevationAffinities[k] - Math.Abs(elevation)) +
-                           Math.Abs(entitiesGenerated[i].moistureAffinities[k] - Math.Abs(moisture)) +
-                           Math.Abs(entitiesGenerated[i].temperatureAffinities[k] - Math.Abs(temperature)));
+                        float entityProb = (float)(Math.Abs(entitiesGenerated[i].elevationAffinities[k] - elevation) +
+                           Math.Abs(entitiesGenerated[i].moistureAffinities[k] - moisture) +
+                           Math.Abs(entitiesGenerated[i].temperatureAffinities[k] - temperature));
                         if (entityProb < lowestAffinity)
                         {
                             lowestAffinity = entityProb;
                             lowestPrototype = k;
                         }
                     }
-                    float moistureDiff = (float)(Math.Abs(entitiesGenerated[i].moistureAffinities[lowestPrototype] - Math.Abs(moisture)));
-                    float elevationDiff = (float)(Math.Abs(entitiesGenerated[i].elevationAffinities[lowestPrototype] - Math.Abs(elevation)));
-                    float temperatureDiff = (float)(Math.Abs(entitiesGenerated[i].temperatureAffinities[lowestPrototype] - Math.Abs(temperature)));
+                    float moistureDiff = (float)(Math.Abs(entitiesGenerated[i].moistureAffinities[lowestPrototype] - moisture));
+                    float elevationDiff = (float)(Math.Abs(entitiesGenerated[i].elevationAffinities[lowestPrototype] - elevation));
+                    float temperatureDiff = (float)(Math.Abs(entitiesGenerated[i].temperatureAffinities[lowestPrototype] - temperature));
                     if (entitiesGenerated[i].moistureRange[lowestPrototype % entitiesGenerated[i].prototypeCount] > elevationDiff
                         && entitiesGenerated[i].temperatureRange[lowestPrototype % entitiesGenerated[i].prototypeCount] > temperatureDiff
                         && entitiesGenerated[i].elevationRange[lowestPrototype % entitiesGenerated[i].prototypeCount] > moistureDiff)

@@ -17,7 +17,7 @@ namespace EngineeringCorpsCS
         public static Vector2[] GetDistribution(float sampleDistance, long seed, int samplingMaximum)
         {
             Random r = new Random((int)seed % int.MaxValue);
-            int size = (int)(((Props.chunkSize) * Props.tileSize) / sampleDistance);
+            int size = (int)(((Props.chunkSize) * Props.tileSize) / sampleDistance) + 1;
             List<int> activeList = new List<int>();
             List<Vector2> samples = new List<Vector2>();
             int[,] samplingGrid = new int[size, size];
