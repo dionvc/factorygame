@@ -31,6 +31,8 @@ namespace EngineeringCorpsCS
         {
             Initialize(componentSize);
             textField = new MenuText(new Vector2f(size.X, size.Y), font, "", Convert.ToUInt32(size.Y - 4), size.Y);
+            textField.SetTextPosition("left", "center");
+            textField.SetPivots("center", "center", "inside", 2);
             this.parseField = parseField;
             fieldState = FieldState.Normal;
             collisionBox = new BoundingBox(size);

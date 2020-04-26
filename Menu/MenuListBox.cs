@@ -50,11 +50,13 @@ namespace EngineeringCorpsCS
             selectedText.SetRelativePosition(new Vector2f(0, -2));
             selectedValue = initialValue;
             selectedText.SetText(listHeaders[initialValue]);
+            selectedText.SetTextPosition("left", "center");
             for (int i = 0; i < listHeaders.Length; i++)
             {
                 texts[i] = new MenuText(this.size, font, listHeaders[i], charSize, 0.6f);
                 AttachComponent(texts[i]);
                 texts[i].SetText(listHeaders[i]);
+                texts[i].SetTextPosition("left", "center");
                 texts[i].SetRelativePosition(new Vector2f(0, (i + 1) * lineSpacing - 2));
             }
             dropdownBox = new BoundingBox(new Vector2f(size.X, lineSpacing));

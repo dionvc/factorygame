@@ -20,10 +20,12 @@ namespace EngineeringCorpsCS
         public delegate void ButtonAction(string tag);
         ButtonAction action;
         ButtonState buttonState;
-        Color buttonHeld = Color.Green;
-        Color buttonNormal = Color.Yellow;
-        Color buttonHover = Color.Magenta;
-        Color buttonColor = Color.Yellow;
+        VertexArray buttonGraphic;
+        RectangleShape highlight;
+        Color buttonHeld = new Color(0, 64, 0, 128);
+        Color buttonNormal = new Color(0,0,0,0);
+        Color buttonHover = new Color(0, 128, 0, 128);
+        Color buttonColor = new Color(0, 0, 0, 128);
 
         public string tag { get; set; } = "";
         public MenuButton(Vector2f componentSize, ButtonAction action)
@@ -32,13 +34,19 @@ namespace EngineeringCorpsCS
             this.action = action;
             this.buttonState = ButtonState.Normal;
             this.collisionBox = new BoundingBox(this.size);
+            buttonGraphic = CreateMenuGraphicArrayWithBorder(new FloatRect(320, 0, 96, 96), 20);
+            highlight = new RectangleShape(componentSize);
         }
         override public void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
         {
-            RectangleShape test = new RectangleShape(size);
-            test.Position = origin + position;
-            test.FillColor = buttonColor;
-            gui.Draw(test);
+            Transform t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            t.Translate(origin + position);
+            Transform original = guiState.Transform;
+            guiState.Transform = t;
+            gui.Draw(buttonGraphic, guiState);
+            highlight.FillColor = buttonColor;
+            highlight.Position = origin + position;
+            gui.Draw(highlight);
             base.Draw(gui, origin, guiState);
         }
         override public void HandleInput(InputManager input)
