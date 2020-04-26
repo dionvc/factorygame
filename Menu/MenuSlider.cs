@@ -25,9 +25,14 @@ namespace EngineeringCorpsCS
         float sliderMax = 2.0f; //The underlying range.  This means that a slider at halfway visually would have half this value.
         float sliderMin = 0.5f;
         SliderState sliderState;
+        VertexArray[] sliderArrays;
+        VertexArray sliderArray;
+        VertexArray sliderArrayHover;
+        VertexArray sliderArraySliding;
         public string tag { get; set; }
-        public MenuSlider(Vector2f componentSize, ApplySlider sliderAction, float sliderMin, float sliderMax, float sliderInitialValue)
+        public MenuSlider(int segments, ApplySlider sliderAction, float sliderMin, float sliderMax, float sliderInitialValue)
         {
+            Vector2f componentSize = new Vector2f(32 * segments, 32);
             Initialize(componentSize);
             this.sliderMin = sliderMin;
             this.sliderMax = sliderMax;
@@ -35,22 +40,56 @@ namespace EngineeringCorpsCS
             sliderState = SliderState.Normal;
             collisionBox = new BoundingBox(componentSize);
             this.sliderAction = sliderAction;
+            sliderArrays = new VertexArray[segments];
+            for(int i = 0; i < segments; i ++)
+            {
+                if(i == 0)
+                {
+                    sliderArrays[i] = CreateMenuGraphic(new FloatRect(0, 96, 32, 32), new Vector2f(32, 32));
+                }
+                else if(i == segments - 1)
+                {
+                    sliderArrays[i] = CreateMenuGraphic(new FloatRect(64, 96, 32, 32), new Vector2f(32, 32));
+                }
+                else
+                {
+                    sliderArrays[i] = CreateMenuGraphic(new FloatRect(32, 96, 32, 32), new Vector2f(32, 32));
+                }
+            }
+            sliderArray = CreateMenuGraphic(new FloatRect(96, 96, 32, 32), new Vector2f(32, 32));
+            sliderArrayHover = CreateMenuGraphic(new FloatRect(96, 96, 32, 32), new Vector2f(32, 32), new Color(192, 255, 192, 255));
+            sliderArraySliding = CreateMenuGraphic(new FloatRect(96, 96, 32, 32), new Vector2f(32, 32), new Color(128, 255, 128, 255));
         }
 
         public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
         {
             //draw the slider (regular, hightlighted, and pressed)
             //draw the backdrop of slider (details?)
-            RectangleShape back = new RectangleShape(size);
-            back.Position = origin + position;
-            if(sliderState == SliderState.Hover)
+            Transform original = guiState.Transform;
+            Transform t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            t.Translate(origin + position);
+            for (int i = 0; i < sliderArrays.Length; i++)
             {
-                back.FillColor = Color.Blue;
+                guiState.Transform = t;
+                gui.Draw(sliderArrays[i], guiState);
+                t.Translate(new Vector2f(32, 0));
             }
-            RectangleShape slider = new RectangleShape(new Vector2f(32, 64));
-            slider.Position = origin + position + new Vector2f(sliderValue - 16, -32);
-            gui.Draw(back);
-            gui.Draw(slider);
+            t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            t.Translate(origin + position + new Vector2f(sliderValue - 16, -4));
+            guiState.Transform = t;
+            if(sliderState == SliderState.Normal)
+            {
+                gui.Draw(sliderArray, guiState);
+            }
+            else if(sliderState == SliderState.Hover)
+            {
+                gui.Draw(sliderArrayHover, guiState);
+            }
+            else if(sliderState == SliderState.Sliding)
+            {
+                gui.Draw(sliderArraySliding, guiState);
+            }
+            guiState.Transform = original;
             base.Draw(gui, origin, guiState);
         }
 

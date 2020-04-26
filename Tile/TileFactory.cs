@@ -60,7 +60,7 @@ namespace EngineeringCorpsCS
             Base.CollisionLayer collisionMask = Base.CollisionLayer.Void | Base.CollisionLayer.TerrainSolid;
             IntRect bounds;
             Texture tileSheet = textureAtlases.GetTexture("", out bounds);
-            return new Tile(tileSheet, bounds, index, "Void", 0, defaultShade, new Color(0,0,0), collisionMask, 0.0f, 1.0f, 0.2f);
+            return new Tile(tileSheet, bounds, index, "Void", 0, defaultShade, new Color(0,0,0), collisionMask, -1.0f, -1.0f, -1.0f);
         }
 
         public Tile CreateGrass(byte index)

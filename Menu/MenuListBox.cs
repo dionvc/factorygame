@@ -26,6 +26,8 @@ namespace EngineeringCorpsCS
         float lineSpacing;
         ListBoxState listboxState;
         SelectionMethod applySelection;
+        VertexArray dropdownMainBox;
+        VertexArray dropdownArrow;
         /// <summary>
         /// Additional param that will be passed with the selection
         /// </summary>
@@ -57,20 +59,28 @@ namespace EngineeringCorpsCS
                 AttachComponent(texts[i]);
                 texts[i].SetText(listHeaders[i]);
                 texts[i].SetTextPosition("left", "center");
-                texts[i].SetRelativePosition(new Vector2f(0, (i + 1) * lineSpacing - 2));
+                texts[i].SetRelativePosition(new Vector2f(0, (i + 1) * (lineSpacing + 1) - 2));
             }
             dropdownBox = new BoundingBox(new Vector2f(size.X, lineSpacing));
-            collisionBox = new BoundingBox(size);
+            collisionBox = new BoundingBox(size + new Vector2f(size.Y, 0));
             listboxState = ListBoxState.Normal;
+
+            dropdownMainBox = CreateMenuGraphicArrayWithBorder(new FloatRect(96, 0, 96, 96), 10);
+            dropdownArrow = CreateMenuGraphic(new FloatRect(416, 0, 96, 96), new Vector2f(size.Y, size.Y));
         }
 
         public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
         {
             //Draw the top component field and text header
-            RectangleShape box = new RectangleShape(size);
-            box.Position = origin + position;
-            box.FillColor = Color.Magenta;
-            gui.Draw(box);
+            Transform t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            t.Translate(origin + position);
+            Transform original = guiState.Transform;
+            guiState.Transform = t;
+            gui.Draw(dropdownMainBox, guiState);
+            t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            t.Translate(origin + position + new Vector2f(size.X,0));
+            guiState.Transform = t;
+            gui.Draw(dropdownArrow, guiState);
             selectedText.Draw(gui, origin + position, guiState);
             //Draw the dropdown button
             //If is focused:
@@ -79,8 +89,12 @@ namespace EngineeringCorpsCS
                 for (int i = 0; i < listHeaders.Length; i++)
                 {
                     RectangleShape otherbox = new RectangleShape(size);
-                    otherbox.Position = origin + new Vector2f(position.X, position.Y + size.Y + i * lineSpacing);
-                    otherbox.FillColor = Color.Yellow;
+                    otherbox.Position = origin + new Vector2f(position.X, position.Y + size.Y + i * (lineSpacing + 1));
+                    otherbox.FillColor = new Color(64, 64, 64, 128);
+                    if(i == hoveredValue)
+                    {
+                        otherbox.FillColor = new Color(32, 96, 32, 128);
+                    }
                     gui.Draw(otherbox);
                     texts[i].Draw(gui, origin + position, guiState);
                 }
@@ -88,6 +102,7 @@ namespace EngineeringCorpsCS
             //Draw the dropdown transparent selector
             //Draw the highlight over currently hovered value
             //Draw the text for the values
+            guiState.Transform = original;
         }
 
         public override void HandleInput(InputManager input)

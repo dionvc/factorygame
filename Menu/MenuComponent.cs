@@ -115,6 +115,29 @@ namespace EngineeringCorpsCS
 
             return vertexArray;
         }
+
+        public VertexArray CreateMenuGraphic(FloatRect bounds, Vector2f size)
+        {
+            VertexArray vertexArray = new VertexArray(PrimitiveType.Triangles);
+            vertexArray.Append(new Vertex(new Vector2f(0, 0), new Vector2f(bounds.Left, bounds.Top)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X, 0), new Vector2f(bounds.Left + bounds.Width, bounds.Top)));
+            vertexArray.Append(new Vertex(new Vector2f(0, size.Y), new Vector2f(bounds.Left, bounds.Top + bounds.Height)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X, 0), new Vector2f(bounds.Left + bounds.Width, bounds.Top)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X, size.Y), new Vector2f(bounds.Left + bounds.Width, bounds.Top + bounds.Height)));
+            vertexArray.Append(new Vertex(new Vector2f(0, size.Y), new Vector2f(bounds.Left, bounds.Top + bounds.Height)));
+            return vertexArray;
+        }
+        public VertexArray CreateMenuGraphic(FloatRect bounds, Vector2f size, Color color)
+        {
+            VertexArray vertexArray = new VertexArray(PrimitiveType.Triangles);
+            vertexArray.Append(new Vertex(new Vector2f(0, 0), color, new Vector2f(bounds.Left, bounds.Top)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X, 0), color, new Vector2f(bounds.Left + bounds.Width, bounds.Top)));
+            vertexArray.Append(new Vertex(new Vector2f(0, size.Y), color, new Vector2f(bounds.Left, bounds.Top + bounds.Height)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X, 0), color, new Vector2f(bounds.Left + bounds.Width, bounds.Top)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X, size.Y), color, new Vector2f(bounds.Left + bounds.Width, bounds.Top + bounds.Height)));
+            vertexArray.Append(new Vertex(new Vector2f(0, size.Y), color, new Vector2f(bounds.Left, bounds.Top + bounds.Height)));
+            return vertexArray;
+        }
         public void Translate(Vector2f translation)
         {
             if (!lockedPosition)
