@@ -71,7 +71,8 @@ namespace EngineeringCorpsCS
         {
             base.HandleInput(input);
 
-            Vector2f mousePos = input.GetMousePosition();
+            Vector2f mousePos;
+            bool mouse = input.GetMousePosition(out mousePos);
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
             while (bubble != null)
@@ -80,7 +81,7 @@ namespace EngineeringCorpsCS
                 bubble = bubble.parent;
             }
             bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, position + origin);
-            if ((fieldState == FieldState.Normal || fieldState == FieldState.Modified) && collided && input.GetMouseClicked(InputBindings.primary, true))
+            if (mouse && (fieldState == FieldState.Normal || fieldState == FieldState.Modified) && collided && input.GetMouseClicked(InputBindings.primary, true))
             {
                 fieldState = FieldState.Focused;
             }

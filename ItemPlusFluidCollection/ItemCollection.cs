@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EngineeringCorpsCS.ItemPlusFluidCollection
+namespace EngineeringCorpsCS
 {
     class ItemCollection
     {
         Dictionary<string, Item> itemCollection;
         ItemFactory itemFactory;
 
-        public ItemCollection()
+        public ItemCollection(TextureAtlases textureAtlases)
         {
-            itemFactory = new ItemFactory();
+            itemFactory = new ItemFactory(textureAtlases);
             itemCollection = itemFactory.GetItems();
         }
 

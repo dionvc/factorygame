@@ -70,8 +70,10 @@ namespace EngineeringCorpsCS
         //ingame variables
         SurfaceContainer surfaceContainer;
         SurfaceGenerator surfaceGenerator;
+        //Prototype/Flyweight collections
         TileCollection tileCollection;
         EntityCollection entityCollection;
+        ItemCollection itemCollection;
         //Debug variable
         Clock clock;
         float fps;
@@ -93,6 +95,7 @@ namespace EngineeringCorpsCS
         }
         public void InitializeResources()
         {
+            //Loading text/splashscreen loading
             Image icon = new Image("Graphics/GUI/EngineeringCorpsIcon.png");
             Texture loadingTexture = new Texture(icon);
             Sprite loadingTitle = new Sprite(loadingTexture);
@@ -104,7 +107,7 @@ namespace EngineeringCorpsCS
             loadingTitle.Origin = new Vector2f(loadingTexture.Size.X/2, loadingTexture.Size.Y / 2);
             loadingTitle.Position = new Vector2f(window.Size.X / 2, window.Size.Y / 4);
 
-
+            //Loading textures
             window.Clear(Color.Black);
             window.Draw(loadingTitle);
             window.Draw(loadingText);
@@ -112,7 +115,7 @@ namespace EngineeringCorpsCS
             textureAtlases = new TextureAtlases();
             textureAtlases.LoadTextures(Props.packTogether);
 
-
+            //Loading fonts
             loadingText.DisplayedString = "Loading Fonts...";
             loadingText.Origin = new Vector2f(loadingText.GetGlobalBounds().Width / 2, loadingText.GetGlobalBounds().Height / 2);
             window.Clear(Color.Black);
@@ -121,9 +124,8 @@ namespace EngineeringCorpsCS
             window.Display();
             fontContainer = new FontContainer();
             fontContainer.LoadFonts();
-            //TODO: End loading screen
 
-            //Input, menu, display systems
+            //Initializing Input
             //TODO: Investigate this cyclic couple of the menu system and input.  Input definitely needs access to menufactory.  Menucontainer may not need access to input.
             loadingText.DisplayedString = "Initializing Input...";
             loadingText.Origin = new Vector2f(loadingText.GetGlobalBounds().Width / 2, loadingText.GetGlobalBounds().Height / 2);
@@ -133,6 +135,7 @@ namespace EngineeringCorpsCS
             window.Display();
             input = new InputManager(window);
 
+            //Initializing Rendering systems
             loadingText.DisplayedString = "Initializing Rendering...";
             loadingText.Origin = new Vector2f(loadingText.GetGlobalBounds().Width / 2, loadingText.GetGlobalBounds().Height / 2);
             window.Clear(Color.Black);
@@ -149,7 +152,7 @@ namespace EngineeringCorpsCS
             window.Resized += menuContainer.RepositionMenus;
             input.menuFactory = menuFactory;
 
-            //Game prototypes
+            //Loading prototypes
             loadingText.DisplayedString = "Initializing Collections...";
             loadingText.Origin = new Vector2f(loadingText.GetGlobalBounds().Width / 2, loadingText.GetGlobalBounds().Height / 2);
             window.Clear(Color.Black);
@@ -160,6 +163,8 @@ namespace EngineeringCorpsCS
             entityCollection = new EntityCollection(textureAtlases);
             entityCollection.LoadPrototypes();
             input.entityCollection = entityCollection;
+            itemCollection = new ItemCollection(textureAtlases);
+            input.itemCollection = itemCollection;
         }
         public void StartMenu()
         {
@@ -222,7 +227,7 @@ namespace EngineeringCorpsCS
             RectangleShape targetBox = new RectangleShape(new Vector2f(32, 32));
             targetBox.Position = target;
             targetBox.FillColor = Color.Green;
-            PathNode path = pathTest.GetPath(surfaceContainer, new Vector2(2048, 2048), new Vector2(2048 * 3, 2048 * 3), 500, Base.CollisionLayer.TerrainSolid, Base.CollisionLayer.TerrainSolid & Base.CollisionLayer.Terrain, 2.0f);
+            PathNode path = pathTest.GetPath(surfaceContainer, new Vector2(2048, 2048), new Vector2(2048 * 3, 2048 * 3), 500, Base.CollisionLayer.TerrainSolid, Base.CollisionLayer.TerrainSolid | Base.CollisionLayer.Terrain, 2.0f);
             for(int i = 0; i < 30; i ++)
             {
                 fpsQueue.Enqueue(60.0f);
@@ -261,6 +266,10 @@ namespace EngineeringCorpsCS
                     }
                     window.Draw(targetBox);
                     //end debug pathtesting
+                    if (camera.focusedEntity is Player) 
+                    {
+                        renderer.RenderMiningProgress(window, camera, (Player)camera.focusedEntity);
+                    }
                 }
                 //drawing menus (main menu, pause, ingame, etc)
                 renderer.RenderGUI(window, camera);

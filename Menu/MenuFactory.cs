@@ -162,8 +162,7 @@ namespace EngineeringCorpsCS
             MenuField surfaceSizeField = new MenuField(new Vector2f(150,25), mapGenFont, surfaceGenerator.ParseString);
             surfaceSizeField.tag = "surfacesize";
             surfaceSizeField.AttachComponent(surfaceSizeFieldTitle);
-            surfaceSizeFieldTitle.SetPivots("right", "center", "outside", 5.0f);
-            surfaceSizeFieldTitle.SetTextPosition();
+            surfaceSizeFieldTitle.SetTextPosition("right", "center");
             surfaceSizeFieldTitle.SetPivots("left", "center", "outside", 0.0f);
             surfaceSizeFieldTitle.SetInitialPosition(surfaceSizeField);
             //Seed field
@@ -171,8 +170,7 @@ namespace EngineeringCorpsCS
             MenuField seedField = new MenuField(new Vector2f(150, 25), mapGenFont, surfaceGenerator.ParseString);
             seedField.tag = "seed";
             seedField.AttachComponent(seedFieldTitle);
-            seedFieldTitle.SetPivots("right", "center", "outside", 5.0f);
-            seedFieldTitle.SetTextPosition();
+            seedFieldTitle.SetTextPosition("right", "center");
             seedFieldTitle.SetPivots("left", "center", "outside", 0.0f);
             seedFieldTitle.SetInitialPosition(seedField);
             //Start game button
@@ -221,8 +219,12 @@ namespace EngineeringCorpsCS
 
         public void CreateTestInventory(Player accessingPlayer, ItemStack[] inventory)
         {
-            MenuInventory inventoryMenu = new MenuInventory(new Vector2f(256, 256), inventory, accessingPlayer);
-            menuContainer.AttachMenu(inventoryMenu);
+            Font itemFont = fontContainer.GetFont("SairaRegular");
+            MenuPanel inventoryPanel = new MenuPanel(new Vector2f(0, 0), new Vector2f(300, 300), new FloatRect(0, 0, 96, 96), 8, null);
+            inventoryPanel.closePanelKey = InputBindings.showInventory;
+            MenuInventory inventoryMenu = new MenuInventory(new Vector2f(256, 256), inventory, accessingPlayer, itemFont);
+            inventoryPanel.AttachComponent(inventoryMenu);
+            menuContainer.AttachMenu(inventoryPanel);
         }
     }
 }

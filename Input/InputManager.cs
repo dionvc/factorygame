@@ -41,6 +41,8 @@ namespace EngineeringCorpsCS
         public MenuFactory menuFactory { get; set; }
         public EntityCollection entityCollection { get; set; }
 
+        public ItemCollection itemCollection { get; set; }
+
         private string keyString;
         private bool keyStringConsumed;
         private int tickAccumulator = 0;
@@ -51,6 +53,7 @@ namespace EngineeringCorpsCS
         private List<Keyboard.Key> keyConsumedForFrame; //Stores if a key has been consumed this frame, if so, doesn't allow it to be used
         private List<Mouse.Button> mouseButtonConsumedForFrame;
         private bool mouseScrollConsumedForFrame = false;
+        private bool mousePositionConsumedForFrame = false;
         public InputManager(RenderWindow window) 
         {
             this.window = window;
@@ -125,6 +128,7 @@ namespace EngineeringCorpsCS
             keyConsumedForFrame.Clear();
             mouseButtonConsumedForFrame.Clear();
             mouseScrollConsumedForFrame = false;
+            mousePositionConsumedForFrame = false;
             keyStringConsumed = false;
             mouseScrollDelta = 0.0f;
             keyString = "";
@@ -409,14 +413,41 @@ namespace EngineeringCorpsCS
             return 0.0f;
         }
 
-        public Vector2f GetMousePosition()
+        /// <summary>
+        /// Returns whether the mouse position was available.  Also outputs the coordinates themselves as a Vector2f.
+        /// </summary>
+        /// <param name="consume"></param>
+        /// <param name="coords"></param>
+        /// <returns></returns>
+        public bool GetMousePosition(out Vector2f coords)
         {
-            return window.MapPixelToCoords(mousePos);
+            coords = window.MapPixelToCoords(mousePos);
+            if (mousePositionConsumedForFrame == false)
+            {
+                return true;
+            }
+            return false;
         }
 
-        public float[] GetMousePositionAsFloat()
+        /// <summary>
+        /// Returns whether the mouse position was available. Also outputs the coordinates themselves as a float array.
+        /// </summary>
+        /// <param name="consume"></param>
+        /// <param name="coords"></param>
+        /// <returns></returns>
+        public bool GetMousePositionAsFloat(out float[] coords)
         {
-            return new float[] { window.MapPixelToCoords(mousePos).X, window.MapPixelToCoords(mousePos).Y };
+            coords = new float[] { window.MapPixelToCoords(mousePos).X, window.MapPixelToCoords(mousePos).Y };
+            if (mousePositionConsumedForFrame == false)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void ConsumeMousePosition()
+        {
+            mousePositionConsumedForFrame = true;
         }
 
         public Vector2f GetMouseDiff()

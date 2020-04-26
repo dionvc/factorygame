@@ -58,6 +58,9 @@ namespace EngineeringCorpsCS
             }
             collisionMask = CollisionLayer.EntityPhysical;
             mapColor = new Color(32, 160, 0);
+
+
+            miningProps = new MiningProps("Pine Sapling", 1, 320, 0, "");
         }
 
         public override void Update()

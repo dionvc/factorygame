@@ -16,6 +16,8 @@ namespace EngineeringCorpsCS
         public float lineSpacing { get; set; }
         char lineSplit = ' ';
         Font font;
+        string textPivot1 = "center";
+        string textPivot2 = "center";
         public uint charSize { get; protected set; }
         public MenuText(Vector2f componentSize, Font font, string text, uint charSize, float lineSpacing)
         {
@@ -44,8 +46,10 @@ namespace EngineeringCorpsCS
             base.Draw(gui, origin, guiState);
         }
 
-        public void SetTextPosition()
+        public void SetTextPosition(string textPivot, string textPivotOther)
         {
+            textPivot1 = textPivot;
+            textPivot2 = textPivotOther;
             //do not change the position of the text component, but instead the positions of the text objects contained
             float centerX = size.X / 2;
             float centerY = size.Y / 2;
@@ -55,25 +59,25 @@ namespace EngineeringCorpsCS
             {
                 textPositions[i] = new Vector2f(size.X / 2, size.Y / 2);
                 textComponents[i].Origin = new Vector2f(textComponents[i].GetLocalBounds().Width / 2.0f, charSize / 2.0f);
-                if (pivot1 == "center" || pivot2 == "center")
+                if (textPivot1 == "center" || textPivot2 == "center")
                 {
                     textPositions[i] += new Vector2f(0, (i - (components - 1)/2.0f) * charSize - charSize/8);
                 }
-                if (pivot1 == "top" || pivot2 == "top")
+                if (textPivot1 == "top" || textPivot2 == "top")
                 {
                     textComponents[i].Origin += new Vector2f(0, -textComponents[i].GetLocalBounds().Height / 2.0f);
                     textPositions[i] += new Vector2f(0, (i * charSize) - size.Y / 2 + margin);
                 }
-                if (pivot1 == "bottom" || pivot2 == "bottom") {
+                if (textPivot1 == "bottom" || textPivot2 == "bottom") {
                     textComponents[i].Origin += new Vector2f(0, -textComponents[i].GetLocalBounds().Height / 2.0f);
                     textPositions[i] += new Vector2f(0, -((components - i) * charSize) + size.Y / 2 - margin);
                 }
-                if (pivot1 == "left" || pivot2 == "left") 
+                if (textPivot1 == "left" || textPivot2 == "left") 
                 {
                     textComponents[i].Origin += new Vector2f(-textComponents[i].GetLocalBounds().Width / 2.0f, 0);
                     textPositions[i] += new Vector2f(-size.X / 2 + margin, 0);
                 }
-                if (pivot1 == "right" || pivot2 == "right")
+                if (textPivot1 == "right" || textPivot2 == "right")
                 {
                     textComponents[i].Origin += new Vector2f(textComponents[i].GetLocalBounds().Width / 2.0f, 0) ;
                     textPositions[i] += new Vector2f(size.X - margin, 0);
@@ -121,7 +125,7 @@ namespace EngineeringCorpsCS
                     }
                 }
             }
-            SetTextPosition();
+            SetTextPosition(textPivot1, textPivot2);
         }
 
         public void ComputeSize()

@@ -15,6 +15,8 @@ namespace EngineeringCorpsCS
         ItemStack[] inventory;
         public ItemStack heldItem { get; set; } = null;
         EntityGhost heldItemGhost;
+        public Entity miningEntity { get; set; } = null;
+        public int miningProgress;
         TextureAtlases textureAtlases;
         AnimationRotated walking;
         LightSourceDirectional directionalLight;
@@ -34,13 +36,6 @@ namespace EngineeringCorpsCS
             drawArray = new Drawable[] { walking };
             collisionMask = CollisionLayer.EntityPhysical | CollisionLayer.TerrainSolid;
             mapColor = Color.Magenta;
-
-            inventory = new ItemStack[10];
-            for (int i = 0; i < inventory.Length - 2; i++)
-            {
-                inventory[i] = new ItemStack();
-            }
-            
         }
         /// <summary>
         /// TODO: Add inheritance structure
@@ -76,6 +71,15 @@ namespace EngineeringCorpsCS
         }
         public void HandleInput(InputManager input)
         {
+            if(inventory == null)
+            {
+                inventory = new ItemStack[10];
+                for (int i = 0; i < inventory.Length - 2; i++)
+                {
+                    inventory[i] = new ItemStack(input.itemCollection.GetItem("Pine Sapling"), 100);
+                }
+            }
+
             if (input.GetKeyHeld(InputBindings.moveUp, false))
             {
                 velocity.Add(0, -8);
@@ -97,29 +101,43 @@ namespace EngineeringCorpsCS
             {
                 input.menuFactory.CreateTestInventory(this, inventory);
             }
-
-            if(heldItem != null && input.GetMouseHeld(InputBindings.primary, true))
+            float[] mousePos;
+            if (input.GetMousePositionAsFloat(out mousePos) && heldItem != null && input.GetMouseHeld(InputBindings.primary, true))
             {
-                float[] mousePos = input.GetMousePositionAsFloat();
                 int[] tileAligned = new int[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
                 BoundingBox box = new BoundingBox(-15, -15, 15, 15);
                 EntityGhost entityGhost = new EntityGhost(box, new Vector2(mousePos[0], mousePos[1]), surface);
                 if (!BoundingBox.CheckForCollision(entityGhost))
                 {
-                    Entity tree = input.entityCollection.InstantiatePrototype("pineTree1", new Vector2(mousePos[0], mousePos[1]), surface);
+                    Entity tree = input.entityCollection.InstantiatePrototype(heldItem.item.placeResult, new Vector2(mousePos[0], mousePos[1]), surface);
+                    heldItem.count -= 1;
+                    if (heldItem.count < 1)
+                    {
+                        heldItem = null;
+                    }
                 }
             }
-
-            if(input.GetMouseHeld(InputBindings.secondary, true))
+            if(input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true))
             {
-                float[] mousePos = input.GetMousePositionAsFloat();
-                //int[] tileAligned = new int[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
-                BoundingBox box = new BoundingBox(-15, -15, 15, 15);
-                EntityGhost entityGhost = new EntityGhost(box, new Vector2(mousePos[0], mousePos[1]), surface);
-                List<Entity> list = BoundingBox.GetCollisionListOfType<Entity>(entityGhost);
-                if (list.Count > 0 && list[0].minable == true)
+                if (miningEntity == null)
                 {
-                    surface.RemoveEntity(list[0]);
+                    BoundingBox box = new BoundingBox(-15, -15, 15, 15);
+                    EntityGhost entityGhost = new EntityGhost(box, new Vector2(mousePos[0], mousePos[1]), surface);
+                    List<Entity> list = BoundingBox.GetCollisionListOfType<Entity>(entityGhost);
+                    if (list.Count > 0 && list[0].minable == true)
+                    {
+                        miningEntity = list[0];
+                    }
+                }
+                else
+                {
+                    miningProgress += 1;
+                    if(miningProgress > miningEntity.miningProps.miningTime)
+                    {
+                        surface.RemoveEntity(miningEntity);
+                        miningEntity = null;
+                        miningProgress = 0;
+                    }
                 }
             }
         }

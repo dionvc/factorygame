@@ -15,6 +15,12 @@ namespace EngineeringCorpsCS
         /// The underlying item
         /// </summary>
         public Item item { get; protected set; }
-        int count;
+        public int count { get; set; }
+
+        public ItemStack(Item item, int count)
+        {
+            this.item = item;
+            this.count = count;
+        }
     }
 }

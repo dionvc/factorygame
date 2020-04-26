@@ -3,25 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SFML.Graphics;
 
 namespace EngineeringCorpsCS
 {
     class ItemFactory
     {
         Dictionary<string, Item> itemCollection;
+        TextureAtlases textureAtlases;
 
-        public ItemFactory()
+        public ItemFactory(TextureAtlases textureAtlases)
         {
             itemCollection = new Dictionary<string, Item>();
+
+            this.textureAtlases = textureAtlases;
         }
 
         
         public Dictionary<string, Item> GetItems()
         {
-            //Add items to dictionary here
+            Item item = CreatePineSapling();
+            itemCollection.Add(item.name, item);
             return itemCollection;
         }
 
         //Define items prototypes here:
+        private Item CreatePineSapling()
+        {
+            IntRect bounds;
+            StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("", out bounds), bounds, Drawable.DrawLayer.Item);
+            return new Item("Pine Sapling", itemIcon, "pineTree1");
+        }
     }
 }

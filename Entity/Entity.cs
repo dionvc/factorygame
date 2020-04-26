@@ -11,11 +11,11 @@ namespace EngineeringCorpsCS
     {
         public struct MiningProps
         {
-            string[] results;
-            int[] counts;
-            int miningTime;
-            int fluid;
-            string fluidRequired;
+            public string[] results;
+            public int[] counts;
+            public int miningTime;
+            public int fluid;
+            public string fluidRequired;
 
             public MiningProps(string[] results, int[] counts, int miningTime, int fluidCount, string fluidRequired)
             {

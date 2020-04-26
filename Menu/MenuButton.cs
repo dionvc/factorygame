@@ -45,7 +45,8 @@ namespace EngineeringCorpsCS
         {
             base.HandleInput(input);
 
-            Vector2f mousePos = input.GetMousePosition();
+            Vector2f mousePos; 
+            bool mouse = input.GetMousePosition(out mousePos);
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
             while (bubble != null)
@@ -53,7 +54,7 @@ namespace EngineeringCorpsCS
                 origin += bubble.position;
                 bubble = bubble.parent;
             }
-            if (buttonState != ButtonState.Held && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, (position + origin)))
+            if (mouse && buttonState != ButtonState.Held && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, (position + origin)))
             {
                 buttonState = ButtonState.Hover;
                 buttonColor = buttonHover;
@@ -63,12 +64,12 @@ namespace EngineeringCorpsCS
                 buttonState = ButtonState.Normal;
                 buttonColor = buttonNormal;
             }
-            if(buttonState == ButtonState.Hover && input.GetMouseClicked(InputBindings.primary, true))
+            if(buttonState == ButtonState.Hover && mouse && input.GetMouseClicked(InputBindings.primary, true))
             {
                 buttonState = ButtonState.Held;
                 buttonColor = buttonHeld;
             }
-            if (buttonState == ButtonState.Held && input.GetMouseReleased(InputBindings.primary, false))
+            if (buttonState == ButtonState.Held && mouse && input.GetMouseReleased(InputBindings.primary, false))
             {
                 action?.Invoke(tag);
                 buttonState = ButtonState.Normal;

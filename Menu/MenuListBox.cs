@@ -92,7 +92,8 @@ namespace EngineeringCorpsCS
         {
             base.HandleInput(input);
             //Computing absolute position to check collision
-            Vector2f mousePos = input.GetMousePosition();
+            Vector2f mousePos;
+            bool mouse = input.GetMousePosition(out mousePos);
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
             while (bubble != null)
@@ -101,7 +102,6 @@ namespace EngineeringCorpsCS
                 bubble = bubble.parent;
             }
             bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, position + origin);
-
             if (listboxState == ListBoxState.Normal && collided && input.GetMouseClicked(InputBindings.primary, true))
             {
                 listboxState = ListBoxState.Focused;

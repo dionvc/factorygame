@@ -45,7 +45,8 @@ namespace EngineeringCorpsCS
             }
             if(input.GetMouseHeld(InputBindings.primary, false))
             {
-                float[] mousePos = input.GetMousePositionAsFloat();
+                float[] mousePos;
+                bool mouse = input.GetMousePositionAsFloat(out mousePos);
                 BoundingBox tilePlacementBox = new BoundingBox(1 + placementSize * 32, 1 + placementSize * 32);
                 Vector2 pos = new Vector2(mousePos[0], mousePos[1]);
                 int[] chunkBounds = BoundingBox.GetChunkBounds(tilePlacementBox, pos, surface);
@@ -67,7 +68,8 @@ namespace EngineeringCorpsCS
 
             if (input.GetMouseHeld(InputBindings.secondary, false))
             {
-                float[] mousePos = input.GetMousePositionAsFloat();
+                float[] mousePos;
+                bool mouse = input.GetMousePositionAsFloat(out mousePos);
                 int[] tileAligned = new int[] {(int) (mousePos[0] - mousePos[0] % Props.tileSize + 16),(int) ( mousePos[1] - mousePos[1] % Props.tileSize + 16) };
                 BoundingBox box = new BoundingBox(-15, -15, 15, 15);
                 EntityGhost entityGhost = new EntityGhost(box, new Vector2(tileAligned[0], tileAligned[1]), surface);

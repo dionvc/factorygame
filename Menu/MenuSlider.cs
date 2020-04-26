@@ -57,7 +57,8 @@ namespace EngineeringCorpsCS
         public override void HandleInput(InputManager input)
         {
             base.HandleInput(input);
-            Vector2f mousePos = input.GetMousePosition();
+            Vector2f mousePos;
+            bool mouse = input.GetMousePosition(out mousePos);
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
             while (bubble != null)
@@ -66,7 +67,7 @@ namespace EngineeringCorpsCS
                 bubble = bubble.parent;
             }
 
-            if (sliderState != SliderState.Sliding && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, (position + origin)))
+            if (mouse && sliderState != SliderState.Sliding && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, (position + origin)))
             {
                 sliderState = SliderState.Hover;
             }

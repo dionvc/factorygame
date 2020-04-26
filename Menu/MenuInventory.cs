@@ -33,7 +33,8 @@ namespace EngineeringCorpsCS
         VertexArray itemFrames;
         BoundingBox frameBox;
         Player accessingPlayer;
-        public MenuInventory(Vector2f componentSize, ItemStack[] inventory, Player accessingPlayer)// TextureContainer textureContainer)
+        MenuText itemCount;
+        public MenuInventory(Vector2f componentSize, ItemStack[] inventory, Player accessingPlayer, Font font)// TextureContainer textureContainer)
         {
             this.inventory = inventory;
             this.size = componentSize;
@@ -45,6 +46,7 @@ namespace EngineeringCorpsCS
                 //Construct inventory frames
             }
             frameBox = new BoundingBox(0, 0, 32, 32);
+            itemCount = new MenuText(new Vector2f(32, 32), font, "", 16, 0);
         }
 
         public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
@@ -61,7 +63,11 @@ namespace EngineeringCorpsCS
                 if (inventory[i] != null)
                 {
                     item.Position = origin + position + new Vector2f((i * 32) % (int)size.X, (i * 32) / (int)size.X * 32);
+                    itemCount.SetText(inventory[i].count.ToString());
+                    itemCount.SetTextPosition("right", "bottom");
+                    itemCount.SetRelativePosition(position + new Vector2f((i * 32) % (int)size.X - 16, (i * 32) / (int)size.X * 32));
                     gui.Draw(item);
+                    itemCount.Draw(gui, origin, guiState);
                 }
             }
         }
@@ -69,7 +75,8 @@ namespace EngineeringCorpsCS
         public override void HandleInput(InputManager input)
         {
             base.HandleInput(input);
-            Vector2f mousePos = input.GetMousePosition();
+            Vector2f mousePos;
+            bool mouse = input.GetMousePosition(out mousePos);
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
             while (bubble != null)
@@ -78,7 +85,7 @@ namespace EngineeringCorpsCS
                 bubble = bubble.parent;
             }
 
-            if (input.GetMouseClicked(InputBindings.primary, false))
+            if (mouse && input.GetMouseClicked(InputBindings.primary, false))
             {
                 for(int i = 0; i < inventory.Length; i++)
                 {

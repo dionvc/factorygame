@@ -349,10 +349,23 @@ namespace EngineeringCorpsCS
                 return;
             }
             window.SetView(camera.GetGUIView());
-            Vector2f pos = input.GetMousePosition();
+            Vector2f pos;
+            bool mouse = input.GetMousePosition(out pos);
             RectangleShape item = new RectangleShape(new Vector2f(32,32));
             item.Position = pos;
             window.Draw(item);
+        }
+
+        public void RenderMiningProgress(RenderWindow window, Camera camera, Player player)
+        {
+            if(player.miningEntity != null)
+            {
+                window.SetView(camera.GetGUIView());
+                RectangleShape miningProgress = new RectangleShape(new Vector2f((player.miningProgress * 512.0f)/player.miningEntity.miningProps.miningTime, 64));
+                miningProgress.FillColor = Color.Red;
+                miningProgress.Position = new Vector2f(camera.GetGUIView().Size.X/2 - 256, camera.GetGUIView().Size.Y - 128);
+                window.Draw(miningProgress);
+            }
         }
 
         public void HandleResize(Object s, SizeEventArgs e)

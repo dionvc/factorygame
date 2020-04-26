@@ -54,7 +54,8 @@ namespace EngineeringCorpsCS
         public override void HandleInput(InputManager input)
         {
             //Computing absolute position to check collision
-            Vector2f mousePos = input.GetMousePosition();
+            Vector2f mousePos;
+            bool mouse = input.GetMousePosition(out mousePos);
             Vector2f origin = new Vector2f(0, 0);
             MenuComponent bubble = parent;
             while (bubble != null)
@@ -64,7 +65,7 @@ namespace EngineeringCorpsCS
             }
             //If the menu is collided with then it will consume the mouse position so that it does not interact with anything else
             bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, position + origin);
-            if (input.GetMouseClicked(InputBindings.primary, false) && collided)
+            if (mouse && input.GetMouseClicked(InputBindings.primary, false) && collided)
             {
                 container.PushMenuToFront(this);
             }
@@ -75,9 +76,13 @@ namespace EngineeringCorpsCS
                 container.RemoveMenu(this);
                 return;
             }
+            //Panel consumes the position of the mouse after processing child input if it hasn't already been consumed.
+            if(collided)
+            {
+                input.ConsumeMousePosition();
+            }
             
-            
-            
+            //Dragging logic
             if (panelState == PanelState.Dragging && input.GetMouseReleased(InputBindings.primary, false))
             {
                 panelState = PanelState.Normal;

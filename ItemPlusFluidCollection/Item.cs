@@ -13,8 +13,8 @@ namespace EngineeringCorpsCS
     /// </summary>
     class Item
     {
-        string name;
-        string placeResult;
+        public string name { get; protected set; }
+        public string placeResult { get; protected set; }
         public StaticSprite itemSprite { get; protected set; }
 
         public Item(string name, StaticSprite itemSprite, string placeResult)

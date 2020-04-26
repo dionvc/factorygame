@@ -104,7 +104,7 @@ namespace EngineeringCorpsCS
                         if (!ignore) //if neither of the preceding conditiosn set ignore to false, add tile to open list on path search
                         {
                             Tile tile = tileCollection.GetTerrainTile(surface.GetTileFromWorldInt(i, j));
-                            int solidMask = (int)((collisionMask & unwalkableMask) & tile.collisionMask); // a zero value when the tile is walkable
+                            int solidMask = (int)((unwalkableMask & collisionMask) & tile.collisionMask); // a zero value when the tile is walkable
                             if (solidMask == 0)
                             {
                                 int[] coords = new int[] { i, j };
