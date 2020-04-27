@@ -46,6 +46,14 @@ namespace EngineeringCorpsCS
             this.drawOffset = drawOffset;
         }
 
+        public new Animation Clone()
+        {
+            Animation cloned = new Animation(this.texture, this.textureFrame.Width, this.textureFrame.Height, this.frames, this.textureBounds, new Vector2f(this.drawOffset.X, this.drawOffset.Y));
+            cloned.drawLayer = this.drawLayer;
+            cloned.color = this.color;
+            return cloned;
+        }
+
         public void Update()
         {
             if (animationSpeed != 0)

@@ -58,6 +58,15 @@ namespace EngineeringCorpsCS
             this.drawOffset = drawOffset;
         }
 
+        public new AnimationRotated Clone()
+        {
+            AnimationRotated cloned = new AnimationRotated(this.texture, this.textureFrame.Width, this.textureFrame.Height, this.textureBounds, this.drawOffset, this.states, this.frames);
+            cloned.drawLayer = this.drawLayer;
+            cloned.drawOffset = new Vector2f(this.drawOffset.X, this.drawOffset.Y);
+            cloned.color = this.color;
+            return cloned;
+        }
+
         /// <summary>
         /// Updates the animation's sprite based on its animation speed and behavior
         /// </summary>

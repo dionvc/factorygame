@@ -47,6 +47,15 @@ namespace EngineeringCorpsCS
             this.CalculateConstants();
         }
 
+        public BoundingBox(BoundingBox box)
+        {
+            topLeft = new Vector2(box.topLeft.x, box.topLeft.y);
+            botRight = new Vector2(box.botRight.x, box.botRight.y);
+
+            this.SetRotation(box.rotation);
+            this.CalculateConstants();
+        }
+
         /// <summary>
         /// Creates bounding box uniformly around center of entity
         /// </summary>

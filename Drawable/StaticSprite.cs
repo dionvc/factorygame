@@ -34,9 +34,17 @@ namespace EngineeringCorpsCS
             this.drawOffset = drawOffset;
         }
 
+        public new StaticSprite Clone()
+        {
+            StaticSprite cloned = new StaticSprite(this.texture, this.textureFrame, new Vector2f(this.drawOffset.X, this.drawOffset.Y));
+            cloned.drawLayer = this.drawLayer;
+            cloned.color = this.color;
+            return cloned;
+        }
+
         public override void Draw(SpriteBatch spriteBatch, Vector2f position)
         {
-            spriteBatch.Draw(texture, position, textureFrame, color, scale, origin, rotation);
+            spriteBatch.Draw(texture, position + drawOffset, textureFrame, color, scale, origin, rotation);
         }
 
         public Sprite GetSprite()

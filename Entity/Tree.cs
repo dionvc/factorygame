@@ -22,45 +22,18 @@ namespace EngineeringCorpsCS
         Animation leaves; //A leaf animation that will change the leaf density based on the state of the animation
         Animation shadow; //A shadow animation containing the various shadows of the tree
         TreeState treeState;
-        TextureAtlases textureAtlas;
 
-        /// <summary>
-        /// Creates a tree
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <param name="surface"></param>
-        /// <param name="textureAtlases"></param>
-        public Tree(TextureAtlases textureAtlases, string name)
+
+        public Tree(string name, StaticSprite trunk, Animation leaves, Animation shadow)
         {
             this.name = name;
-            this.textureAtlas = textureAtlases;
-            minable = true;
-            collisionBox = new BoundingBox(16, 16);
-            drawingBox = new BoundingBox(128, 192);
-            IntRect bounds;
-            Animation trunk = new Animation(textureAtlases.GetTexture("tree", out bounds), 128, bounds.Height, 1, bounds, new Vector2f(0, -64));
-            trunk.drawLayer = Drawable.DrawLayer.EntitySorted;
-            Animation leaves = new Animation(textureAtlases.GetTexture("tree", out bounds), 128, bounds.Height, 1, bounds, new Vector2f(0, -64));
-            leaves.drawLayer = Drawable.DrawLayer.EntitySorted;
-            Animation shadow = new Animation(textureAtlases.GetTexture("treeshadow", out bounds), 192, bounds.Height, 1, bounds, new Vector2f(32, 0));
-            shadow.drawLayer = Drawable.DrawLayer.Shadow;
-            Random r = new Random();
-            int rand = r.Next(0, 4);
-            leaves.currentFrame = rand;
-            shadow.currentFrame = rand;
-            if (rand != 0)
-            {
-                drawArray = new Drawable[] {shadow, trunk, leaves};
-            }
-            else
-            {
-                drawArray = new Drawable[] {shadow, trunk};
-            }
-            collisionMask = CollisionLayer.EntityPhysical;
-            mapColor = new Color(32, 160, 0);
+            this.trunk = trunk;
+            this.leaves = leaves;
+            this.shadow = shadow;
+            leaves.currentFrame = 3;
+            shadow.currentFrame = 3;
+            drawArray = new Drawable[] { shadow, trunk, leaves };
 
-
-            miningProps = new MiningProps("Pine Sapling", 1, 320, 0, "");
         }
 
         public override void Update()
@@ -98,7 +71,17 @@ namespace EngineeringCorpsCS
 
         public override Entity Clone()
         {
-            return new Tree(textureAtlas, this.name);
+            //Things that must be duplicated
+            Tree clone = new Tree(this.name, this.trunk.Clone(), this.leaves.Clone(), this.shadow.Clone());
+            clone.drawingBox = new BoundingBox(this.drawingBox);
+            clone.collisionBox = new BoundingBox(this.collisionBox);
+            clone.collisionMask = this.collisionMask;
+            clone.minable = this.minable;
+            clone.miningProps = this.miningProps;
+            clone.mapColor = new Color(this.mapColor);
+            //Things that are retained between instances of a prototype
+
+            return clone;
         }
     }
 }

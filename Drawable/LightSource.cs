@@ -32,5 +32,10 @@ namespace EngineeringCorpsCS
             position = attachedEntity.position;
             surface.UpdateLightSource(this);
         }
+
+        public LightSource Clone()
+        {
+            throw new UnauthorizedAccessException();
+        }
     }
 }

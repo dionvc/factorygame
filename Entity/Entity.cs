@@ -71,12 +71,12 @@ namespace EngineeringCorpsCS
         /// <summary>
         /// The collision box representing the entity physically.
         /// </summary>
-        public BoundingBox collisionBox { get; protected set; }
+        public BoundingBox collisionBox { get; set; }
 
         /// <summary>
         /// The drawing collision box for the entity
         /// </summary>
-        public BoundingBox drawingBox { get; protected set; }
+        public BoundingBox drawingBox { get; set; }
         /// <summary>
         /// Array of drawables to be drawn representing the entity
         /// </summary>
@@ -84,15 +84,17 @@ namespace EngineeringCorpsCS
         /// <summary>
         /// Color of entity on the map
         /// </summary>
-        public Color mapColor { get; protected set; }
+        public Color mapColor { get; set; }
 
-        public int tileWidth { get; protected set; } = 2;
-        public int tileHeight { get; protected set; } = 2;
+        public int tileWidth { get; protected set; } = 1;
+        public int tileHeight { get; protected set; } = 1;
 
         public float emissionPerSecond = 0.0f;
 
         public bool minable = false;
         public MiningProps miningProps;
+        string remainsMined;
+        string remainsDestroyed;
 
         public Vector2 position { get; set; }
         /// <summary>
@@ -106,6 +108,7 @@ namespace EngineeringCorpsCS
         virtual public void OnMined()
         {
             surface.RemoveEntity(this);
+            
         }
     }
 }

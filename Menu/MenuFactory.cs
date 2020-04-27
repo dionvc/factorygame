@@ -177,11 +177,11 @@ namespace EngineeringCorpsCS
             MenuButton startGame = new MenuButton(new Vector2f(100, 25), program.SwitchGameState);
             startGame.tag = "inGame";
             //Slider
-            MenuSlider elevationFactor = new MenuSlider(3, surfaceGenerator.SetNoiseFactor, 0.1f, 2.0f, 1.0f);
+            MenuSlider elevationFactor = new MenuSlider(5, surfaceGenerator.SetNoiseFactor, 0.5f, 1.5f, 1.0f);
             elevationFactor.tag = "elevation";
-            MenuSlider moistureFactor = new MenuSlider(3, surfaceGenerator.SetNoiseFactor, 0.1f, 2.0f, 1.0f);
+            MenuSlider moistureFactor = new MenuSlider(5, surfaceGenerator.SetNoiseFactor, 0.5f, 1.5f, 1.0f);
             moistureFactor.tag = "moisture";
-            MenuSlider temperatureFactor = new MenuSlider(3, surfaceGenerator.SetNoiseFactor, 0.1f, 2.0f, 1.0f);
+            MenuSlider temperatureFactor = new MenuSlider(5, surfaceGenerator.SetNoiseFactor, 0.5f, 1.5f, 1.0f);
             temperatureFactor.tag = "temperature";
             //Attaching Elements
             worldMenu.AttachComponent(startGame);

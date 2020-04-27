@@ -151,10 +151,10 @@ namespace EngineeringCorpsCS
         {
             base.InitializeEntity(position, surface);
             IntRect bounds;
-            radialLight = new LightSourceRadial(new Vector2(1024, 1024), surface, 256.0f, textureAtlases.GetTexture("lightsource", out bounds), bounds);
+            radialLight = new LightSourceRadial(surface, 256.0f, textureAtlases.GetTexture("lightsource", out bounds), bounds);
             radialLight.on = true;
             radialLight.attachedEntity = this;
-            directionalLight = new LightSourceDirectional(new Vector2(1024, 1024), surface, 2000.0f, 1024, textureAtlases.GetTexture("directionallight", out bounds), bounds);
+            directionalLight = new LightSourceDirectional(surface, 2000.0f, 1024, textureAtlases.GetTexture("directionallight", out bounds), bounds);
             directionalLight.on = true;
             directionalLight.attachedEntity = this;
         }

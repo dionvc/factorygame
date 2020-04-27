@@ -36,7 +36,7 @@ namespace EngineeringCorpsCS
             Initialize(componentSize);
             this.sliderMin = sliderMin;
             this.sliderMax = sliderMax;
-            sliderValue = ((sliderInitialValue)/sliderMax * size.X);
+            sliderValue = ((sliderInitialValue)/(sliderMax - sliderMin) * size.X/2);
             sliderState = SliderState.Normal;
             collisionBox = new BoundingBox(componentSize);
             this.sliderAction = sliderAction;

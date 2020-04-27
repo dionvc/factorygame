@@ -284,8 +284,8 @@ namespace EngineeringCorpsCS
                         {
                             Entity e = entityList[l];
                             int[] pos = surface.WorldToAbsoluteTileCoords(e.position.x, e.position.y);
-                            float halfWidth = e.tileWidth / 2;
-                            float halfHeight = e.tileHeight / 2;
+                            float halfWidth = e.tileWidth;
+                            float halfHeight = e.tileHeight;
                             entityArray.Append(new Vertex(new Vector2f(pos[0] - halfWidth , pos[1] - halfHeight), e.mapColor));
                             entityArray.Append(new Vertex(new Vector2f(pos[0] + halfWidth, pos[1] - halfHeight), e.mapColor));
                             entityArray.Append(new Vertex(new Vector2f(pos[0] - halfWidth, pos[1] + halfHeight), e.mapColor));
