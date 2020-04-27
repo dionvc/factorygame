@@ -108,7 +108,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Chunk\Alliance.cs" />
+    <Compile Include="EntitySystems\Alliance.cs" />
     <Compile Include="Drawable\IAnimation.cs" />
     <Compile Include="Drawable\LightSourceDirectional.cs" />
     <Compile Include="Drawable\LightSourceRadial.cs" />
@@ -123,7 +123,7 @@
     <Compile Include="ItemPlusFluidCollection\ItemFactory.cs" />
     <Compile Include="ItemPlusFluidCollection\ItemCollection.cs" />
     <Compile Include="ItemPlusFluidCollection\ItemStack.cs" />
-    <Compile Include="Entity\EntityCollection.cs" />
+    <Compile Include="EntitySystems\EntityCollection.cs" />
     <Compile Include="Menu\MenuCheckbox.cs" />
     <Compile Include="Menu\MenuDynamicText.cs" />
     <Compile Include="Menu\MenuField.cs" />
@@ -136,8 +136,7 @@
     <Compile Include="Drawable\Drawable.cs" />
     <Compile Include="Entity\EntityGhost.cs" />
     <Compile Include="Entity\EntityPhysical.cs" />
-    <Compile Include="Entity\TestTilePlacer.cs" />
-    <Compile Include="Util\EntityUpdateSystem.cs" />
+    <Compile Include="EntitySystems\EntityUpdateSystem.cs" />
     <Compile Include="Util\FontContainer.cs" />
     <Compile Include="Input\IInputSubscriber.cs" />
     <Compile Include="Input\InputBindings.cs" />

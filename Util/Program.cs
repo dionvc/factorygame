@@ -67,6 +67,7 @@ namespace EngineeringCorpsCS
         private MenuFactory menuFactory; //the client;s menufactory
         private Renderer renderer;
         private GameState gameState;
+        EntityUpdateSystem entityUpdateSystem;
         //ingame variables
         SurfaceContainer surfaceContainer;
         SurfaceGenerator surfaceGenerator;
@@ -159,12 +160,20 @@ namespace EngineeringCorpsCS
             window.Draw(loadingTitle);
             window.Draw(loadingText);
             window.Display();
+            EntityUpdateSystem.UpdateProperties[] updateOrder = new EntityUpdateSystem.UpdateProperties[]
+            {
+                new EntityUpdateSystem.UpdateProperties(typeof(Player), 1),
+                new EntityUpdateSystem.UpdateProperties(typeof(Tree), 600)
+            };
+            entityUpdateSystem = new EntityUpdateSystem(updateOrder);
             tileCollection = new TileCollection(textureAtlases);
-            entityCollection = new EntityCollection(textureAtlases);
+            entityCollection = new EntityCollection(textureAtlases, entityUpdateSystem);
             entityCollection.LoadPrototypes();
             input.entityCollection = entityCollection;
             itemCollection = new ItemCollection(textureAtlases);
             input.itemCollection = itemCollection;
+
+            
         }
         public void StartMenu()
         {
@@ -248,9 +257,12 @@ namespace EngineeringCorpsCS
                 //Do not update game world if game is paused
                 if (gameState != GameState.paused)
                 {
-                    //update entities
-                    player.Update();
+                    //update surface
                     surfaceContainer.Update();
+                    //update entities
+                    entityUpdateSystem.UpdateEntities();
+                    entityUpdateSystem.AddNewEntities();
+                    entityUpdateSystem.DestroyEntities();
                 }
                 //update camera
                 camera.Update();

@@ -134,7 +134,7 @@ namespace EngineeringCorpsCS
                     miningProgress += 1;
                     if(miningProgress > miningEntity.miningProps.miningTime)
                     {
-                        surface.RemoveEntity(miningEntity);
+                        input.entityCollection.DestroyInstance(miningEntity);
                         miningEntity = null;
                         miningProgress = 0;
                         Item item = input.itemCollection.GetItem("Wood");

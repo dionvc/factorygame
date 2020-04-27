@@ -10,7 +10,8 @@ namespace EngineeringCorpsCS
     {
         int[] exploredChunks;
         int[] visibleChunks;
-        string AllianceName;
+        string allianceName;
+        Recipe[] recipesAvailable; //recipes available to alliance
 
         public Alliance(string name)
         {

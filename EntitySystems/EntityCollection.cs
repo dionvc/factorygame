@@ -13,10 +13,12 @@ namespace EngineeringCorpsCS
         //construct kvp of names and entities which are then cloned and returned, it is up to the asker to initialize the cloned object
         Dictionary<string, Entity> entityPrototypes;
         TextureAtlases textureAtlases;
-        public EntityCollection(TextureAtlases textureAtlases)
+        EntityUpdateSystem entityUpdateSystem;
+        public EntityCollection(TextureAtlases textureAtlases, EntityUpdateSystem entityUpdateSystem)
         {
             entityPrototypes = new Dictionary<string, Entity>();
             this.textureAtlases = textureAtlases;
+            this.entityUpdateSystem = entityUpdateSystem;
         }
 
         public void LoadPrototypes()
@@ -32,16 +34,37 @@ namespace EngineeringCorpsCS
             //Iterate over itemcollection and create an itementity prototype for each in the collection
         }
 
+        /// <summary>
+        /// Instantiates an entity and subscribes it to updating
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="position"></param>
+        /// <param name="surface"></param>
+        /// <returns></returns>
         public Entity InstantiatePrototype(string name, Vector2 position, SurfaceContainer surface)
         {
             Entity prototype;
             if(entityPrototypes.TryGetValue(name, out prototype))
             {
                 Entity newEntity = prototype.Clone();
+                //Initialize the Entity
                 newEntity.InitializeEntity(position, surface);
+                //Add to update system
+                entityUpdateSystem.AddEntity(newEntity);
                 return newEntity;
             }
             return null;
+        }
+
+        public void DestroyInstance(Entity entity)
+        {
+            //Remove the entity from the surface
+            if(entity.surface != null)
+            {
+                entity.surface.RemoveEntity(entity);
+            }
+            //Remove the entity from updating
+            entityUpdateSystem.RemoveEntity(entity);
         }
 
         /// <summary>
@@ -58,6 +81,8 @@ namespace EngineeringCorpsCS
             }
             return null;
         }
+
+        #region Entity Definitions
 
         private Entity CreatePlayer()
         {
@@ -83,5 +108,8 @@ namespace EngineeringCorpsCS
             pineTree1.drawingBox = new BoundingBox(128, 192);
             return pineTree1;
         }
+
+
+        #endregion Entity Definitions
     }
 }

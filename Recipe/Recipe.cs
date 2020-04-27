@@ -8,9 +8,9 @@ namespace EngineeringCorpsCS
 {
     class Recipe
     {
-        public int[] counts;
-        public string[] itemsRequired;
-        public int[] countsResult;
-        public string[] itemsResults;
+        public int[] counts; //counts of the inputs required
+        public string[] itemsRequired; //Names of required items
+        public int[] countsResult; //counts of the results
+        public string[] itemsResults; //Names of results
     }
 }
