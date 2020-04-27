@@ -27,6 +27,11 @@ namespace EngineeringCorpsCS
             entityPrototypes.Add(pineTree1Prototype.name, pineTree1Prototype);
         }
 
+        private void LoadItemEntityPrototypes()
+        {
+            //Iterate over itemcollection and create an itementity prototype for each in the collection
+        }
+
         public Entity InstantiatePrototype(string name, Vector2 position, SurfaceContainer surface)
         {
             Entity prototype;
@@ -72,7 +77,7 @@ namespace EngineeringCorpsCS
             Tree pineTree1 = new Tree("pineTree1", trunk, leaves, shadow);
             pineTree1.collisionMask = Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
             pineTree1.mapColor = new Color(32, 160, 0);
-            pineTree1.miningProps = new Entity.MiningProps("Pine Sapling", 1, 320, 0, "");
+            pineTree1.miningProps = new Entity.MiningProps("Wood", 1, 320, 0, "");
             pineTree1.minable = true;
             pineTree1.collisionBox = new BoundingBox(16, 16);
             pineTree1.drawingBox = new BoundingBox(128, 192);

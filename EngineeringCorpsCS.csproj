@@ -114,6 +114,9 @@
     <Compile Include="Drawable\LightSourceRadial.cs" />
     <Compile Include="Drawable\StaticSprite.cs" />
     <Compile Include="Drawable\SpriteBatch.cs" />
+    <Compile Include="Recipe\Recipe.cs" />
+    <Compile Include="Recipe\RecipeCollection.cs" />
+    <Compile Include="Recipe\RecipeFactory.cs" />
     <Compile Include="Util\Pathing.cs" />
     <Compile Include="Entity\Remains.cs" />
     <Compile Include="ItemPlusFluidCollection\Item.cs" />
@@ -213,10 +216,14 @@
     <Content Include="Graphics\DebugTextures\Tree01leaves.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\Entity\Greenhouse\greenhouse.png" />
     <Content Include="Graphics\GUI\EngineeringCorpsIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\GUI\guiTilesheet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Items\woodItem.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\Lightmasks\directionallight.png">

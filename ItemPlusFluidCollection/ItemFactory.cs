@@ -24,6 +24,8 @@ namespace EngineeringCorpsCS
         {
             Item item = CreatePineSapling();
             itemCollection.Add(item.name, item);
+            item = CreateWood();
+            itemCollection.Add(item.name, item);
             return itemCollection;
         }
 
@@ -31,8 +33,15 @@ namespace EngineeringCorpsCS
         private Item CreatePineSapling()
         {
             IntRect bounds;
-            StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("", out bounds), bounds, Drawable.DrawLayer.Item);
-            return new Item("Pine Sapling", itemIcon, "pineTree1");
+            StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("woodItem", out bounds), bounds, Drawable.DrawLayer.Item);
+            return new Item("Pine Sapling", itemIcon, "pineTree1", 100);
+        }
+
+        private Item CreateWood()
+        {
+            IntRect bounds;
+            StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("woodItem", out bounds), bounds, Drawable.DrawLayer.Item);
+            return new Item("Wood", itemIcon, null, 100);
         }
     }
 }

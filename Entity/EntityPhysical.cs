@@ -28,7 +28,6 @@ namespace EngineeringCorpsCS
         }
         private int _health = 100;
         public int fullHealth { get; protected set; } = 100;
-        public string miningResult { get; protected set; }
         override public void OnClick()
         {
 

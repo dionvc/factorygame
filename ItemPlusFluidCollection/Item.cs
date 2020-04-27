@@ -17,11 +17,14 @@ namespace EngineeringCorpsCS
         public string placeResult { get; protected set; }
         public StaticSprite itemSprite { get; protected set; }
 
-        public Item(string name, StaticSprite itemSprite, string placeResult)
+        public int maxStack { get; protected set; }
+
+        public Item(string name, StaticSprite itemSprite, string placeResult, int maxStack)
         {
             this.name = name;
             this.itemSprite = itemSprite;
             this.placeResult = placeResult;
+            this.maxStack = maxStack;
         }
     }
 }

@@ -351,9 +351,9 @@ namespace EngineeringCorpsCS
             window.SetView(camera.GetGUIView());
             Vector2f pos;
             bool mouse = input.GetMousePosition(out pos);
-            RectangleShape item = new RectangleShape(new Vector2f(32,32));
-            item.Position = pos;
-            window.Draw(item);
+            Sprite itemSprite = heldItem.item.itemSprite.GetSprite();
+            itemSprite.Position = pos;
+            window.Draw(itemSprite);
         }
 
         public void RenderMiningProgress(RenderWindow window, Camera camera, Player player)

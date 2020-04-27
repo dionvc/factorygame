@@ -54,19 +54,18 @@ namespace EngineeringCorpsCS
             base.Draw(gui, origin, guiState);
             RectangleShape frame = new RectangleShape(new Vector2f(32, 32));
             frame.FillColor = Color.Red;
-            RectangleShape item = new RectangleShape(new Vector2f(16, 16));
-            item.FillColor = Color.Yellow;
             for(int i = 0; i < inventory.Length; i++)
             {
                 frame.Position = origin + position + new Vector2f((i * 32) % (int)size.X, ((i * 32) / (int)size.X) * 32);
                 gui.Draw(frame);
                 if (inventory[i] != null)
                 {
-                    item.Position = origin + position + new Vector2f((i * 32) % (int)size.X, (i * 32) / (int)size.X * 32);
+                    Sprite itemSprite = inventory[i].item.itemSprite.GetSprite();
+                    itemSprite.Position = origin + position + new Vector2f((i * 32) % (int)size.X, (i * 32) / (int)size.X * 32);
                     itemCount.SetText(inventory[i].count.ToString());
                     itemCount.SetTextPosition("right", "bottom");
                     itemCount.SetRelativePosition(position + new Vector2f((i * 32) % (int)size.X - 16, (i * 32) / (int)size.X * 32));
-                    gui.Draw(item);
+                    gui.Draw(itemSprite);
                     itemCount.Draw(gui, origin, guiState);
                 }
             }
@@ -92,14 +91,54 @@ namespace EngineeringCorpsCS
                     bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, frameBox, position + origin + new Vector2f((i * 32) % (int)size.X, ((i * 32) / (int)size.X) * 32));
                     if(collided)
                     {
-                        input.GetMouseClicked(InputBindings.primary, true);
-                        ItemStack temp = inventory[i];
-                        inventory[i] = accessingPlayer.heldItem;
-                        accessingPlayer.heldItem = temp;
+                        if (accessingPlayer.heldItem != null && inventory[i] != null && ReferenceEquals(accessingPlayer.heldItem.item, inventory[i].item)) //attempt to combine
+                        {
+                            int total = inventory[i].count + accessingPlayer.heldItem.count;
+                            if(total <= inventory[i].item.maxStack)
+                            {
+                                inventory[i].count += accessingPlayer.heldItem.count;
+                                accessingPlayer.heldItem = null;
+                            }
+                            else
+                            {
+                                inventory[i].count = inventory[i].item.maxStack;
+                                accessingPlayer.heldItem.count = total - inventory[i].item.maxStack;
+                            }
+                        }
+                        else //swap item
+                        {
+                            input.GetMouseClicked(InputBindings.primary, true);
+                            ItemStack temp = inventory[i];
+                            inventory[i] = accessingPlayer.heldItem;
+                            accessingPlayer.heldItem = temp;
+                        }
                     }
 
                 }
             }
+            if (mouse && input.GetMouseClicked(InputBindings.secondary, true))
+            {
+                for (int i = 0; i < inventory.Length; i++)
+                {
+                    bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, frameBox, position + origin + new Vector2f((i * 32) % (int)size.X, ((i * 32) / (int)size.X) * 32));
+                    if (collided)
+                    {
+                        if(accessingPlayer.heldItem != null && inventory[i] == null)
+                        {
+                            int half = accessingPlayer.heldItem.count / 2;
+                            inventory[i] = new ItemStack(accessingPlayer.heldItem.item, half);
+                            accessingPlayer.heldItem.count -= half;
+                        }
+                        else if(inventory[i] != null && accessingPlayer.heldItem == null)
+                        {
+                            int half = inventory[i].count / 2;
+                            inventory[i].count -= half;
+                            accessingPlayer.heldItem = new ItemStack(inventory[i].item, half);
+                        }
+                    }
+                }
+            }
+            //TODO: move to player
             if(input.GetKeyPressed(InputBindings.returnItem, true) && accessingPlayer.heldItem != null)
             {
                 for(int i = 0; i < inventory.Length; i++)

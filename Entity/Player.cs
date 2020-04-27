@@ -102,14 +102,14 @@ namespace EngineeringCorpsCS
                 input.menuFactory.CreateTestInventory(this, inventory);
             }
             float[] mousePos;
-            if (input.GetMousePositionAsFloat(out mousePos) && heldItem != null && input.GetMouseHeld(InputBindings.primary, true))
+            if (input.GetMousePositionAsFloat(out mousePos) && heldItem != null && heldItem.item.placeResult != null && input.GetMouseHeld(InputBindings.primary, true))
             {
                 int[] tileAligned = new int[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
                 BoundingBox box = new BoundingBox(-15, -15, 15, 15);
                 EntityGhost entityGhost = new EntityGhost(box, new Vector2(mousePos[0], mousePos[1]), surface);
                 if (!BoundingBox.CheckForCollision(entityGhost))
                 {
-                    Entity tree = input.entityCollection.InstantiatePrototype(heldItem.item.placeResult, new Vector2(mousePos[0], mousePos[1]), surface);
+                    Entity placeItem = input.entityCollection.InstantiatePrototype(heldItem.item.placeResult, new Vector2(mousePos[0], mousePos[1]), surface);
                     heldItem.count -= 1;
                     if (heldItem.count < 1)
                     {
@@ -137,6 +137,20 @@ namespace EngineeringCorpsCS
                         surface.RemoveEntity(miningEntity);
                         miningEntity = null;
                         miningProgress = 0;
+                        Item item = input.itemCollection.GetItem("Wood");
+                        for(int i = 0; i < inventory.Length; i++)
+                        {
+                            if (inventory[i] == null)
+                            {
+                                inventory[i] = new ItemStack(item, 1);
+                                break;
+                            }
+                            else if (ReferenceEquals(inventory[i].item, item) && inventory[i].count <= inventory[i].item.maxStack)
+                            {
+                                inventory[i].count++;
+                                break;
+                            }
+                        }
                     }
                 }
             }
