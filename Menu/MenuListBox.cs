@@ -23,7 +23,7 @@ namespace EngineeringCorpsCS
         int selectedValue = 0; //in terms of index of listHeaders/values
         int hoveredValue = 0; //in terms of index of listHeaders/values
         BoundingBox dropdownBox;
-        float lineSpacing;
+        int lineSpacing;
         ListBoxState listboxState;
         SelectionMethod applySelection;
         VertexArray dropdownMainBox;
@@ -40,7 +40,7 @@ namespace EngineeringCorpsCS
         /// <param name="componentSize"></param>
         /// <param name="listHeaders"></param>
         /// <param name="listValues"></param>
-        public MenuListBox(Vector2f componentSize, string[] listHeaders, int[] listValues, SelectionMethod applySelection, Font font, uint charSize, float lineSpacing, int initialValue)
+        public MenuListBox(Vector2i componentSize, string[] listHeaders, int[] listValues, SelectionMethod applySelection, Font font, uint charSize, int lineSpacing, int initialValue)
         {
             Initialize(componentSize);
             this.listHeaders = listHeaders;
@@ -49,7 +49,7 @@ namespace EngineeringCorpsCS
             this.lineSpacing = lineSpacing;
             texts = new MenuText[listHeaders.Length];
             selectedText = new MenuText(this.size, font, "", charSize, 0.6f);
-            selectedText.SetRelativePosition(new Vector2f(0, -2));
+            selectedText.SetRelativePosition(new Vector2i(0, -2));
             selectedValue = initialValue;
             selectedText.SetText(listHeaders[initialValue]);
             selectedText.SetTextPosition("left", "center");
@@ -59,37 +59,38 @@ namespace EngineeringCorpsCS
                 AttachComponent(texts[i]);
                 texts[i].SetText(listHeaders[i]);
                 texts[i].SetTextPosition("left", "center");
-                texts[i].SetRelativePosition(new Vector2f(0, (i + 1) * (lineSpacing + 1) - 2));
+                texts[i].SetRelativePosition(new Vector2i(0, (i + 1) * (lineSpacing + 1) - 2));
             }
             dropdownBox = new BoundingBox(new Vector2f(size.X, lineSpacing));
-            collisionBox = new BoundingBox(size + new Vector2f(size.Y, 0));
+            collisionBox = new BoundingBox(size + new Vector2i(size.Y, 0));
             listboxState = ListBoxState.Normal;
 
             dropdownMainBox = CreateMenuGraphicArrayWithBorder(new FloatRect(96, 0, 96, 96), 10);
-            dropdownArrow = CreateMenuGraphic(new FloatRect(416, 0, 96, 96), new Vector2f(size.Y, size.Y));
+            dropdownArrow = CreateMenuGraphic(new FloatRect(416, 0, 96, 96), new Vector2i(size.Y, size.Y));
         }
 
-        public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
+        public override void Draw(RenderTexture gui, Vector2i origin, RenderStates guiState)
         {
             //Draw the top component field and text header
             Transform t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
-            t.Translate(origin + position);
+            Vector2f pos = new Vector2f((position + origin).X, (origin + position).Y);
+            t.Translate(pos);
             Transform original = guiState.Transform;
             guiState.Transform = t;
             gui.Draw(dropdownMainBox, guiState);
             t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
-            t.Translate(origin + position + new Vector2f(size.X,0));
+            t.Translate(pos + new Vector2f(size.X,0));
             guiState.Transform = t;
             gui.Draw(dropdownArrow, guiState);
             selectedText.Draw(gui, origin + position, guiState);
-            RectangleShape otherbox = new RectangleShape(size);
+            RectangleShape otherbox = new RectangleShape(new Vector2f(size.X, size.Y));
             //Draw the dropdown button
             //If is focused:
             if (listboxState == ListBoxState.Focused)
             {
                 for (int i = 0; i < listHeaders.Length; i++)
                 {
-                    otherbox.Position = origin + new Vector2f(position.X, position.Y + size.Y + i * (lineSpacing + 1));
+                    otherbox.Position = new Vector2f(origin.X + position.X, origin.Y + position.Y + size.Y + i * (lineSpacing + 1));
                     otherbox.FillColor = new Color(64, 64, 64, 255);
                     if(i == hoveredValue)
                     {
@@ -111,14 +112,15 @@ namespace EngineeringCorpsCS
             //Computing absolute position to check collision
             Vector2f mousePos;
             bool mouse = input.GetMousePosition(out mousePos);
-            Vector2f origin = new Vector2f(0, 0);
+            Vector2i origin = new Vector2i(0, 0);
             MenuComponent bubble = parent;
             while (bubble != null)
             {
                 origin += bubble.position;
                 bubble = bubble.parent;
             }
-            bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, position + origin);
+            Vector2f pos = new Vector2f((position + origin).X, (origin + position).Y);
+            bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, pos);
             if (listboxState == ListBoxState.Normal && collided && input.GetMouseClicked(InputBindings.primary, true))
             {
                 listboxState = ListBoxState.Focused;
@@ -130,7 +132,7 @@ namespace EngineeringCorpsCS
                 for (int i = 0; i < listHeaders.Length; i++)
                 {
                     //check collision for each list header
-                    if (BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, dropdownBox, origin + position + new Vector2f(0, lineSpacing * (i + 1))))
+                    if (BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, dropdownBox, pos + new Vector2f(0, lineSpacing * (i + 1))))
                     {
                         hoveredValue = i;
                         collided = true;

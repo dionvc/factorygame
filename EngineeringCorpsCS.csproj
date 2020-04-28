@@ -217,7 +217,9 @@
     <Content Include="Graphics\DebugTextures\Tree01leaves.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Graphics\Entity\Greenhouse\greenhouse.png" />
+    <Content Include="Graphics\Entity\Greenhouse\greenhouse.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Graphics\GUI\EngineeringCorpsIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

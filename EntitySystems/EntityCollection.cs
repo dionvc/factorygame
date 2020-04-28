@@ -27,6 +27,8 @@ namespace EngineeringCorpsCS
             entityPrototypes.Add(playerPrototype.name, playerPrototype);
             Entity pineTree1Prototype = CreatePineTree1();
             entityPrototypes.Add(pineTree1Prototype.name, pineTree1Prototype);
+            Entity greenhousePrototype = CreateGreenhouse();
+            entityPrototypes.Add(greenhousePrototype.name, greenhousePrototype);
         }
 
         private void LoadItemEntityPrototypes()
@@ -111,6 +113,20 @@ namespace EngineeringCorpsCS
             return pineTree1;
         }
 
+        private Entity CreateGreenhouse()
+        {
+            IntRect bounds;
+            Animation animation = new Animation(textureAtlases.GetTexture("greenhouse", out bounds), bounds.Width, bounds.Height, 1, bounds, new Vector2f(0, 0));
+            animation.drawLayer = Drawable.DrawLayer.EntitySorted;
+            Machine greenhouse = new Machine("greenhouse", animation);
+            greenhouse.collisionMask = Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
+            greenhouse.mapColor = new Color(128, 64, 0);
+            greenhouse.minable = true;
+            greenhouse.collisionBox = new BoundingBox(50, 50);
+            greenhouse.drawingBox = new BoundingBox(64, 64);
+            greenhouse.selectionBox = new BoundingBox(64, 64);
+            return greenhouse;
+        }
 
         #endregion Entity Definitions
     }

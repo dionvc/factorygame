@@ -27,10 +27,10 @@ namespace EngineeringCorpsCS
         RectangleShape cursor;
         int cursorCounter;
         int cursorRefresh;
-        public MenuField(Vector2f componentSize, Font font, ParseField parseField)
+        public MenuField(Vector2i componentSize, Font font, ParseField parseField)
         {
             Initialize(componentSize);
-            textField = new MenuText(new Vector2f(size.X, size.Y), font, "", Convert.ToUInt32(size.Y - 4), size.Y);
+            textField = new MenuText(new Vector2i(size.X, size.Y), font, "", Convert.ToUInt32(size.Y - 4), size.Y);
             textField.SetTextPosition("left", "center");
             textField.SetPivots("center", "center", "inside", 2);
             this.parseField = parseField;
@@ -42,12 +42,13 @@ namespace EngineeringCorpsCS
             cursorRefresh = 30;
         }
 
-        public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
+        public override void Draw(RenderTexture gui, Vector2i origin, RenderStates guiState)
         {
             
             //Construct transform
             Transform t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
-            t.Translate(origin + position);
+            Vector2f pos = new Vector2f((position + origin).X, (origin + position).Y);
+            t.Translate(pos);
             Transform original = guiState.Transform;
             guiState.Transform = t;
             gui.Draw(fieldBackGround, guiState);
@@ -56,7 +57,7 @@ namespace EngineeringCorpsCS
             {
                 if (fieldState == FieldState.Focused)
                 {
-                    cursor.Position = origin + position + textField.GetLastPosition() + new Vector2f(1, 4);
+                    cursor.Position = pos + textField.GetLastPosition() + new Vector2f(1, 4);
                     gui.Draw(cursor);
                 }
                 if(cursorCounter > 2 * cursorRefresh)
@@ -75,14 +76,14 @@ namespace EngineeringCorpsCS
 
             Vector2f mousePos;
             bool mouse = input.GetMousePosition(out mousePos);
-            Vector2f origin = new Vector2f(0, 0);
+            Vector2i origin = new Vector2i(0, 0);
             MenuComponent bubble = parent;
             while (bubble != null)
             {
                 origin += bubble.position;
                 bubble = bubble.parent;
             }
-            bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, position + origin);
+            bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, new Vector2f((position + origin).X, (origin + position).Y));
             if (mouse && (fieldState == FieldState.Normal || fieldState == FieldState.Modified) && collided && input.GetMouseClicked(InputBindings.primary, true))
             {
                 fieldState = FieldState.Focused;

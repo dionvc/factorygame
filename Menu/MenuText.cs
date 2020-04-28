@@ -19,7 +19,7 @@ namespace EngineeringCorpsCS
         string textPivot1 = "center";
         string textPivot2 = "center";
         public uint charSize { get; protected set; }
-        public MenuText(Vector2f componentSize, Font font, string text, uint charSize, float lineSpacing)
+        public MenuText(Vector2i componentSize, Font font, string text, uint charSize, float lineSpacing)
         {
             Initialize(componentSize);
             textComponents = new List<Text>();
@@ -29,17 +29,18 @@ namespace EngineeringCorpsCS
             SetText(text);
         }
 
-        override public void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
+        override public void Draw(RenderTexture gui, Vector2i origin, RenderStates guiState)
         {
-            for(int i = 0; i < textComponents.Count; i++)
+            Vector2f pos = new Vector2f((position + origin).X, (origin + position).Y);
+            for (int i = 0; i < textComponents.Count; i++)
             {
                 if (textPositions == null)
                 {
-                    textComponents[i].Position = position + origin + new Vector2f(0, i * 12.0f);
+                    textComponents[i].Position = pos + new Vector2f(0, i * 12.0f);
                 }
                 else
                 {
-                    textComponents[i].Position = position + origin + textPositions[i];
+                    textComponents[i].Position = pos + textPositions[i];
                 }
                 gui.Draw(textComponents[i]);
             }
@@ -130,7 +131,7 @@ namespace EngineeringCorpsCS
 
         public void ComputeSize()
         {
-            this.size = new Vector2f(parent.size.X - 2 * margin - position.X, parent.size.Y - 2 * margin - position.Y);
+            this.size = new Vector2i(parent.size.X - 2 * margin - position.X, parent.size.Y - 2 * margin - position.Y);
         }
 
         public Vector2f GetLastPosition()

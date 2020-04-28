@@ -113,15 +113,15 @@ namespace EngineeringCorpsCS
             #region entity drawing
             renderedEntityCount = 0;
             renderedSpriteCount = 0;
-            for (int i = begPos[0]; i <= endPos[0]; i++)
+            for (int i = begPos[0]; i <= endPos[0] + 1; i++)
             {
-                for (int j = begPos[1]; j <= endPos[1]; j++)
+                for (int j = begPos[1]; j <= endPos[1] + 1; j++)
                 {
                     Chunk chunk = surface.GetChunk(i, j);
                     List<Entity> entityList = chunk.entityList;
                     for (int k = 0; k < entityList.Count; k++)
                     {
-                        if (BoundingBox.CheckCollision(windowBox, entityList[k].drawingBox, new Vector2(origin), entityList[k].position))
+                        if (entityList[k].drawArray != null && BoundingBox.CheckCollision(windowBox, entityList[k].drawingBox, new Vector2(origin), entityList[k].position))
                         {
                             drawList.Add(entityList[k]);
                         }

@@ -36,7 +36,7 @@ namespace EngineeringCorpsCS
         /// <summary>
         /// Updates all active entities.  All active entities get a chance to update, even if they will be destroyed.
         /// </summary>
-        public void UpdateEntities()
+        public void UpdateEntities(EntityCollection entityCollection, ItemCollection itemCollection)
         {
             for(int i = 0; i < updateProperties.Length; i++)
             {
@@ -45,7 +45,7 @@ namespace EngineeringCorpsCS
                     List<Entity> list = activeEntities[updateProperties[i].type];
                     for (int j = 0; j < list.Count; j++)
                     {
-                        list[j].Update();
+                        list[j].Update(entityCollection, itemCollection);
                     }
                     updateCounters[i] = 0; //reset update counter after updating
                 }

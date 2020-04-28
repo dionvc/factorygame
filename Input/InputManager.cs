@@ -458,9 +458,10 @@ namespace EngineeringCorpsCS
             mousePositionConsumedForFrame = true;
         }
 
-        public Vector2f GetMouseDiff()
+        public Vector2i GetMouseDiff()
         {
-            return window.MapPixelToCoords(mousePos) - window.MapPixelToCoords(mouseDiff);
+            Vector2f diff = window.MapPixelToCoords(mousePos) - window.MapPixelToCoords(mouseDiff);
+            return new Vector2i((int)diff.X, (int)diff.Y);
         }
     }
 }

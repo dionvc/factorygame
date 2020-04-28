@@ -43,7 +43,7 @@ namespace EngineeringCorpsCS
             this.surface.InitiateEntityInChunks(this);
         }
 
-        virtual public void Update()
+        virtual public void Update(EntityCollection entityCollection, ItemCollection itemCollection)
         {
 
         }
@@ -97,18 +97,6 @@ namespace EngineeringCorpsCS
         string remainsDestroyed;
 
         public Vector2 position { get; set; }
-        /// <summary>
-        /// Defines behavior of entity upon being clicked.  Example: Open a menu.
-        /// </summary>
-        abstract public void OnClick();
 
-        /// <summary>
-        /// Used to enforce mineability of objects
-        /// </summary>
-        virtual public void OnMined()
-        {
-            surface.RemoveEntity(this);
-            
-        }
     }
 }

@@ -12,10 +12,11 @@ namespace EngineeringCorpsCS
     {
         Vector2 velocity;
         float rotation = 0;
+        int playerVelocity = 12;
         ItemStack[] inventory;
         public ItemStack heldItem { get; set; } = null;
         EntityGhost heldItemGhost;
-        public Entity miningEntity { get; set; } = null;
+        public EntityPhysical selectedEntity { get; protected set; } = null;
         public int miningProgress;
         public float selectionRange = 100.0f;
         TextureAtlases textureAtlases;
@@ -41,7 +42,7 @@ namespace EngineeringCorpsCS
         /// <summary>
         /// TODO: Add inheritance structure
         /// </summary>
-        public override void Update()
+        public override void Update(EntityCollection entityCollection, ItemCollection itemCollection)
         {
             ///TODO: Move this
             BoundingBox.ApplyPhysicalCollision(this, velocity);
@@ -56,10 +57,6 @@ namespace EngineeringCorpsCS
             radialLight.Update();
             directionalLight.Update();
             directionalLight.SetDirection(270 + rotation);
-        }
-        override public void OnClick()
-        {
-
         }
 
         public void SubscribeToInput(InputManager input)
@@ -79,64 +76,88 @@ namespace EngineeringCorpsCS
                 {
                     inventory[i] = new ItemStack(input.itemCollection.GetItem("Pine Sapling"), 100);
                 }
+                inventory[8] = new ItemStack(input.itemCollection.GetItem("Greenhouse"), 10);
             }
 
+            //Movement
             if (input.GetKeyHeld(InputBindings.moveUp, false))
             {
-                velocity.Add(0, -8);
+                velocity.Add(0, -playerVelocity);
             }
             if (input.GetKeyHeld(InputBindings.moveDown, false))
             {
-                velocity.Add(0, 8);
+                velocity.Add(0, playerVelocity);
             }
             if (input.GetKeyHeld(InputBindings.moveLeft, false))
             {
-                velocity.Add(-8, 0);
+                velocity.Add(-playerVelocity, 0);
             }
             if(input.GetKeyHeld(InputBindings.moveRight, false))
             {
-                velocity.Add(8, 0);
+                velocity.Add(playerVelocity, 0);
             }
 
+            //Open Inventory
             if(input.GetKeyPressed(InputBindings.showInventory, true))
             {
-                input.menuFactory.CreateTestInventory(this, inventory);
+                input.menuFactory.CreatePlayerInventory(this, inventory);
             }
-            float[] mousePos;
-            if (input.GetMousePositionAsFloat(out mousePos) && heldItem != null && heldItem.item.placeResult != null && input.GetMouseHeld(InputBindings.primary, true))
-            {
-                int[] tileAligned = new int[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
-                BoundingBox box = new BoundingBox(-15, -15, 15, 15);
-                EntityGhost entityGhost = new EntityGhost(box, new Vector2(mousePos[0], mousePos[1]), surface);
-                if (!BoundingBox.CheckForCollision(entityGhost))
+            Vector2f mousePosf;
+            BoundingBox box = new BoundingBox(-2, -2, 2, 2);
+            bool mouse = input.GetMousePosition(out mousePosf);
+            if (mouse) {
+                List<EntityPhysical> list = BoundingBox.CheckSelectionOfType<EntityPhysical>(new Vector2(mousePosf), box, surface);
+                if (list.Count > 0)
                 {
-                    Entity placeItem = input.entityCollection.InstantiatePrototype(heldItem.item.placeResult, new Vector2(mousePos[0], mousePos[1]), surface);
-                    heldItem.count -= 1;
-                    if (heldItem.count < 1)
+                    if (!ReferenceEquals(list[0], selectedEntity))
                     {
-                        heldItem = null;
-                    }
-                }
-            }
-            if(input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true))
-            {
-                if (miningEntity == null)
-                {
-                    BoundingBox box = new BoundingBox(-15, -15, 15, 15);
-                    EntityGhost entityGhost = new EntityGhost(box, new Vector2(mousePos[0], mousePos[1]), surface);
-                    List<Entity> list = BoundingBox.GetCollisionListOfType<Entity>(entityGhost);
-                    if (list.Count > 0 && list[0].minable == true)
-                    {
-                        miningEntity = list[0];
+                        miningProgress = 0;
+                        selectedEntity = list[0];
                     }
                 }
                 else
                 {
+                    miningProgress = 0;
+                    selectedEntity = null;
+                }
+            }
+            else
+            {
+                selectedEntity = null;
+            }
+            //Check for onClick
+            if (selectedEntity != null && input.GetMouseClicked(InputBindings.primary, true))
+            {
+                selectedEntity.OnClick(this, input.menuFactory);
+                input.ConsumeMousePosition();
+            }
+            float[] mousePos;
+            bool mousefloat = input.GetMousePositionAsFloat(out mousePos);
+            //Check for placement ability
+            if (mousefloat && heldItem != null && heldItem.item.placeResult != null && input.GetMouseHeld(InputBindings.primary, true))
+            {
+                int[] tileAligned = new int[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
+                BoundingBox placeBox = new BoundingBox(-15, -15, 15, 15);
+                //Use prototype animation to construct entityghost
+                EntityGhost entityGhost = new EntityGhost(placeBox, new Vector2(mousePos[0], mousePos[1]), surface);
+                if (!BoundingBox.CheckForCollision(entityGhost))
+                {
+                    Entity placeItem = input.entityCollection.InstantiatePrototype(heldItem.item.placeResult, new Vector2(mousePos[0], mousePos[1]), surface);
+                    heldItem = heldItem.Subtract(1);
+                }
+            }
+
+            
+            //Check for mining potential (Switch to using states and update?)
+            if(input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true))
+            {
+                if(selectedEntity != null)
+                {
                     miningProgress += 1;
-                    if(miningProgress > miningEntity.miningProps.miningTime)
+                    if(miningProgress > selectedEntity.miningProps.miningTime)
                     {
-                        input.entityCollection.DestroyInstance(miningEntity);
-                        miningEntity = null;
+                        input.entityCollection.DestroyInstance(selectedEntity);
+                        selectedEntity = null;
                         miningProgress = 0;
                         Item item = input.itemCollection.GetItem("Wood");
                         for(int i = 0; i < inventory.Length; i++)
@@ -148,7 +169,7 @@ namespace EngineeringCorpsCS
                             }
                             else if (ReferenceEquals(inventory[i].item, item) && inventory[i].count <= inventory[i].item.maxStack)
                             {
-                                inventory[i].count++;
+                                inventory[i].Add(1);
                                 break;
                             }
                         }
@@ -161,8 +182,8 @@ namespace EngineeringCorpsCS
         {
             if(tag.Equals("mining"))
             {
-                if (miningEntity != null) {
-                    return miningProgress * 1.0f / miningEntity.miningProps.miningTime;
+                if (selectedEntity != null) {
+                    return miningProgress * 1.0f / selectedEntity.miningProps.miningTime;
                 }
                 else
                 {

@@ -36,7 +36,7 @@ namespace EngineeringCorpsCS
 
         }
 
-        public override void Update()
+        public override void Update(EntityCollection entityCollection, ItemCollection itemCollection)
         {
             if(surface.GetChunk(centeredChunk, false).pollutionValue > 50)
             {

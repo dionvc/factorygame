@@ -65,7 +65,7 @@ namespace EngineeringCorpsCS
             if (entity is Player)
             {
                 //Create minimap
-                menuFactory.CreateMinimap(this);
+                menuFactory.CreateMinimap();
                 //Create hotbar
 
                 //Create miningbar
@@ -105,7 +105,7 @@ namespace EngineeringCorpsCS
             }
             if(input.GetKeyPressed(InputBindings.showWorldMap, true))
             {
-                input.menuFactory.CreateWorldMap(this);
+                input.menuFactory.CreateWorldMap();
             }
             if(focusedEntity != null)
             {

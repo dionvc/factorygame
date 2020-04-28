@@ -118,6 +118,15 @@ namespace EngineeringCorpsCS
             this.CalculateConstants();
         }
 
+        public BoundingBox(Vector2i size)
+        {
+            topLeft = new Vector2(0, 0);
+            botRight = new Vector2(size.X, size.Y);
+
+            this.SetRotation(0);
+            this.CalculateConstants();
+        }
+
         private void CalculateConstants()
         {
             float r1 = (topLeft - center).GetMagnitude();
@@ -848,6 +857,10 @@ namespace EngineeringCorpsCS
             for (int i = 0; i < chunkList.Length; i++)
             {
                 Chunk chunk = surface.GetChunk(chunkList[i], false);
+                if(chunk == null)
+                {
+                    continue;
+                }
                 //entity collision checks
                 List<Entity> collisionList = chunk.entityCollisionList;
                 for (int j = 0; j < collisionList.Count; j++)

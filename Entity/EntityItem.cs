@@ -8,10 +8,6 @@ namespace EngineeringCorpsCS
 {
     class EntityItem: Entity
     {
-        public override void OnClick()
-        {
-            
-        }
 
         public override Entity Clone()
         {

@@ -26,23 +26,26 @@ namespace EngineeringCorpsCS
 
         public string tag { get; set; } = "";
 
+        public string panelTag { get; set; } = "";
+
         VertexArray vertexArray;
-        public MenuPanel(Vector2f relativePosition, Vector2f componentSize, FloatRect bounds, float borderSize, PanelAction closePanelAction)
+        public MenuPanel(Vector2i relativePosition, Vector2i componentSize, FloatRect bounds, float borderSize, PanelAction closePanelAction, Color panelColor)
         {
             this.size = componentSize;
             this.position = relativePosition;
             this.ClosePanelAction = closePanelAction;
             collisionBox = new BoundingBox(this.size);
             panelState = PanelState.Normal;
-            vertexArray = CreateMenuGraphicArrayWithBorder(bounds, borderSize);
+            vertexArray = CreateMenuGraphicArrayWithBorder(bounds, borderSize, panelColor);
         }
 
         
-        override public void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
+        override public void Draw(RenderTexture gui, Vector2i origin, RenderStates guiState)
         {
             //Construct transform
             Transform t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
-            t.Translate(origin + position);
+            Vector2f pos = new Vector2f((position + origin).X, (origin + position).Y);
+            t.Translate(pos);
             Transform original = guiState.Transform;
             guiState.Transform = t;
             gui.Draw(vertexArray, guiState);
@@ -56,15 +59,16 @@ namespace EngineeringCorpsCS
             //Computing absolute position to check collision
             Vector2f mousePos;
             bool mouse = input.GetMousePosition(out mousePos);
-            Vector2f origin = new Vector2f(0, 0);
+            Vector2i origin = new Vector2i(0, 0);
             MenuComponent bubble = parent;
             while (bubble != null)
             {
                 origin += bubble.position;
                 bubble = bubble.parent;
             }
+            Vector2f pos = new Vector2f((position + origin).X, (origin + position).Y);
             //If the menu is collided with then it will consume the mouse position so that it does not interact with anything else
-            bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, position + origin);
+            bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, pos);
             if (mouse && input.GetMouseClicked(InputBindings.primary, false) && collided)
             {
                 container.PushMenuToFront(this);

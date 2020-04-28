@@ -23,7 +23,7 @@ namespace EngineeringCorpsCS
         public string tag { get; set; } = "";
         float progress;
         GetProgress barProgress;
-        public MenuProgressBar(Vector2f componentSize, FloatRect backdropBounds, FloatRect barBounds, GetProgress barProgress, Color barColor)
+        public MenuProgressBar(Vector2i componentSize, FloatRect backdropBounds, FloatRect barBounds, GetProgress barProgress, Color barColor)
         {
             Initialize(componentSize);
 
@@ -32,13 +32,14 @@ namespace EngineeringCorpsCS
             this.barProgress = barProgress;
         }
 
-        public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
+        public override void Draw(RenderTexture gui, Vector2i origin, RenderStates guiState)
         {
             progress = barProgress.Invoke(tag);
             if (!(progress == 1.0f && hideWhenFull) && !(progress == 0.0f && hideWhenEmpty))
             {
                 Transform t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
-                t.Translate(origin + position);
+                Vector2f pos = new Vector2f((position + origin).X, (origin + position).Y);
+                t.Translate(pos);
                 Transform original = guiState.Transform;
                 guiState.Transform = t;
                 //draw backdrop

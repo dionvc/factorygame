@@ -31,7 +31,7 @@ namespace EngineeringCorpsCS
         bool getPollution = true;
         public bool controllable { get; set; } = false;
         public int controlSpeed { get; set; } = 4;
-        public MenuWorldMap(Vector2f componentSize, Camera camera, Renderer renderer)
+        public MenuWorldMap(Vector2i componentSize, Camera camera, Renderer renderer)
         {
             Initialize(componentSize);
             this.camera = camera;
@@ -44,7 +44,7 @@ namespace EngineeringCorpsCS
             pollutionArray = new VertexArray(PrimitiveType.Triangles);
         }
 
-        public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
+        public override void Draw(RenderTexture gui, Vector2i origin, RenderStates guiState)
         {
             textureMinimap.Clear();
             refreshCounter++;
@@ -78,7 +78,7 @@ namespace EngineeringCorpsCS
             }
             textureMinimap.Display();
             Sprite minimap = new Sprite(textureMinimap.Texture);
-            minimap.Position = origin + position;
+            minimap.Position = new Vector2f((position + origin).X, (origin + position).Y);
             gui.Draw(minimap);
             base.Draw(gui, origin, guiState);
         }

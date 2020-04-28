@@ -20,7 +20,7 @@ namespace EngineeringCorpsCS
         {
 
         }
-        public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
+        public override void Draw(RenderTexture gui, Vector2i origin, RenderStates guiState)
         {
             base.Draw(gui, origin, guiState);
         }

@@ -30,10 +30,6 @@ namespace EngineeringCorpsCS
         public int fullHealth { get; protected set; } = 100;
 
         public BoundingBox selectionBox { get; set; }
-        override public void OnClick()
-        {
-
-        }
 
         /// <summary>
         /// Used to create particles, play sounds, and create remains when an entity with health is destroyed
@@ -41,6 +37,23 @@ namespace EngineeringCorpsCS
         virtual public void OnDestroyed()
         {
             surface.RemoveEntity(this);
+        }
+
+        /// <summary>
+        /// Defines behavior of entity upon being clicked.  Example: Open a menu.
+        /// </summary>
+        virtual public void OnClick(Entity accessingEntity, MenuFactory menuFactory)
+        {
+
+        }
+
+        /// <summary>
+        /// Used to enforce mineability of objects
+        /// </summary>
+        virtual public void OnMined()
+        {
+            surface.RemoveEntity(this);
+
         }
     }
 }

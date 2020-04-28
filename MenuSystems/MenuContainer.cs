@@ -21,7 +21,7 @@ namespace EngineeringCorpsCS
         {
             for (int i = menus.Count - 1; i >= 0; i--)
             {
-                menus[i].Draw(GUI, new Vector2f(0, 0), guiState);
+                menus[i].Draw(GUI, new Vector2i(0, 0), guiState);
             }
         }
         public void AttachMenu(MenuComponent menu)
@@ -71,6 +71,17 @@ namespace EngineeringCorpsCS
                 input.PushMenuToBack(menuComponent);
             }
             
+        }
+
+        public void ClosePanelsWithTag(string tag)
+        {
+            for(int i = 0; i < menus.Count; i++)
+            {
+                if(menus[i] is MenuPanel && ((MenuPanel)menus[i]).panelTag == tag)
+                {
+                    RemoveMenu(menus[i]);
+                }
+            }
         }
     }
 }

@@ -32,7 +32,7 @@ namespace EngineeringCorpsCS
         public string tag { get; set; }
         public MenuSlider(int segments, ApplySlider sliderAction, float sliderMin, float sliderMax, float sliderInitialValue)
         {
-            Vector2f componentSize = new Vector2f(32 * segments, 32);
+            Vector2i componentSize = new Vector2i(32 * segments, 32);
             Initialize(componentSize);
             this.sliderMin = sliderMin;
             this.sliderMax = sliderMax;
@@ -45,29 +45,30 @@ namespace EngineeringCorpsCS
             {
                 if(i == 0)
                 {
-                    sliderArrays[i] = CreateMenuGraphic(new FloatRect(0, 96, 32, 32), new Vector2f(32, 32));
+                    sliderArrays[i] = CreateMenuGraphic(new FloatRect(0, 96, 32, 32), new Vector2i(32, 32));
                 }
                 else if(i == segments - 1)
                 {
-                    sliderArrays[i] = CreateMenuGraphic(new FloatRect(64, 96, 32, 32), new Vector2f(32, 32));
+                    sliderArrays[i] = CreateMenuGraphic(new FloatRect(64, 96, 32, 32), new Vector2i(32, 32));
                 }
                 else
                 {
-                    sliderArrays[i] = CreateMenuGraphic(new FloatRect(32, 96, 32, 32), new Vector2f(32, 32));
+                    sliderArrays[i] = CreateMenuGraphic(new FloatRect(32, 96, 32, 32), new Vector2i(32, 32));
                 }
             }
-            sliderArray = CreateMenuGraphic(new FloatRect(96, 96, 32, 32), new Vector2f(32, 32));
-            sliderArrayHover = CreateMenuGraphic(new FloatRect(96, 96, 32, 32), new Vector2f(32, 32), new Color(192, 255, 192, 255));
-            sliderArraySliding = CreateMenuGraphic(new FloatRect(96, 96, 32, 32), new Vector2f(32, 32), new Color(128, 255, 128, 255));
+            sliderArray = CreateMenuGraphic(new FloatRect(96, 96, 32, 32), new Vector2i(32, 32));
+            sliderArrayHover = CreateMenuGraphic(new FloatRect(96, 96, 32, 32), new Vector2i(32, 32), new Color(192, 255, 192, 255));
+            sliderArraySliding = CreateMenuGraphic(new FloatRect(96, 96, 32, 32), new Vector2i(32, 32), new Color(128, 255, 128, 255));
         }
 
-        public override void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
+        public override void Draw(RenderTexture gui, Vector2i origin, RenderStates guiState)
         {
             //draw the slider (regular, hightlighted, and pressed)
             //draw the backdrop of slider (details?)
             Transform original = guiState.Transform;
             Transform t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
-            t.Translate(origin + position);
+            Vector2f pos = new Vector2f((position + origin).X, (origin + position).Y);
+            t.Translate(pos);
             for (int i = 0; i < sliderArrays.Length; i++)
             {
                 guiState.Transform = t;
@@ -75,7 +76,7 @@ namespace EngineeringCorpsCS
                 t.Translate(new Vector2f(32, 0));
             }
             t = new Transform(1, 0, 0, 0, 1, 0, 0, 0, 1);
-            t.Translate(origin + position + new Vector2f(sliderValue - 16, -4));
+            t.Translate(pos + new Vector2f(sliderValue - 16, -4));
             guiState.Transform = t;
             if(sliderState == SliderState.Normal)
             {
@@ -98,15 +99,15 @@ namespace EngineeringCorpsCS
             base.HandleInput(input);
             Vector2f mousePos;
             bool mouse = input.GetMousePosition(out mousePos);
-            Vector2f origin = new Vector2f(0, 0);
+            Vector2i origin = new Vector2i(0, 0);
             MenuComponent bubble = parent;
             while (bubble != null)
             {
                 origin += bubble.position;
                 bubble = bubble.parent;
             }
-
-            if (mouse && sliderState != SliderState.Sliding && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, (position + origin)))
+            Vector2f pos = new Vector2f((position + origin).X, (origin + position).Y);
+            if (mouse && sliderState != SliderState.Sliding && BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, (pos)))
             {
                 sliderState = SliderState.Hover;
             }

@@ -26,6 +26,8 @@ namespace EngineeringCorpsCS
             itemCollection.Add(item.name, item);
             item = CreateWood();
             itemCollection.Add(item.name, item);
+            item = CreateGreenhouse();
+            itemCollection.Add(item.name, item);
             return itemCollection;
         }
 
@@ -42,6 +44,13 @@ namespace EngineeringCorpsCS
             IntRect bounds;
             StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("woodItem", out bounds), bounds, Drawable.DrawLayer.Item);
             return new Item("Wood", itemIcon, null, 100);
+        }
+
+        private Item CreateGreenhouse()
+        {
+            IntRect bounds;
+            StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("woodItem", out bounds), bounds, Drawable.DrawLayer.Item);
+            return new Item("Greenhouse", itemIcon, "greenhouse", 100);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace EngineeringCorpsCS
         /// <param name="text"></param>
         /// <param name="charSize"></param>
         /// <param name="methodList"></param>
-        public MenuDynamicText(Vector2f componentSize, Font font, string text, uint charSize, DynamicString[] methodList)
+        public MenuDynamicText(Vector2i componentSize, Font font, string text, uint charSize, DynamicString[] methodList)
         {
             Initialize(componentSize);
             this.methodList = methodList;
@@ -36,13 +36,13 @@ namespace EngineeringCorpsCS
             stringArray = new string[methodList.Length];
         }
 
-        override public void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
+        override public void Draw(RenderTexture gui, Vector2i origin, RenderStates guiState)
         {
             EvaluateMethods();
             textString = string.Format(unformattedString, stringArray);
             ComputeSize();
             SetText(textString);
-            textComponent.Position = position + origin;
+            textComponent.Position = new Vector2f((position + origin).X, (origin + position).Y);
             gui.Draw(textComponent);
             base.Draw(gui, origin, guiState);
         }
@@ -79,12 +79,12 @@ namespace EngineeringCorpsCS
 
                 }
             }
-            size = new Vector2f(size.X, textComponent.FindCharacterPos(Convert.ToUInt32(textComponent.DisplayedString.Length)).Y);
+            size = new Vector2i(size.X, (int)textComponent.FindCharacterPos(Convert.ToUInt32(textComponent.DisplayedString.Length)).Y);
         }
 
         private void ComputeSize()
         {
-            this.size = new Vector2f(parent.size.X - 2 * margin - position.X, parent.size.Y - 2 * margin - position.Y);
+            this.size = new Vector2i(parent.size.X - 2 * margin - position.X, parent.size.Y - 2 * margin - position.Y);
         }
 
         private void EvaluateMethods()

@@ -10,8 +10,8 @@ namespace EngineeringCorpsCS
 {
     class MenuComponent: IInputSubscriber
     {
-        public Vector2f position { get; protected set; }
-        public Vector2f size { get; protected set; }
+        public Vector2i position { get; protected set; }
+        public Vector2i size { get; protected set; }
         public MenuComponent parent { get; protected set; }
         public MenuComponent relativeComponent { get; protected set; }
         public BoundingBox collisionBox { get; protected set; }
@@ -21,14 +21,14 @@ namespace EngineeringCorpsCS
         protected string pivot1 = "center";
         protected string pivot2 = "center";
         protected string pivot3 = "inside";
-        protected float margin = 0.0f; //specify margin of attachment.  If attaching to a component, then the sign matters.
+        protected int margin = 0; //specify margin of attachment.  If attaching to a component, then the sign matters.
 
-        public void Initialize(Vector2f size)
+        public void Initialize(Vector2i size)
         {
-            this.position = new Vector2f(0,0);
+            this.position = new Vector2i(0,0);
             this.size = size;
         }
-        virtual public void Draw(RenderTexture gui, Vector2f origin, RenderStates guiState)
+        virtual public void Draw(RenderTexture gui, Vector2i origin, RenderStates guiState)
         {
             for (int i = 0; i < attachedComponents.Count; i++)
             {
@@ -44,6 +44,11 @@ namespace EngineeringCorpsCS
         /// <param name="borderSize"></param>
         public VertexArray CreateMenuGraphicArrayWithBorder(FloatRect bounds, float borderSize)
         {
+            return CreateMenuGraphicArrayWithBorder(bounds, borderSize, new Color(255,255,255));
+        }
+
+        public VertexArray CreateMenuGraphicArrayWithBorder(FloatRect bounds, float borderSize, Color color)
+        {
             VertexArray vertexArray = new VertexArray(PrimitiveType.Triangles);
             float pR = 0.0f;
             float oX = bounds.Left; //origin x
@@ -51,73 +56,73 @@ namespace EngineeringCorpsCS
             float iX = bounds.Width / 3; //increment x
             float iY = bounds.Height / 3;
             //Topleft
-            vertexArray.Append(new Vertex(new Vector2f(0 - pR, 0 - pR), new Vector2f(oX, oY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, 0 - pR), new Vector2f(oX + iX, oY)));
-            vertexArray.Append(new Vertex(new Vector2f(0 - pR, borderSize + pR), new Vector2f(oX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, 0 - pR), new Vector2f(oX + iX, oY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, borderSize + pR), new Vector2f(oX + iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(0 - pR, borderSize + pR), new Vector2f(oX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(0 - pR, 0 - pR), color, new Vector2f(oX, oY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, 0 - pR), color, new Vector2f(oX + iX, oY)));
+            vertexArray.Append(new Vertex(new Vector2f(0 - pR, borderSize + pR), color, new Vector2f(oX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, 0 - pR), color, new Vector2f(oX + iX, oY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, borderSize + pR), color, new Vector2f(oX + iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(0 - pR, borderSize + pR), color, new Vector2f(oX, oY + iY)));
             //Topright
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, 0 - pR), new Vector2f(oX + 2 * iX, oY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, 0 - pR), new Vector2f(oX + 3 * iX, oY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, borderSize + pR), new Vector2f(oX + 2 * iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, 0 - pR), new Vector2f(oX + 3 * iX, oY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, borderSize + pR), new Vector2f(oX + 3 * iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, borderSize + pR), new Vector2f(oX + 2 * iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, 0 - pR), color, new Vector2f(oX + 2 * iX, oY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, 0 - pR), color, new Vector2f(oX + 3 * iX, oY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, borderSize + pR), color, new Vector2f(oX + 2 * iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, 0 - pR), color, new Vector2f(oX + 3 * iX, oY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, borderSize + pR), color, new Vector2f(oX + 3 * iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, borderSize + pR),color, new Vector2f(oX + 2 * iX, oY + iY)));
             //Top
-            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, 0 - pR), new Vector2f(oX + iX, oY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, 0 - pR), new Vector2f(oX + 2 * iX, oY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, borderSize + pR), new Vector2f(oX + iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, 0 - pR), new Vector2f(oX + 2 * iX, oY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, borderSize + pR), new Vector2f(oX + 2 * iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, borderSize + pR), new Vector2f(oX + iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, 0 - pR), color, new Vector2f(oX + iX, oY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, 0 - pR), color, new Vector2f(oX + 2 * iX, oY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, borderSize + pR), color, new Vector2f(oX + iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, 0 - pR), color, new Vector2f(oX + 2 * iX, oY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, borderSize + pR), color, new Vector2f(oX + 2 * iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, borderSize + pR), color, new Vector2f(oX + iX, oY + iY)));
             //Center
-            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, borderSize - pR), new Vector2f(oX + iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, borderSize - pR), new Vector2f(oX + 2 * iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, size.Y - borderSize + pR), new Vector2f(oX + iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, borderSize - pR), new Vector2f(oX + 2 * iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, size.Y - borderSize + pR), new Vector2f(oX + 2 * iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, size.Y - borderSize + pR), new Vector2f(oX + iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, borderSize - pR), color, new Vector2f(oX + iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, borderSize - pR),color, new Vector2f(oX + 2 * iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, size.Y - borderSize + pR),color, new Vector2f(oX + iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, borderSize - pR),color, new Vector2f(oX + 2 * iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, size.Y - borderSize + pR),color, new Vector2f(oX + 2 * iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, size.Y - borderSize + pR),color, new Vector2f(oX + iX, oY + 2 * iY)));
             //Left
-            vertexArray.Append(new Vertex(new Vector2f(0 - pR, borderSize - pR), new Vector2f(oX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, borderSize - pR), new Vector2f(oX + iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(0 - pR, size.Y - borderSize + pR), new Vector2f(oX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, borderSize - pR), new Vector2f(oX + iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, size.Y - borderSize + pR), new Vector2f(oX + iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(0 - pR, size.Y - borderSize + pR), new Vector2f(oX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(0 - pR, borderSize - pR),color, new Vector2f(oX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, borderSize - pR),color, new Vector2f(oX + iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(0 - pR, size.Y - borderSize + pR),color, new Vector2f(oX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, borderSize - pR),color, new Vector2f(oX + iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, size.Y - borderSize + pR),color, new Vector2f(oX + iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(0 - pR, size.Y - borderSize + pR),color, new Vector2f(oX, oY + 2 * iY)));
             //Right
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, borderSize - pR), new Vector2f(oX + 2 * iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, borderSize - pR), new Vector2f(oX + 3 * iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, size.Y - borderSize + pR), new Vector2f(oX + 2 * iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, borderSize - pR), new Vector2f(oX + 3 * iX, oY + iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, size.Y - borderSize + pR), new Vector2f(oX + 3 * iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, size.Y - borderSize + pR), new Vector2f(oX + 2 * iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, borderSize - pR),color, new Vector2f(oX + 2 * iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, borderSize - pR),color, new Vector2f(oX + 3 * iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, size.Y - borderSize + pR),color, new Vector2f(oX + 2 * iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, borderSize - pR),color, new Vector2f(oX + 3 * iX, oY + iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, size.Y - borderSize + pR),color, new Vector2f(oX + 3 * iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, size.Y - borderSize + pR),color, new Vector2f(oX + 2 * iX, oY + 2 * iY)));
             //bottomleft
-            vertexArray.Append(new Vertex(new Vector2f(0 - pR, size.Y - borderSize - pR), new Vector2f(oX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, size.Y - borderSize - pR), new Vector2f(oX + iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(0 - pR, size.Y + pR), new Vector2f(oX, oY + 3 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, size.Y - borderSize - pR), new Vector2f(oX + iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, size.Y + pR), new Vector2f(oX + iX, oY + 3 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(0 - pR, size.Y + pR), new Vector2f(oX, oY + 3 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(0 - pR, size.Y - borderSize - pR),color, new Vector2f(oX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, size.Y - borderSize - pR),color, new Vector2f(oX + iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(0 - pR, size.Y + pR),color, new Vector2f(oX, oY + 3 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, size.Y - borderSize - pR),color, new Vector2f(oX + iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize + pR, size.Y + pR),color, new Vector2f(oX + iX, oY + 3 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(0 - pR, size.Y + pR),color, new Vector2f(oX, oY + 3 * iY)));
             //bottomright
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, size.Y - borderSize - pR), new Vector2f(oX + 2 * iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, size.Y - borderSize - pR), new Vector2f(oX + 3 * iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, size.Y + pR), new Vector2f(oX + 2 * iX, oY + 3 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, size.Y - borderSize - pR), new Vector2f(oX + 3 * iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, size.Y + pR), new Vector2f(oX + 3 * iX, oY + 3 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, size.Y + pR), new Vector2f(oX + 2 * iX, oY + 3 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, size.Y - borderSize - pR), color, new Vector2f(oX + 2 * iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, size.Y - borderSize - pR), color, new Vector2f(oX + 3 * iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, size.Y + pR), color, new Vector2f(oX + 2 * iX, oY + 3 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, size.Y - borderSize - pR), color, new Vector2f(oX + 3 * iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X + pR, size.Y + pR), color, new Vector2f(oX + 3 * iX, oY + 3 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize - pR, size.Y + pR), color, new Vector2f(oX + 2 * iX, oY + 3 * iY)));
             //bottom
-            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, size.Y - borderSize - pR), new Vector2f(oX + iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, size.Y - borderSize - pR), new Vector2f(oX + 2 * iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, size.Y + pR), new Vector2f(oX + iX, oY + 3 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, size.Y - borderSize - pR), new Vector2f(oX + 2 * iX, oY + 2 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, size.Y + pR), new Vector2f(oX + 2 * iX, oY + 3 * iY)));
-            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, size.Y + pR), new Vector2f(oX + iX, oY + 3 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, size.Y - borderSize - pR), color, new Vector2f(oX + iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, size.Y - borderSize - pR), color, new Vector2f(oX + 2 * iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, size.Y + pR), color, new Vector2f(oX + iX, oY + 3 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, size.Y - borderSize - pR), color, new Vector2f(oX + 2 * iX, oY + 2 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(size.X - borderSize + pR, size.Y + pR),color, new Vector2f(oX + 2 * iX, oY + 3 * iY)));
+            vertexArray.Append(new Vertex(new Vector2f(borderSize - pR, size.Y + pR),color, new Vector2f(oX + iX, oY + 3 * iY)));
 
             return vertexArray;
         }
 
-        public VertexArray CreateMenuGraphic(FloatRect bounds, Vector2f size)
+        public VertexArray CreateMenuGraphic(FloatRect bounds, Vector2i size)
         {
             VertexArray vertexArray = new VertexArray(PrimitiveType.Triangles);
             float pR = 0.0f;
@@ -129,9 +134,9 @@ namespace EngineeringCorpsCS
             vertexArray.Append(new Vertex(new Vector2f(0 - pR, size.Y + pR), new Vector2f(bounds.Left, bounds.Top + bounds.Height)));
             return vertexArray;
         }
-        public VertexArray CreateMenuGraphic(FloatRect bounds, Vector2f size, Color color)
+        public VertexArray CreateMenuGraphic(FloatRect bounds, Vector2i size, Color color)
         {
-            float pR = 0.5f;
+            float pR = 0.0f;
             VertexArray vertexArray = new VertexArray(PrimitiveType.Triangles);
             vertexArray.Append(new Vertex(new Vector2f(0 - pR, 0 - pR), color, new Vector2f(bounds.Left, bounds.Top)));
             vertexArray.Append(new Vertex(new Vector2f(size.X + pR, 0 - pR), color, new Vector2f(bounds.Left + bounds.Width, bounds.Top)));
@@ -141,7 +146,7 @@ namespace EngineeringCorpsCS
             vertexArray.Append(new Vertex(new Vector2f(0 - pR, size.Y + pR), color, new Vector2f(bounds.Left, bounds.Top + bounds.Height)));
             return vertexArray;
         }
-        public void Translate(Vector2f translation)
+        public void Translate(Vector2i translation)
         {
             if (!lockedPosition)
             {
@@ -149,12 +154,12 @@ namespace EngineeringCorpsCS
             }
         }
 
-        public void SetRelativePosition(Vector2f position)
+        public void SetRelativePosition(Vector2i position)
         {
             this.position = position;
         }
 
-        public void SetPivots(string pivot1, string pivot2, string inside, float margin)
+        public void SetPivots(string pivot1, string pivot2, string inside, int margin)
         {
             this.pivot1 = pivot1;
             this.pivot2 = pivot2;
@@ -170,42 +175,42 @@ namespace EngineeringCorpsCS
             }
             if (pivot3 == "inside")
             {
-                position = new Vector2f(parent.size.X / 2 - size.X / 2, parent.size.Y / 2 - size.Y / 2);
+                position = new Vector2i(parent.size.X / 2 - size.X / 2, parent.size.Y / 2 - size.Y / 2);
                 if (pivot1 == "top" || pivot2 == "top")
                 {
-                    position += new Vector2f(0, size.Y / 2 + margin - parent.size.Y / 2);
+                    position += new Vector2i(0, size.Y / 2 + margin - parent.size.Y / 2);
                 }
                 if (pivot1 == "bottom" || pivot2 == "bottom")
                 {
-                    position += new Vector2f(0, parent.size.Y / 2 - size.Y / 2 - margin);
+                    position += new Vector2i(0, parent.size.Y / 2 - size.Y / 2 - margin);
                 }
                 if (pivot1 == "left" || pivot2 == "left")
                 {
-                    position += new Vector2f(margin + size.X / 2 - parent.size.X / 2, 0);
+                    position += new Vector2i(margin + size.X / 2 - parent.size.X / 2, 0);
                 }
                 if (pivot1 == "right" || pivot2 == "right")
                 {
-                    position += new Vector2f(parent.size.X / 2 - size.X / 2 - margin, 0);
+                    position += new Vector2i(parent.size.X / 2 - size.X / 2 - margin, 0);
                 }
             }
             else
             {
-                position = new Vector2f(parent.size.X / 2 - size.X / 2, parent.size.Y / 2 - size.Y / 2);
+                position = new Vector2i(parent.size.X / 2 - size.X / 2, parent.size.Y / 2 - size.Y / 2);
                 if (pivot1 == "top" || pivot2 == "top")
                 {
-                    position += new Vector2f(0, -size.Y / 2 - margin - parent.size.Y / 2);
+                    position += new Vector2i(0, -size.Y / 2 - margin - parent.size.Y / 2);
                 }
                 if (pivot1 == "bottom" || pivot2 == "bottom")
                 {
-                    position += new Vector2f(0, parent.size.Y / 2 + margin + size.Y / 2);
+                    position += new Vector2i(0, parent.size.Y / 2 + margin + size.Y / 2);
                 }
                 if (pivot1 == "left" || pivot2 == "left")
                 {
-                    position += new Vector2f(-size.X - parent.size.X / 2 - margin, 0);
+                    position += new Vector2i(-size.X - parent.size.X / 2 - margin, 0);
                 }
                 if (pivot1 == "right" || pivot2 == "right")
                 {
-                    position += new Vector2f(parent.size.X / 2 + margin, 0);
+                    position += new Vector2i(parent.size.X / 2 + margin, 0);
                 }
             }
         }
@@ -222,22 +227,22 @@ namespace EngineeringCorpsCS
                 SetInitialPosition();
             }
             else if (parent == null) {
-                position = new Vector2f(GUIView.Size.X / 2 - size.X / 2, GUIView.Size.Y / 2 - size.Y / 2);
+                position = new Vector2i((int)(GUIView.Size.X / 2 - size.X / 2), (int)(GUIView.Size.Y / 2 - size.Y / 2));
                 if (pivot1 == "top" || pivot2 == "top")
                 {
-                    position += new Vector2f(0, -GUIView.Size.Y / 2 + size.Y / 2 + margin);
+                    position += new Vector2i(0, (int)(-GUIView.Size.Y / 2 + size.Y / 2 + margin));
                 }
                 if (pivot1 == "bottom" || pivot2 == "bottom")
                 {
-                    position += new Vector2f(0, GUIView.Size.Y / 2 - size.Y / 2 - margin);
+                    position += new Vector2i(0, (int)(GUIView.Size.Y / 2 - size.Y / 2 - margin));
                 }
                 if (pivot1 == "left" || pivot2 == "left")
                 {
-                    position += new Vector2f(-GUIView.Size.X / 2 + size.X / 2 + margin, 0);
+                    position += new Vector2i((int)(-GUIView.Size.X / 2 + size.X / 2 + margin), 0);
                 }
                 if (pivot1 == "right" || pivot2 == "right")
                 {
-                    position += new Vector2f(GUIView.Size.X / 2 - size.X / 2 - margin, 0);
+                    position += new Vector2i((int)(GUIView.Size.X / 2 - size.X / 2 - margin), 0);
                 }
             }
         }
@@ -249,59 +254,59 @@ namespace EngineeringCorpsCS
         public void SetInitialPosition(MenuComponent component)
         {
             relativeComponent = component;
-            Vector2f origin = new Vector2f(0, 0);
+            Vector2i origin = new Vector2i(0, 0);
             MenuComponent bubble = component;
             while (bubble != null)
             {
                 origin += bubble.position;
                 bubble = bubble.parent;
             }
-            Vector2f thisOrigin = new Vector2f(0, 0);
+            Vector2i thisOrigin = new Vector2i(0, 0);
             bubble = this.parent;
             while (bubble != null)
             {
                 thisOrigin += bubble.position;
                 bubble = bubble.parent;
             }
-            Vector2f relativeToThis = origin - thisOrigin;
+            Vector2i relativeToThis = origin - thisOrigin;
             if (pivot3 == "inside")
             {
-                position = new Vector2f(relativeToThis.X + component.size.X / 2 - size.X / 2, relativeToThis.Y + component.size.Y / 2 - size.Y / 2);
+                position = new Vector2i(relativeToThis.X + component.size.X / 2 - size.X / 2, relativeToThis.Y + component.size.Y / 2 - size.Y / 2);
                 if (pivot1 == "top" || pivot2 == "top")
                 {
-                    position += new Vector2f(0, size.Y + margin - component.size.Y / 2);
+                    position += new Vector2i(0, size.Y + margin - component.size.Y / 2);
                 }
                 if (pivot1 == "bottom" || pivot2 == "bottom")
                 {
-                    position += new Vector2f(0, component.size.Y / 2 - size.Y - margin);
+                    position += new Vector2i(0, component.size.Y / 2 - size.Y - margin);
                 }
                 if (pivot1 == "left" || pivot2 == "left")
                 {
-                    position += new Vector2f(margin + size.X - component.size.X / 2, 0);
+                    position += new Vector2i(margin + size.X - component.size.X / 2, 0);
                 }
                 if (pivot1 == "right" || pivot2 == "right")
                 {
-                    position += new Vector2f(component.size.X / 2 - size.X - margin, 0);
+                    position += new Vector2i(component.size.X / 2 - size.X - margin, 0);
                 }
             }
             else
             {
-                position = new Vector2f(relativeToThis.X + component.size.X / 2 - size.X / 2, relativeToThis.Y + component.size.Y / 2 - size.Y / 2);
+                position = new Vector2i(relativeToThis.X + component.size.X / 2 - size.X / 2, relativeToThis.Y + component.size.Y / 2 - size.Y / 2);
                 if (pivot1 == "top" || pivot2 == "top")
                 {
-                    position += new Vector2f(0, -size.Y - margin - component.size.Y / 2);
+                    position += new Vector2i(0, -size.Y - margin - component.size.Y / 2);
                 }
                 if (pivot1 == "bottom" || pivot2 == "bottom")
                 {
-                    position += new Vector2f(0, component.size.Y / 2 + margin + size.Y /2);
+                    position += new Vector2i(0, component.size.Y / 2 + margin + size.Y /2);
                 }
                 if (pivot1 == "left" || pivot2 == "left")
                 {
-                    position += new Vector2f(-size.X - component.size.X / 2 - margin, 0);
+                    position += new Vector2i(-size.X - component.size.X / 2 - margin, 0);
                 }
                 if (pivot1 == "right" || pivot2 == "right")
                 {
-                    position += new Vector2f(component.size.X / 2 + margin + size.X/2, 0);
+                    position += new Vector2i(component.size.X / 2 + margin + size.X/2, 0);
                 }
             }
         }

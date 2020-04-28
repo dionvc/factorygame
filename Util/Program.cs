@@ -147,7 +147,7 @@ namespace EngineeringCorpsCS
             camera = new Camera();
             camera.SubscribeToInput(input);
             renderer = new Renderer(window, menuContainer, textureAtlases.GetTexture("guiTilesheet", out _));
-            menuFactory = new MenuFactory(menuContainer, renderer, this, textureAtlases, fontContainer);
+            menuFactory = new MenuFactory(camera, menuContainer, renderer, this, textureAtlases, fontContainer);
             window.Resized += camera.HandleResize;
             window.Resized += renderer.HandleResize;
             window.Resized += menuContainer.RepositionMenus;
@@ -163,7 +163,9 @@ namespace EngineeringCorpsCS
             EntityUpdateSystem.UpdateProperties[] updateOrder = new EntityUpdateSystem.UpdateProperties[]
             {
                 new EntityUpdateSystem.UpdateProperties(typeof(Player), 1),
+                new EntityUpdateSystem.UpdateProperties(typeof(Machine), 1),
                 new EntityUpdateSystem.UpdateProperties(typeof(Tree), 600)
+
             };
             entityUpdateSystem = new EntityUpdateSystem(updateOrder);
             tileCollection = new TileCollection(textureAtlases);
@@ -178,7 +180,7 @@ namespace EngineeringCorpsCS
         public void StartMenu()
         {
             StaticSoundManager.PlayMusic();
-            input.menuFactory.CreateMainMenu(camera);
+            input.menuFactory.CreateMainMenu();
             while (window.IsOpen && gameState == GameState.mainMenu)
             {
                 window.Clear();
@@ -259,7 +261,7 @@ namespace EngineeringCorpsCS
                     //update surface
                     surfaceContainer.Update();
                     //update entities
-                    entityUpdateSystem.UpdateEntities();
+                    entityUpdateSystem.UpdateEntities(entityCollection, itemCollection);
                     entityUpdateSystem.AddNewEntities();
                     entityUpdateSystem.DestroyEntities();
                 }
@@ -321,7 +323,7 @@ namespace EngineeringCorpsCS
             List<GeneratorEntityAffinity> list = new List<GeneratorEntityAffinity>();
             list.Add(treeCollection);
             surfaceGenerator = new SurfaceGenerator(tileCollection, entityCollection, list);
-            menuFactory.CreateMapGenMenu(surfaceGenerator, camera);
+            menuFactory.CreateMapGenMenu(surfaceGenerator);
         }
 
         public void SubscribeToInput(InputManager input)
@@ -338,7 +340,7 @@ namespace EngineeringCorpsCS
         {
             if (gameState == GameState.inGame && input.GetKeyPressed(InputBindings.showPauseMenu, true))
             {
-                menuFactory.CreatePauseMenu(camera);
+                menuFactory.CreatePauseMenu();
             }
         }
 
