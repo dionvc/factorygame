@@ -33,12 +33,14 @@ namespace EngineeringCorpsCS
         VertexArray itemFrames;
         BoundingBox frameBox;
         Player accessingPlayer;
+        Entity accessedEntity;
         MenuText itemCount;
-        public MenuInventory(Vector2i componentSize, ItemStack[] inventory, Player accessingPlayer, Font font)// TextureContainer textureContainer)
+        public MenuInventory(Vector2i componentSize, ItemStack[] inventory, Player accessingPlayer, Entity accessedEntity, Font font)// TextureContainer textureContainer)
         {
             this.inventory = inventory;
             this.size = componentSize;
             this.accessingPlayer = accessingPlayer;
+            this.accessedEntity = accessedEntity;
             //Need textureContainer to draw item icons
             //Need
             for(int i = 0; i < inventory.Length; i++)
@@ -74,6 +76,15 @@ namespace EngineeringCorpsCS
 
         public override void HandleInput(InputManager input)
         {
+            if(accessedEntity.surface == null || accessingPlayer.surface == null)
+            {
+                MenuComponent bubbleTest = parent;
+                while(bubbleTest.parent != null)
+                {
+                    bubbleTest = bubbleTest.parent;
+                }
+                input.menuContainer.RemoveMenu(bubbleTest);
+            }
             base.HandleInput(input);
             Vector2f mousePos;
             bool mouse = input.GetMousePosition(out mousePos);
@@ -136,18 +147,6 @@ namespace EngineeringCorpsCS
                             inventory[i].Subtract(half);
                             accessingPlayer.heldItem = new ItemStack(inventory[i].item, half);
                         }
-                    }
-                }
-            }
-            //TODO: move to player
-            if(input.GetKeyPressed(InputBindings.returnItem, true) && accessingPlayer.heldItem != null)
-            {
-                for(int i = 0; i < inventory.Length; i++)
-                {
-                    if(inventory[i] == null)
-                    {
-                        inventory[i] = accessingPlayer.heldItem;
-                        accessingPlayer.heldItem = null;
                     }
                 }
             }

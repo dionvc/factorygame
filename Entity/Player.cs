@@ -10,13 +10,20 @@ namespace EngineeringCorpsCS
 {
     class Player: EntityPhysical, IInputSubscriber
     {
+        public enum PlayerState
+        {
+            Idle,
+            Moving,
+            Mining
+        }
+        PlayerState playerState = PlayerState.Idle;
         Vector2 velocity;
         float rotation = 0;
         int playerVelocity = 12;
         ItemStack[] inventory;
         public ItemStack heldItem { get; set; } = null;
         EntityGhost heldItemGhost;
-        public EntityPhysical selectedEntity { get; protected set; } = null;
+        public Entity selectedEntity { get; protected set; } = null;
         public int miningProgress;
         public float selectionRange = 100.0f;
         TextureAtlases textureAtlases;
@@ -44,19 +51,37 @@ namespace EngineeringCorpsCS
         /// </summary>
         public override void Update(EntityCollection entityCollection, ItemCollection itemCollection)
         {
-            ///TODO: Move this
-            BoundingBox.ApplyPhysicalCollision(this, velocity);
-            if (velocity.x != 0 || velocity.y != 0)
+            if (playerState == PlayerState.Mining)
             {
-                rotation = velocity.GetRotation() + 180.0f;
+                EntityPhysical entity = selectedEntity as EntityPhysical;
+                if (entity != null)
+                {
+                    miningProgress += 1;
+                    if (miningProgress > entity.miningProps.miningTime)
+                    {
+                        entity.OnMined(this, itemCollection, entityCollection);
+                        selectedEntity = null;
+                        miningProgress = 0;
+                        playerState = PlayerState.Idle;
+                    }
+                }
             }
-            walking.SetRotation(rotation);
-            walking.Update();
-            walking.animationSpeed = 60/velocity.GetMagnitude();
-            velocity.Set(0, 0);
-            radialLight.Update();
-            directionalLight.Update();
-            directionalLight.SetDirection(270 + rotation);
+            if (playerState == PlayerState.Moving)
+            {
+                ///TODO: Move this
+                BoundingBox.ApplyPhysicalCollision(this, velocity);
+                if (velocity.x != 0 || velocity.y != 0)
+                {
+                    rotation = velocity.GetRotation() + 180.0f;
+                }
+                walking.SetRotation(rotation);
+                walking.Update();
+                walking.animationSpeed = 60 / velocity.GetMagnitude();
+                velocity.Set(0, 0);
+                radialLight.Update();
+                directionalLight.Update();
+                directionalLight.SetDirection(270 + rotation);
+            }
         }
 
         public void SubscribeToInput(InputManager input)
@@ -69,6 +94,7 @@ namespace EngineeringCorpsCS
         }
         public void HandleInput(InputManager input)
         {
+            //TODO: Debug code (move dis)
             if(inventory == null)
             {
                 inventory = new ItemStack[10];
@@ -80,33 +106,33 @@ namespace EngineeringCorpsCS
             }
 
             //Movement
-            if (input.GetKeyHeld(InputBindings.moveUp, false))
+            if (playerState == PlayerState.Idle || playerState == PlayerState.Moving)
             {
-                velocity.Add(0, -playerVelocity);
-            }
-            if (input.GetKeyHeld(InputBindings.moveDown, false))
-            {
-                velocity.Add(0, playerVelocity);
-            }
-            if (input.GetKeyHeld(InputBindings.moveLeft, false))
-            {
-                velocity.Add(-playerVelocity, 0);
-            }
-            if(input.GetKeyHeld(InputBindings.moveRight, false))
-            {
-                velocity.Add(playerVelocity, 0);
+                if (input.GetKeyHeld(InputBindings.moveUp, false))
+                {
+                    velocity.Add(0, -playerVelocity);
+                }
+                if (input.GetKeyHeld(InputBindings.moveDown, false))
+                {
+                    velocity.Add(0, playerVelocity);
+                }
+                if (input.GetKeyHeld(InputBindings.moveLeft, false))
+                {
+                    velocity.Add(-playerVelocity, 0);
+                }
+                if (input.GetKeyHeld(InputBindings.moveRight, false))
+                {
+                    velocity.Add(playerVelocity, 0);
+                }
+                playerState = PlayerState.Moving;
             }
 
-            //Open Inventory
-            if(input.GetKeyPressed(InputBindings.showInventory, true))
-            {
-                input.menuFactory.CreatePlayerInventory(this, inventory);
-            }
+            //Determining Selected Entity
             Vector2f mousePosf;
             BoundingBox box = new BoundingBox(-2, -2, 2, 2);
             bool mouse = input.GetMousePosition(out mousePosf);
             if (mouse) {
-                List<EntityPhysical> list = BoundingBox.CheckSelectionOfType<EntityPhysical>(new Vector2(mousePosf), box, surface);
+                List<Entity> list = BoundingBox.CheckSelectionOfType<Entity>(new Vector2(mousePosf), box, surface);
                 if (list.Count > 0)
                 {
                     if (!ReferenceEquals(list[0], selectedEntity))
@@ -125,55 +151,75 @@ namespace EngineeringCorpsCS
             {
                 selectedEntity = null;
             }
-            //Check for onClick
-            if (selectedEntity != null && input.GetMouseClicked(InputBindings.primary, true))
-            {
-                selectedEntity.OnClick(this, input.menuFactory);
-                input.ConsumeMousePosition();
-            }
+
             float[] mousePos;
             bool mousefloat = input.GetMousePositionAsFloat(out mousePos);
-            //Check for placement ability
-            if (mousefloat && heldItem != null && heldItem.item.placeResult != null && input.GetMouseHeld(InputBindings.primary, true))
+            EntityPhysical entity = selectedEntity as EntityPhysical;
+            //Switch to mining state if suitable
+            if (entity != null && input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true))
             {
-                int[] tileAligned = new int[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
-                BoundingBox placeBox = new BoundingBox(-15, -15, 15, 15);
-                //Use prototype animation to construct entityghost
-                EntityGhost entityGhost = new EntityGhost(placeBox, new Vector2(mousePos[0], mousePos[1]), surface);
-                if (!BoundingBox.CheckForCollision(entityGhost))
+                playerState = PlayerState.Mining;
+            }
+            EntityItem itemCheck = selectedEntity as EntityItem;
+            if (itemCheck != null && input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true))
+            {
+                ItemStack leftover = InsertIntoInventory(new ItemStack(input.itemCollection.GetItem(itemCheck.name), 1));
+                if (leftover == null)
                 {
-                    Entity placeItem = input.entityCollection.InstantiatePrototype(heldItem.item.placeResult, new Vector2(mousePos[0], mousePos[1]), surface);
-                    heldItem = heldItem.Subtract(1);
+                    input.entityCollection.DestroyInstance(itemCheck);
                 }
             }
 
-            
-            //Check for mining potential (Switch to using states and update?)
-            if(input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true))
+            //Check for onClick
+            if (entity != null && selectedEntity is EntityPhysical && input.GetMouseClicked(InputBindings.primary, true))
             {
-                if(selectedEntity != null)
+                entity.OnClick(this, input.menuFactory);
+                input.ConsumeMousePosition();
+            }
+
+            //Check for placement ability
+            if (mousefloat && heldItem != null)
+            {
+                if (heldItem.item.placeResult != null && input.GetMouseHeld(InputBindings.primary, true))
                 {
-                    miningProgress += 1;
-                    if(miningProgress > selectedEntity.miningProps.miningTime)
+                    Entity prototype = input.entityCollection.GetPrototype(heldItem.item.placeResult);
+                    float[] tileAligned;
+                    if (prototype.tileAligned == true)
                     {
-                        input.entityCollection.DestroyInstance(selectedEntity);
-                        selectedEntity = null;
-                        miningProgress = 0;
-                        Item item = input.itemCollection.GetItem("Wood");
-                        for(int i = 0; i < inventory.Length; i++)
-                        {
-                            if (inventory[i] == null)
-                            {
-                                inventory[i] = new ItemStack(item, 1);
-                                break;
-                            }
-                            else if (ReferenceEquals(inventory[i].item, item) && inventory[i].count <= inventory[i].item.maxStack)
-                            {
-                                inventory[i].Add(1);
-                                break;
-                            }
-                        }
+                        tileAligned = new float[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
                     }
+                    else
+                    {
+                        tileAligned = new float[] { mousePos[0], mousePos[1] };
+                    }
+                    BoundingBox placeBox = new BoundingBox(prototype.collisionBox);
+                    //Use prototype animation to construct entityghost
+                    if (!BoundingBox.CheckForPlacementCollision(placeBox, new Vector2(tileAligned[0], tileAligned[1]), surface, prototype.collisionMask))
+                    {
+                        Entity placeItem = input.entityCollection.InstantiatePrototype(heldItem.item.placeResult, new Vector2(tileAligned[0], tileAligned[1]), surface);
+                        heldItem = heldItem.Subtract(1);
+                    }
+                }
+                //Check for dropping item
+                if (input.GetKeyPressed(InputBindings.dropItem, true))
+                {
+                    input.entityCollection.InstantiatePrototype(heldItem.item.name, new Vector2(mousePos[0], mousePos[1]), surface);
+                }
+            }
+
+            //Open Inventory
+            if (input.GetKeyPressed(InputBindings.showInventory, true))
+            {
+                input.menuFactory.CreatePlayerInventory(this, inventory);
+            }
+
+            //Return item to inventory
+            if (input.GetKeyPressed(InputBindings.returnItem, true) && heldItem != null)
+            {
+                ItemStack leftover = InsertIntoInventory(heldItem);
+                if(leftover == null)
+                {
+                    heldItem = null;
                 }
             }
         }
@@ -182,8 +228,9 @@ namespace EngineeringCorpsCS
         {
             if(tag.Equals("mining"))
             {
-                if (selectedEntity != null) {
-                    return miningProgress * 1.0f / selectedEntity.miningProps.miningTime;
+                EntityPhysical entity = selectedEntity as EntityPhysical;
+                if (entity != null && entity.minable == true) {
+                    return miningProgress * 1.0f / entity.miningProps.miningTime;
                 }
                 else
                 {
@@ -211,6 +258,36 @@ namespace EngineeringCorpsCS
             directionalLight = new LightSourceDirectional(surface, 2000.0f, 1024, textureAtlases.GetTexture("directionallight", out bounds), bounds);
             directionalLight.on = true;
             directionalLight.attachedEntity = this;
+        }
+
+        /// <summary>
+        /// Inserts into inventory. Returns leftovers if unsuccessful.
+        /// </summary>
+        /// <param name="itemStack"></param>
+        /// <returns></returns>
+        public ItemStack InsertIntoInventory(ItemStack itemStack)
+        {
+            for (int i = 0; i < inventory.Length; i++)
+            {
+                if (inventory[i] == null)
+                {
+                    inventory[i] = itemStack;
+                    return null;
+                }
+                else if (ReferenceEquals(inventory[i].item, itemStack.item) && inventory[i].count <= inventory[i].item.maxStack)
+                {
+                    int leftover = inventory[i].Add(itemStack.count);
+                    if (leftover > 0)
+                    {
+                        itemStack.SetCount(leftover);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            return itemStack;
         }
     }
 }

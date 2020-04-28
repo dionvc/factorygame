@@ -2,34 +2,36 @@
 
 namespace EngineeringCorpsCS
 {
+    class UpdateProperties
+    {
+        public System.Type type;
+        public int updateFrequency;
+        public bool dontUpdate;
+        public int updateCounter;
+        public UpdateProperties(System.Type type, int updateFrequency, bool dontUpdate)
+        {
+            this.type = type;
+            this.updateFrequency = updateFrequency;
+            this.dontUpdate = dontUpdate;
+        }
+    }
     class EntityUpdateSystem
     {
-        public struct UpdateProperties
-        {
-            public System.Type type;
-            public int updateFrequency;
-            public UpdateProperties(System.Type type, int updateFrequency)
-            {
-                this.type = type;
-                this.updateFrequency = updateFrequency;
-            }
-        }
+        
         Dictionary<System.Type, List<Entity>> entities = new Dictionary<System.Type, List<Entity>>();
         Dictionary<System.Type, List<Entity>> activeEntities = new Dictionary<System.Type, List<Entity>>();
         List<Entity> destroyIndices = new List<Entity>();
         List<Entity> newEntities = new List<Entity>();
-        UpdateProperties[] updateProperties;
-        int[] updateCounters;
+        Dictionary<System.Type, UpdateProperties> updateProperties;
 
-        public EntityUpdateSystem(UpdateProperties[] updateProperties)
+        public EntityUpdateSystem(Dictionary<System.Type, UpdateProperties> updateProperties)
         {
             this.updateProperties = updateProperties;
-            updateCounters = new int[updateProperties.Length];
-            for(int i = 0; i < updateProperties.Length; i++)
+            foreach(System.Type key in updateProperties.Keys)
             {
-                entities.Add(updateProperties[i].type, new List<Entity>());
-                activeEntities.Add(updateProperties[i].type, new List<Entity>());
-                updateCounters[i] = 1;
+                entities.Add(updateProperties[key].type, new List<Entity>());
+                activeEntities.Add(updateProperties[key].type, new List<Entity>());
+                updateProperties[key].updateCounter = 0;
             }
         }
 
@@ -38,18 +40,23 @@ namespace EngineeringCorpsCS
         /// </summary>
         public void UpdateEntities(EntityCollection entityCollection, ItemCollection itemCollection)
         {
-            for(int i = 0; i < updateProperties.Length; i++)
+            foreach(System.Type key in updateProperties.Keys) 
             {
-                if (updateCounters[i] > updateProperties[i].updateFrequency) //If the update counter is greater than update frequency, then update
+                UpdateProperties current = updateProperties[key];
+                if(current.dontUpdate == true)
                 {
-                    List<Entity> list = activeEntities[updateProperties[i].type];
+                    continue;
+                }
+                if (current.updateCounter > current.updateFrequency) //If the update counter is greater than update frequency, then update
+                {
+                    List<Entity> list = activeEntities[current.type];
                     for (int j = 0; j < list.Count; j++)
                     {
                         list[j].Update(entityCollection, itemCollection);
                     }
-                    updateCounters[i] = 0; //reset update counter after updating
+                    current.updateCounter = 0; //reset update counter after updating
                 }
-                updateCounters[i]++;
+                current.updateCounter++;
             }
         }
 
@@ -62,7 +69,11 @@ namespace EngineeringCorpsCS
             {
                 //Assumption is that the entity was properly instantiated so we can use direct indexing
                 //If it wasn't, then this code should crash the program anyway because unintended behavior is occurring
-                activeEntities[e.GetType()].Remove(e);
+                UpdateProperties current;
+                if (updateProperties.TryGetValue(e.GetType(), out current))
+                {
+                    activeEntities[e.GetType()].Remove(e);
+                }
                 entities[e.GetType()].Remove(e);
             }
             destroyIndices.Clear();

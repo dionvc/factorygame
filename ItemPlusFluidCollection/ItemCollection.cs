@@ -21,5 +21,10 @@ namespace EngineeringCorpsCS
         {
             return itemCollection[itemName];
         }
+        
+        public Dictionary<string, Item> GetItemCollection()
+        {
+            return itemCollection;
+        }
     }
 }

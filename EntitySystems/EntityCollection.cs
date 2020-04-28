@@ -21,7 +21,7 @@ namespace EngineeringCorpsCS
             this.entityUpdateSystem = entityUpdateSystem;
         }
 
-        public void LoadPrototypes()
+        public void LoadPrototypes(ItemCollection itemCollection)
         {
             Entity playerPrototype = CreatePlayer();
             entityPrototypes.Add(playerPrototype.name, playerPrototype);
@@ -29,11 +29,8 @@ namespace EngineeringCorpsCS
             entityPrototypes.Add(pineTree1Prototype.name, pineTree1Prototype);
             Entity greenhousePrototype = CreateGreenhouse();
             entityPrototypes.Add(greenhousePrototype.name, greenhousePrototype);
-        }
 
-        private void LoadItemEntityPrototypes()
-        {
-            //Iterate over itemcollection and create an itementity prototype for each in the collection
+            LoadItemEntityPrototypes(itemCollection);
         }
 
         /// <summary>
@@ -64,6 +61,7 @@ namespace EngineeringCorpsCS
             if(entity.surface != null)
             {
                 entity.surface.RemoveEntity(entity);
+                entity.surface = null;
             }
             //Remove the entity from updating
             entityUpdateSystem.RemoveEntity(entity);
@@ -85,7 +83,22 @@ namespace EngineeringCorpsCS
         }
 
         #region Entity Definitions
-
+        private void LoadItemEntityPrototypes(ItemCollection itemCollection)
+        {
+            //Iterate over itemcollection and create an itementity prototype for each in the collection
+            Dictionary<string, Item> items = itemCollection.GetItemCollection();
+            foreach(string key in items.Keys)
+            {
+                StaticSprite itemSprite = items[key].itemSprite.Clone();
+                itemSprite.drawLayer = Drawable.DrawLayer.Item;
+                Entity itemEntity = new EntityItem(key, itemSprite);
+                itemEntity.selectionBox = new BoundingBox(32, 32);
+                itemEntity.drawingBox = new BoundingBox(32, 32);
+                itemEntity.collisionBox = new BoundingBox(32, 32);
+                itemEntity.collisionMask = Base.CollisionLayer.Item | Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
+                entityPrototypes.Add(key, itemEntity);
+            }
+        }
         private Entity CreatePlayer()
         {
             Player playerPrototype = new Player(textureAtlases, "player");
@@ -105,7 +118,7 @@ namespace EngineeringCorpsCS
             Tree pineTree1 = new Tree("pineTree1", trunk, leaves, shadow);
             pineTree1.collisionMask = Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
             pineTree1.mapColor = new Color(32, 160, 0);
-            pineTree1.miningProps = new Entity.MiningProps("Wood", 1, 320, 0, "");
+            pineTree1.miningProps = new EntityPhysical.MiningProps("Wood", 1, 90, 0, "");
             pineTree1.minable = true;
             pineTree1.collisionBox = new BoundingBox(16, 16);
             pineTree1.drawingBox = new BoundingBox(128, 192);
@@ -116,15 +129,21 @@ namespace EngineeringCorpsCS
         private Entity CreateGreenhouse()
         {
             IntRect bounds;
-            Animation animation = new Animation(textureAtlases.GetTexture("greenhouse", out bounds), bounds.Width, bounds.Height, 1, bounds, new Vector2f(0, 0));
-            animation.drawLayer = Drawable.DrawLayer.EntitySorted;
-            Machine greenhouse = new Machine("greenhouse", animation);
+            Animation working = new Animation(textureAtlases.GetTexture("greenhouseworking", out bounds), bounds.Width, bounds.Height, 1, bounds, new Vector2f(0, -48));
+            working.drawLayer = Drawable.DrawLayer.EntitySorted;
+            StaticSprite idle = new StaticSprite(textureAtlases.GetTexture("greenhouse", out bounds), bounds, new Vector2f(0, -48));
+            idle.drawLayer = Drawable.DrawLayer.EntitySorted;
+            Animation shadow = new Animation(textureAtlases.GetTexture("greenhouseshadow", out bounds), bounds.Width, bounds.Height, 1, bounds, new Vector2f(96, -16));
+            shadow.drawLayer = Drawable.DrawLayer.Shadow;
+            Machine greenhouse = new Machine("greenhouse", working, idle, shadow);
+            greenhouse.miningProps = new EntityPhysical.MiningProps("Greenhouse", 1, 60, 0, "");
             greenhouse.collisionMask = Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
-            greenhouse.mapColor = new Color(128, 64, 0);
+            greenhouse.mapColor = new Color(96, 64, 0);
             greenhouse.minable = true;
-            greenhouse.collisionBox = new BoundingBox(50, 50);
-            greenhouse.drawingBox = new BoundingBox(64, 64);
-            greenhouse.selectionBox = new BoundingBox(64, 64);
+            greenhouse.collisionBox = new BoundingBox(-85, -80, 85, 48);
+            greenhouse.drawingBox = new BoundingBox(192, 192);
+            greenhouse.selectionBox = new BoundingBox(-96, -112, 96, 48);
+            greenhouse.tileAligned = true;
             return greenhouse;
         }
 

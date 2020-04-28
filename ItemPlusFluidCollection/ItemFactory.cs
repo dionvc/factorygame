@@ -49,7 +49,7 @@ namespace EngineeringCorpsCS
         private Item CreateGreenhouse()
         {
             IntRect bounds;
-            StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("woodItem", out bounds), bounds, Drawable.DrawLayer.Item);
+            StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("greenhouseItem", out bounds), bounds, Drawable.DrawLayer.Item);
             return new Item("Greenhouse", itemIcon, "greenhouse", 100);
         }
     }

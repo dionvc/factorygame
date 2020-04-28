@@ -226,9 +226,12 @@ namespace EngineeringCorpsCS
             Font itemFont = fontContainer.GetFont("SairaRegular");
             MenuPanel inventoryPanel = new MenuPanel(new Vector2i(0, 0), new Vector2i(300, 300), new FloatRect(0, 0, 96, 96), 8, null, new Color(255, 255, 255, 224));
             inventoryPanel.closePanelKey = InputBindings.showInventory;
-            MenuInventory inventoryMenu = new MenuInventory(new Vector2i(256, 256), inventory, accessingPlayer, itemFont);
+            MenuInventory inventoryMenu = new MenuInventory(new Vector2i(256, 256), inventory, accessingPlayer, accessingPlayer, itemFont);
             inventoryPanel.AttachComponent(inventoryMenu);
             menuContainer.AttachMenu(inventoryPanel);
+
+            menuContainer.ClosePanelsWithTag("EntityGUI");
+            inventoryPanel.panelTag = "EntityGUI";
         }
 
         public MenuComponent CreatePlayerProgressBar(Camera camera, Player player, string tag, Color color, MenuComponent relativeComponent)
@@ -246,25 +249,29 @@ namespace EngineeringCorpsCS
             return progressBar;
         }
 
-        public void CreateMachineInterface(Machine machine, Player player)
+        public MenuComponent CreateMachineInterface(Machine machine, Player player)
         {
             Font menuFont = fontContainer.GetFont("SairaRegular");
             MenuPanel machinePanel = new MenuPanel(new Vector2i(0, 0), new Vector2i(500, 200), new FloatRect(0, 0, 96, 96), 8, null, new Color(255, 255, 255, 224));
-            MenuInventory inputInventory = new MenuInventory(new Vector2i(96, 64), machine.input, player, menuFont);
-            MenuInventory outputInventory = new MenuInventory(new Vector2i(96, 64), machine.result, player, menuFont);
+            MenuInventory inputInventory = new MenuInventory(new Vector2i(96, 64), machine.input, player, machine, menuFont);
+            MenuInventory outputInventory = new MenuInventory(new Vector2i(96, 64), machine.result, player, machine, menuFont);
             MenuProgressBar recipeProgress = new MenuProgressBar(new Vector2i(128, 16), new FloatRect(0, 0, 32, 32), new FloatRect(0, 0, 32, 32), machine.GetProgress, new Color(196, 92, 0));
+            MenuDrawable machineGraphic = new MenuDrawable(new Vector2i(128,128), machine, 0);
             machinePanel.AttachComponent(inputInventory);
             machinePanel.AttachComponent(recipeProgress);
             machinePanel.AttachComponent(outputInventory);
+            machinePanel.AttachComponent(machineGraphic);
             inputInventory.SetInitialPosition();
             recipeProgress.SetPivots("right", "center", "outside", 0);
             recipeProgress.SetInitialPosition(inputInventory);
             outputInventory.SetPivots("right", "center", "outside", 0);
             outputInventory.SetInitialPosition(inputInventory);
             menuContainer.AttachMenu(machinePanel);
-
+            machinePanel.closePanelKey = InputBindings.showInventory;
             menuContainer.ClosePanelsWithTag("EntityGUI");
             machinePanel.panelTag = "EntityGUI";
+
+            return machinePanel;
         }
     }
 }

@@ -9,33 +9,6 @@ namespace EngineeringCorpsCS
 {
     abstract class Entity : Base
     {
-        public struct MiningProps
-        {
-            public string[] results;
-            public int[] counts;
-            public int miningTime;
-            public int fluid;
-            public string fluidRequired;
-
-            public MiningProps(string[] results, int[] counts, int miningTime, int fluidCount, string fluidRequired)
-            {
-                this.results = results;
-                this.counts = counts;
-                this.miningTime = miningTime;
-                this.fluid = fluidCount;
-                this.fluidRequired = fluidRequired;
-            }
-
-            public MiningProps(string result, int count, int miningTime, int fluidCount, string fluidRequired)
-            {
-                this.results = new string[] { result };
-                this.counts = new int[] { count };
-                this.miningTime = miningTime;
-                this.fluid = fluidCount;
-                this.fluidRequired = fluidRequired;
-            }
-        }
-
         virtual public void InitializeEntity(Vector2 position, SurfaceContainer surface)
         {
             this.surface = surface;
@@ -82,19 +55,13 @@ namespace EngineeringCorpsCS
         /// </summary>
         public Drawable[] drawArray { get; protected set; }
         /// <summary>
-        /// Color of entity on the map
+        /// The selectionbox of the entity
         /// </summary>
-        public Color mapColor { get; set; }
-
-        public int tileWidth { get; protected set; } = 1;
-        public int tileHeight { get; protected set; } = 1;
-
+        public BoundingBox selectionBox { get; set; }
+        public int tileWidth { get; set; } = 1;
+        public int tileHeight { get; set; } = 1;
+        public bool tileAligned { get; set; } = false;
         public float emissionPerSecond = 0.0f;
-
-        public bool minable = false;
-        public MiningProps miningProps;
-        string remainsMined;
-        string remainsDestroyed;
 
         public Vector2 position { get; set; }
 

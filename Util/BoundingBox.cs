@@ -229,28 +229,28 @@ namespace EngineeringCorpsCS
             //2nd check AABB if both have theta = 0
             if (self.rotation == 0 && other.rotation == 0)
             {
-                if (posSelf.x + selfVelocity.x - self.center.x - self.halfWidth < posOther.x + other.center.x + other.halfWidth &&
-                    posSelf.x + selfVelocity.x + self.center.x + self.halfWidth > posOther.x - other.center.x - other.halfWidth &&
-                    posSelf.y - self.center.y - self.halfHeight < posOther.y + other.center.y + other.halfHeight &&
-                    posSelf.y + self.center.y + self.halfHeight > posOther.y - other.center.y - other.halfHeight)
+                if (posSelf.x + selfVelocity.x + self.center.x - self.halfWidth < posOther.x + other.center.x + other.halfWidth &&
+                    posSelf.x + selfVelocity.x + self.center.x + self.halfWidth > posOther.x + other.center.x - other.halfWidth &&
+                    posSelf.y + self.center.y - self.halfHeight < posOther.y + other.center.y + other.halfHeight &&
+                    posSelf.y + self.center.y + self.halfHeight > posOther.y + other.center.y - other.halfHeight)
                 {
                     //first try moving in the x direction and if it overlaps then push that back
                     float overlapX = self.halfWidth + other.halfWidth - Math.Abs(d.x);
-                    if (posSelf.x < posOther.x)
+                    if (posSelf.x + self.center.x < posOther.x + other.center.x)
                     {
                         overlapX *= -1;
                     }
                     pushBackSelf.x = overlapX;
                     return true;
                 }
-                else if (posSelf.x - self.center.x - self.halfWidth < posOther.x + other.center.x + other.halfWidth &&
-                        posSelf.x + self.center.x + self.halfWidth > posOther.x - other.center.x - other.halfWidth &&
-                        posSelf.y + selfVelocity.y - self.center.y - self.halfHeight < posOther.y + other.center.y + other.halfHeight &&
-                        posSelf.y + selfVelocity.y + self.center.y + self.halfHeight > posOther.y - other.center.y - other.halfHeight)
+                else if (posSelf.x + self.center.x - self.halfWidth < posOther.x + other.center.x + other.halfWidth &&
+                        posSelf.x + self.center.x + self.halfWidth > posOther.x + other.center.x - other.halfWidth &&
+                        posSelf.y + selfVelocity.y + self.center.y - self.halfHeight < posOther.y + other.center.y + other.halfHeight &&
+                        posSelf.y + selfVelocity.y + self.center.y + self.halfHeight > posOther.y + other.center.y - other.halfHeight)
                 {
                     //otherwise try moving the y direction and if it overlaps then push that back
                     float overlapY = self.halfHeight + other.halfHeight - Math.Abs(d.y);
-                    if(posSelf.y < posOther.y)
+                    if(posSelf.y + self.center.y < posOther.y + other.center.y)
                     {
                         overlapY *= -1;
                     }
@@ -357,10 +357,10 @@ namespace EngineeringCorpsCS
             //2nd check AABB if both have theta = 0
             if (self.rotation == 0 && other.rotation == 0)
             {
-                if (posSelf.x - self.center.x - self.halfWidth < posOther.x + other.center.x + other.halfWidth &&
-                    posSelf.x + self.center.x + self.halfWidth > posOther.x - other.center.x - other.halfWidth &&
-                    posSelf.y - self.center.y - self.halfHeight < posOther.y + other.center.y + other.halfHeight &&
-                    posSelf.y + self.center.y + self.halfHeight > posOther.y - other.center.y - other.halfHeight)
+                if (posSelf.x + self.center.x - self.halfWidth < posOther.x + other.center.x + other.halfWidth &&
+                    posSelf.x + self.center.x + self.halfWidth > posOther.x + other.center.x - other.halfWidth &&
+                    posSelf.y + self.center.y - self.halfHeight < posOther.y + other.center.y + other.halfHeight &&
+                    posSelf.y + self.center.y + self.halfHeight > posOther.y + other.center.y - other.halfHeight)
                 {
                     return true;
                 }
@@ -425,10 +425,10 @@ namespace EngineeringCorpsCS
             //2nd check AABB if both have theta = 0
             if (self.rotation == 0 && other.rotation == 0)
             {
-                if (posSelf.x - self.center.x - self.halfWidth < posOther.x + other.center.x + other.halfWidth &&
-                    posSelf.x + self.center.x + self.halfWidth > posOther.x - other.center.x - other.halfWidth &&
-                    posSelf.y - self.center.y - self.halfHeight < posOther.y + other.center.y + other.halfHeight &&
-                    posSelf.y + self.center.y + self.halfHeight > posOther.y - other.center.y - other.halfHeight)
+                if (posSelf.x + self.center.x - self.halfWidth < posOther.x + other.center.x + other.halfWidth &&
+                    posSelf.x + self.center.x + self.halfWidth > posOther.x + other.center.x - other.halfWidth &&
+                    posSelf.y + self.center.y - self.halfHeight < posOther.y + other.center.y + other.halfHeight &&
+                    posSelf.y + self.center.y + self.halfHeight > posOther.y + other.center.y - other.halfHeight)
                 {
                     return true;
                 }
@@ -847,7 +847,7 @@ namespace EngineeringCorpsCS
             return list;
         }
 
-        public static List<TypeToTest> CheckSelectionOfType<TypeToTest>(Vector2 position, BoundingBox collisionBox, SurfaceContainer surface) where TypeToTest : EntityPhysical
+        public static List<TypeToTest> CheckSelectionOfType<TypeToTest>(Vector2 position, BoundingBox collisionBox, SurfaceContainer surface) where TypeToTest : Entity
         {
             //lists to keep track of collided entities
             List<TypeToTest> list = new List<TypeToTest>();

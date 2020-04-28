@@ -10,6 +10,7 @@ namespace EngineeringCorpsCS
 {
     class Animation : Drawable, IAnimation
     {
+        Sprite internalSprite = null;
         Texture texture;
         Vector2f origin;
         IntRect textureBounds;
@@ -87,6 +88,16 @@ namespace EngineeringCorpsCS
             textureFrame.Left = textureBounds.Left + (textureFrame.Width * currentFrame) % (textureBounds.Width);
             textureFrame.Top = textureBounds.Top + (textureFrame.Width * currentFrame) / (textureBounds.Width) * textureFrame.Height;
             spriteBatch.Draw(texture, position + drawOffset, textureFrame, color, scale, origin, rotation);
+        }
+
+        public override Sprite GetSprite()
+        {
+            if(internalSprite == null)
+            {
+                internalSprite = new Sprite(texture, textureFrame);
+                internalSprite.Color = color;
+            }
+            return internalSprite;
         }
 
         /*override public Sprite GetSprite()

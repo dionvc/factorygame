@@ -3,11 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SFML.Graphics;
 
 namespace EngineeringCorpsCS
 {
     abstract class EntityPhysical: Entity
     {
+        public struct MiningProps
+        {
+            public string[] results;
+            public int[] counts;
+            public int miningTime;
+            public int fluid;
+            public string fluidRequired;
+
+            public MiningProps(string[] results, int[] counts, int miningTime, int fluidCount, string fluidRequired)
+            {
+                this.results = results;
+                this.counts = counts;
+                this.miningTime = miningTime;
+                this.fluid = fluidCount;
+                this.fluidRequired = fluidRequired;
+            }
+
+            public MiningProps(string result, int count, int miningTime, int fluidCount, string fluidRequired)
+            {
+                this.results = new string[] { result };
+                this.counts = new int[] { count };
+                this.miningTime = miningTime;
+                this.fluid = fluidCount;
+                this.fluidRequired = fluidRequired;
+            }
+        }
         /// <summary>
         /// The health of the entity.
         /// </summary>
@@ -27,10 +54,17 @@ namespace EngineeringCorpsCS
             }
         }
         private int _health = 100;
-        public int fullHealth { get; protected set; } = 100;
+        public int fullHealth { get; set; } = 100;
 
-        public BoundingBox selectionBox { get; set; }
 
+        public bool minable = false;
+        public MiningProps miningProps;
+        string remainsMined;
+        string remainsDestroyed;
+        /// <summary>
+        /// Color of entity on the map
+        /// </summary>
+        public Color mapColor { get; set; }
         /// <summary>
         /// Used to create particles, play sounds, and create remains when an entity with health is destroyed
         /// </summary>
@@ -50,10 +84,16 @@ namespace EngineeringCorpsCS
         /// <summary>
         /// Used to enforce mineability of objects
         /// </summary>
-        virtual public void OnMined()
+        virtual public void OnMined(Player player, ItemCollection itemCollection, EntityCollection entityCollection)
         {
-            surface.RemoveEntity(this);
-
+            if (miningProps.results != null)
+            {
+                for (int i = 0; i < miningProps.results.Length; i++)
+                {
+                    player.InsertIntoInventory(new ItemStack(itemCollection.GetItem(miningProps.results[i]), miningProps.counts[i]));
+                }
+            }
+            entityCollection.DestroyInstance(this);
         }
     }
 }

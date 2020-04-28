@@ -39,6 +39,10 @@ namespace EngineeringCorpsCS
         public abstract void SetRotation(float rotation);
         public abstract void Draw(SpriteBatch spriteBatch, Vector2f position);
 
+        virtual public Sprite GetSprite()
+        {
+            throw new UnauthorizedAccessException();
+        }
         public Drawable Clone()
         {
             throw new UnauthorizedAccessException();

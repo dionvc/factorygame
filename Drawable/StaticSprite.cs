@@ -47,7 +47,7 @@ namespace EngineeringCorpsCS
             spriteBatch.Draw(texture, position + drawOffset, textureFrame, color, scale, origin, rotation);
         }
 
-        public Sprite GetSprite()
+        public override Sprite GetSprite()
         {
             if(staticSprite == null)
             {

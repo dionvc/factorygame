@@ -152,6 +152,7 @@ namespace EngineeringCorpsCS
             window.Resized += renderer.HandleResize;
             window.Resized += menuContainer.RepositionMenus;
             input.menuFactory = menuFactory;
+            input.menuContainer = menuContainer;
 
             //Loading prototypes
             loadingText.DisplayedString = "Initializing Collections...";
@@ -160,19 +161,16 @@ namespace EngineeringCorpsCS
             window.Draw(loadingTitle);
             window.Draw(loadingText);
             window.Display();
-            EntityUpdateSystem.UpdateProperties[] updateOrder = new EntityUpdateSystem.UpdateProperties[]
-            {
-                new EntityUpdateSystem.UpdateProperties(typeof(Player), 1),
-                new EntityUpdateSystem.UpdateProperties(typeof(Machine), 1),
-                new EntityUpdateSystem.UpdateProperties(typeof(Tree), 600)
-
-            };
+            Dictionary<System.Type, UpdateProperties> updateOrder = new Dictionary<Type, UpdateProperties>();
+            updateOrder.Add(typeof(Player), new UpdateProperties(typeof(Player), 1, false));
+            updateOrder.Add(typeof(Machine), new UpdateProperties(typeof(Machine), 1, false));
+            updateOrder.Add(typeof(Tree), new UpdateProperties(typeof(Tree), 600, false));
             entityUpdateSystem = new EntityUpdateSystem(updateOrder);
             tileCollection = new TileCollection(textureAtlases);
             entityCollection = new EntityCollection(textureAtlases, entityUpdateSystem);
-            entityCollection.LoadPrototypes();
-            input.entityCollection = entityCollection;
             itemCollection = new ItemCollection(textureAtlases);
+            entityCollection.LoadPrototypes(itemCollection);
+            input.entityCollection = entityCollection;
             input.itemCollection = itemCollection;
 
             

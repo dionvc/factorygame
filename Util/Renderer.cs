@@ -282,7 +282,11 @@ namespace EngineeringCorpsCS
                         int oY = j * Props.chunkSize;
                         for(int l = 0; l < entityList.Count; l++)
                         {
-                            Entity e = entityList[l];
+                            EntityPhysical e = entityList[l] as EntityPhysical;
+                            if(e == null)
+                            {
+                                continue;
+                            }
                             int[] pos = surface.WorldToAbsoluteTileCoords(e.position.x, e.position.y);
                             float halfWidth = e.tileWidth;
                             float halfHeight = e.tileHeight;

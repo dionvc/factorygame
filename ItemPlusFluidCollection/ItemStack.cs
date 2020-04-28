@@ -36,9 +36,21 @@ namespace EngineeringCorpsCS
             }
         }
 
-        public void Add(int count)
+        /// <summary>
+        /// Adds to item stack, if there was too much, then it returns the excess
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public int Add(int count)
         {
             this.count += count;
+            if(this.count > item.maxStack)
+            {
+                int leftover = this.count - item.maxStack;
+                this.count = item.maxStack;
+                return leftover;
+            }
+            return 0;
         }
 
         public void SetCount(int count)

@@ -17,19 +17,30 @@ namespace EngineeringCorpsCS
 
         MachineState machineState;
         Animation working; //This animation plays when working and stops when idle
+        StaticSprite idle; //If this animation is assigned, then this will display when idle
+        Animation shadow; //Shadow of the machine
         Recipe activeRecipe;
         int recipeProgress = 0;
         float workingSpeed = 1;
         int bufferAmount = 10;
         public ItemStack[] result { get; set; }
         public ItemStack[] input { get; set; }
-        public Machine(string name, Animation working)
+
+        public Machine(string name, Animation working, StaticSprite idle, Animation shadow)
         {
             this.name = name;
             this.working = working;
-
+            this.shadow = shadow;
+            this.idle = idle;
             activeRecipe = new Recipe(new int[] { 1 }, new string[] { "Pine Sapling" }, new int[] { 1 }, new string[] { "Wood" }, 60);
-            drawArray = new Drawable[] { working };
+            if (idle != null)
+            {
+                drawArray = new Drawable[] { idle, shadow };
+            }
+            else
+            {
+                drawArray = new Drawable[] { working, shadow };
+            }
             result = new ItemStack[activeRecipe.itemsResults.Length];
             input = new ItemStack[activeRecipe.itemsRequired.Length];
             machineState = MachineState.Idle;
@@ -66,6 +77,7 @@ namespace EngineeringCorpsCS
                         {
                             //Switch state to working and consume inputs
                             machineState = MachineState.Working;
+                            drawArray = new Drawable[] { working, shadow };
                             for (int i = 0; i < activeRecipe.itemsRequired.Length; i++)
                             {
                                 input[i] = input[i].Subtract(activeRecipe.counts[i]);
@@ -89,16 +101,22 @@ namespace EngineeringCorpsCS
                     }
                     recipeProgress = 0;
                     machineState = MachineState.Idle;
+                    if(idle != null)
+                    {
+                        drawArray = new Drawable[] { idle, shadow };
+                    }
                 }
                 else
                 {
                     recipeProgress += (int)Math.Ceiling(workingSpeed);
+                    working.Update();
+                    shadow.currentFrame = working.currentFrame;
                 }
             }
         }
         public override Entity Clone()
         {
-            Machine clone = new Machine(this.name, this.working.Clone());
+            Machine clone = new Machine(this.name, this.working.Clone(), this.idle.Clone(), this.shadow.Clone());
             clone.drawingBox = new BoundingBox(this.drawingBox);
             clone.collisionBox = new BoundingBox(this.collisionBox);
             clone.selectionBox = new BoundingBox(this.selectionBox);
@@ -111,9 +129,12 @@ namespace EngineeringCorpsCS
 
         public override void OnClick(Entity entity, MenuFactory menuFactory)
         {
-            //create menu for
-            if(entity is Player)
-            menuFactory.CreateMachineInterface(this, (Player) entity);
+            //create menu for machine
+            if (entity is Player)
+            {
+                
+                menuFactory.CreateMachineInterface(this, (Player)entity);
+            }
         }
 
         public float GetProgress(string tag)
