@@ -17,6 +17,7 @@ namespace EngineeringCorpsCS
         EntityGhost heldItemGhost;
         public Entity miningEntity { get; set; } = null;
         public int miningProgress;
+        public float selectionRange = 100.0f;
         TextureAtlases textureAtlases;
         AnimationRotated walking;
         LightSourceDirectional directionalLight;
@@ -156,9 +157,27 @@ namespace EngineeringCorpsCS
             }
         }
 
+        public float GetProgress(string tag)
+        {
+            if(tag.Equals("mining"))
+            {
+                if (miningEntity != null) {
+                    return miningProgress * 1.0f / miningEntity.miningProps.miningTime;
+                }
+                else
+                {
+                    return 0.0f;
+                }
+            }
+
+            return 0.0f;
+        }
+
         public override Entity Clone()
         {
-            return new Player(this.textureAtlases, this.name);
+            Player newPlayer = new Player(this.textureAtlases, this.name);
+            newPlayer.selectionBox = new BoundingBox(this.selectionBox);
+            return newPlayer;
         }
 
         public override void InitializeEntity(Vector2 position, SurfaceContainer surface)

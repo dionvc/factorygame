@@ -837,5 +837,30 @@ namespace EngineeringCorpsCS
             }
             return list;
         }
+
+        public static List<TypeToTest> CheckSelectionOfType<TypeToTest>(Vector2 position, BoundingBox collisionBox, SurfaceContainer surface) where TypeToTest : EntityPhysical
+        {
+            //lists to keep track of collided entities
+            List<TypeToTest> list = new List<TypeToTest>();
+            //list of chunks where collisions may have happened + tiles
+            int[] chunkList = BoundingBox.GetChunkBounds(collisionBox, position, surface);
+            int[][] tileList = BoundingBox.GetTileBounds(collisionBox, position);
+            for (int i = 0; i < chunkList.Length; i++)
+            {
+                Chunk chunk = surface.GetChunk(chunkList[i], false);
+                //entity collision checks
+                List<Entity> collisionList = chunk.entityCollisionList;
+                for (int j = 0; j < collisionList.Count; j++)
+                {
+                    TypeToTest checkEntity = collisionList[j] as TypeToTest;
+                    if (checkEntity != null &&
+                        BoundingBox.CheckCollision(collisionBox, checkEntity.selectionBox, position, collisionList[j].position))
+                    {
+                        list.Add(checkEntity);
+                    }
+                }
+            }
+            return list;
+        }
     }
 }

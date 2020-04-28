@@ -28,6 +28,8 @@ namespace EngineeringCorpsCS
         }
         private int _health = 100;
         public int fullHealth { get; protected set; } = 100;
+
+        public BoundingBox selectionBox { get; set; }
         override public void OnClick()
         {
 

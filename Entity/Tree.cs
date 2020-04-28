@@ -75,6 +75,7 @@ namespace EngineeringCorpsCS
             Tree clone = new Tree(this.name, this.trunk.Clone(), this.leaves.Clone(), this.shadow.Clone());
             clone.drawingBox = new BoundingBox(this.drawingBox);
             clone.collisionBox = new BoundingBox(this.collisionBox);
+            clone.selectionBox = new BoundingBox(this.selectionBox);
             clone.collisionMask = this.collisionMask;
             clone.minable = this.minable;
             clone.miningProps = this.miningProps;

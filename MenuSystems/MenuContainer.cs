@@ -56,9 +56,21 @@ namespace EngineeringCorpsCS
 
         public void PushMenuToFront(MenuComponent menuComponent)
         {
-            menus.Remove(menuComponent);
-            menus.Insert(0, menuComponent);
-            input.PushMenuToFront(menuComponent);
+            if (menus.Remove(menuComponent))
+            {
+                menus.Insert(0, menuComponent);
+                input.PushMenuToFront(menuComponent);
+            }
+        }
+
+        public void PushMenuToBack(MenuComponent menuComponent)
+        {
+            if(menus.Remove(menuComponent))
+            {
+                menus.Add(menuComponent);
+                input.PushMenuToBack(menuComponent);
+            }
+            
         }
     }
 }

@@ -356,15 +356,63 @@ namespace EngineeringCorpsCS
             window.Draw(itemSprite);
         }
 
-        public void RenderMiningProgress(RenderWindow window, Camera camera, Player player)
+        /// <summary>
+        /// Renders the selection box of an entity for a player
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="input"></param>
+        /// <param name="camera"></param>
+        /// <param name="player"></param>
+        /// <param name="textureAtlases"></param>
+        public void RenderSelectionBox(RenderWindow window, InputManager input, Camera camera, Player player, TextureAtlases textureAtlases)
         {
-            if(player.miningEntity != null)
+            window.SetView(camera.GetGameView());
+            BoundingBox box = new BoundingBox(-2, -2, 2, 2);
+            Vector2f mousePos;
+            input.GetMousePosition(out mousePos);
+            List<EntityPhysical> list = BoundingBox.CheckSelectionOfType<EntityPhysical>(new Vector2(mousePos), box, player.surface);
+            if(list.Count > 0)
             {
-                window.SetView(camera.GetGUIView());
-                RectangleShape miningProgress = new RectangleShape(new Vector2f((player.miningProgress * 512.0f)/player.miningEntity.miningProps.miningTime, 64));
-                miningProgress.FillColor = Color.Red;
-                miningProgress.Position = new Vector2f(camera.GetGUIView().Size.X/2 - 256, camera.GetGUIView().Size.Y - 128);
-                window.Draw(miningProgress);
+                VertexArray selectionArray = new VertexArray(PrimitiveType.Triangles);
+                RenderStates selectionState;
+                IntRect bounds;
+                if((list[0].position - player.position).GetMagnitude() < player.selectionRange)
+                {
+                    selectionState = new RenderStates(textureAtlases.GetTexture("SelectionBox", out bounds));
+                }
+                else
+                {
+                    selectionState = new RenderStates(textureAtlases.GetTexture("SelectionBoxInvalid", out bounds));
+                }
+                float[] points = list[0].selectionBox.GetPoints();
+                Vector2f pos = list[0].position.internalVector;
+                int toX = bounds.Left;
+                int toY = bounds.Top;
+                Vector2f posOrigin = new Vector2f(points[0], points[1]);
+                Vector2f xInc = new Vector2f(32, 0);
+                Vector2f yInc = new Vector2f(0, 32);
+                //Top left
+                selectionArray.Append(new Vertex(posOrigin + pos, new Vector2f(toX, toY)));
+                selectionArray.Append(new Vertex(posOrigin + pos + xInc, new Vector2f(toX + 32, toY)));
+                selectionArray.Append(new Vertex(posOrigin + pos + yInc, new Vector2f(toX, toY + 32)));
+
+                //Top right
+                posOrigin = new Vector2f(points[2], points[3]);
+                selectionArray.Append(new Vertex(posOrigin + pos - xInc, new Vector2f(toX + 32, toY)));
+                selectionArray.Append(new Vertex(posOrigin + pos, new Vector2f(toX + 64, toY)));
+                selectionArray.Append(new Vertex(posOrigin + pos + yInc, new Vector2f(toX + 64, toY + 32)));
+
+                //bottom left
+                posOrigin = new Vector2f(points[6], points[7]);
+                selectionArray.Append(new Vertex(posOrigin + pos - yInc, new Vector2f(toX, toY + 32)));
+                selectionArray.Append(new Vertex(posOrigin + pos + xInc, new Vector2f(toX + 32, toY + 64)));
+                selectionArray.Append(new Vertex(posOrigin + pos, new Vector2f(toX , toY + 64)));
+
+                posOrigin = new Vector2f(points[4], points[5]);
+                selectionArray.Append(new Vertex(posOrigin + pos - xInc, new Vector2f(toX + 32, toY + 64)));
+                selectionArray.Append(new Vertex(posOrigin + pos - yInc, new Vector2f(toX + 64, toY + 32)));
+                selectionArray.Append(new Vertex(posOrigin + pos, new Vector2f(toX + 64, toY + 64)));
+                window.Draw(selectionArray, selectionState);
             }
         }
 

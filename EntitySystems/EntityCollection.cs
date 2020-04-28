@@ -87,6 +87,7 @@ namespace EngineeringCorpsCS
         private Entity CreatePlayer()
         {
             Player playerPrototype = new Player(textureAtlases, "player");
+            playerPrototype.selectionBox = new BoundingBox(32, 32);
             return playerPrototype;
         }
 
@@ -106,6 +107,7 @@ namespace EngineeringCorpsCS
             pineTree1.minable = true;
             pineTree1.collisionBox = new BoundingBox(16, 16);
             pineTree1.drawingBox = new BoundingBox(128, 192);
+            pineTree1.selectionBox = new BoundingBox(32, 32);
             return pineTree1;
         }
 

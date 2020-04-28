@@ -207,10 +207,9 @@ namespace EngineeringCorpsCS
             }
             #endregion
             //Attaching the camera to something!
-            camera.focusedEntity = player;
+            camera.SetFocusedEntity(player, menuFactory);
             this.SubscribeToInput(input);
             renderer.SubscribeToInput(input);
-            menuFactory.CreateMinimap(camera);
         }
 
         public void FinalizeGame()
@@ -218,7 +217,7 @@ namespace EngineeringCorpsCS
             //Pop all menus
             menuContainer.RemoveAllMenus();
             player = null;
-            camera.focusedEntity = null;
+            camera.DetachEntity();
             camera.viewedSurface = null;
             surfaceContainer = null;
             input.ClearGameSubscribers();
@@ -270,6 +269,9 @@ namespace EngineeringCorpsCS
                 if (camera.viewedSurface != null)
                 {
                     renderer.RenderWorld(window, camera, camera.viewedSurface);
+                    if (camera.focusedEntity is Player) {
+                        renderer.RenderSelectionBox(window, input, camera, (Player)camera.focusedEntity, textureAtlases);
+                    }
                     window.SetView(camera.GetGameView());
                     //debug pathtesting
                     if (path != null)
@@ -278,10 +280,6 @@ namespace EngineeringCorpsCS
                     }
                     window.Draw(targetBox);
                     //end debug pathtesting
-                    if (camera.focusedEntity is Player) 
-                    {
-                        renderer.RenderMiningProgress(window, camera, (Player)camera.focusedEntity);
-                    }
                 }
                 //drawing menus (main menu, pause, ingame, etc)
                 renderer.RenderGUI(window, camera);

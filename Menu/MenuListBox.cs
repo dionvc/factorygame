@@ -82,18 +82,18 @@ namespace EngineeringCorpsCS
             guiState.Transform = t;
             gui.Draw(dropdownArrow, guiState);
             selectedText.Draw(gui, origin + position, guiState);
+            RectangleShape otherbox = new RectangleShape(size);
             //Draw the dropdown button
             //If is focused:
             if (listboxState == ListBoxState.Focused)
             {
                 for (int i = 0; i < listHeaders.Length; i++)
                 {
-                    RectangleShape otherbox = new RectangleShape(size);
                     otherbox.Position = origin + new Vector2f(position.X, position.Y + size.Y + i * (lineSpacing + 1));
-                    otherbox.FillColor = new Color(64, 64, 64, 128);
+                    otherbox.FillColor = new Color(64, 64, 64, 255);
                     if(i == hoveredValue)
                     {
-                        otherbox.FillColor = new Color(32, 96, 32, 128);
+                        otherbox.FillColor = new Color(32, 96, 32, 255);
                     }
                     gui.Draw(otherbox);
                     texts[i].Draw(gui, origin + position, guiState);
@@ -122,6 +122,7 @@ namespace EngineeringCorpsCS
             if (listboxState == ListBoxState.Normal && collided && input.GetMouseClicked(InputBindings.primary, true))
             {
                 listboxState = ListBoxState.Focused;
+                parent.PushComponentToFront(this);
                 hoveredValue = selectedValue;
             }
             else if (listboxState == ListBoxState.Focused)

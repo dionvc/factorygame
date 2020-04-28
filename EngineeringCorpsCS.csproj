@@ -114,6 +114,8 @@
     <Compile Include="Drawable\LightSourceRadial.cs" />
     <Compile Include="Drawable\StaticSprite.cs" />
     <Compile Include="Drawable\SpriteBatch.cs" />
+    <Compile Include="Entity\Machine.cs" />
+    <Compile Include="Menu\MenuProgressBar.cs" />
     <Compile Include="Recipe\Recipe.cs" />
     <Compile Include="Recipe\RecipeCollection.cs" />
     <Compile Include="Recipe\RecipeFactory.cs" />
@@ -151,8 +153,8 @@
     <Compile Include="Entity\EntityItem.cs" />
     <Compile Include="Drawable\LightSource.cs" />
     <Compile Include="Menu\MenuWorldMap.cs" />
-    <Compile Include="Menu\MenuFactory.cs" />
-    <Compile Include="Menu\MenuContainer.cs" />
+    <Compile Include="MenuSystems\MenuFactory.cs" />
+    <Compile Include="MenuSystems\MenuContainer.cs" />
     <Compile Include="Menu\MenuButton.cs" />
     <Compile Include="Menu\MenuComponent.cs" />
     <Compile Include="Menu\MenuPanel.cs" />
@@ -220,6 +222,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\GUI\guiTilesheet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\GUI\SelectionBox.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\GUI\SelectionBoxInvalid.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\Items\woodItem.png">

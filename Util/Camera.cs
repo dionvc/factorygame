@@ -12,7 +12,7 @@ namespace EngineeringCorpsCS
 {
     class Camera : IInputSubscriber
     {
-        public Entity focusedEntity { get; set; }
+        public Entity focusedEntity { get; protected set; }
         View gameView;
         View guiView;
         float viewScale;
@@ -56,7 +56,26 @@ namespace EngineeringCorpsCS
             int rH = (int)e.Height;
             gameView.Size = new Vector2f(rW, rH);
             gameViewSize = gameView.Size;
-            guiView = new View(new Vector2f(e.Width/2, e.Height/2), new Vector2f(e.Width, e.Height));
+            guiView = new View(new Vector2f((int)e.Width/2, (int)e.Height/2), new Vector2f(e.Width, e.Height));
+        }
+
+        public void SetFocusedEntity(Entity entity, MenuFactory menuFactory)
+        {
+            focusedEntity = entity;
+            if (entity is Player)
+            {
+                //Create minimap
+                menuFactory.CreateMinimap(this);
+                //Create hotbar
+
+                //Create miningbar
+                menuFactory.CreatePlayerProgressBar(this, (Player)focusedEntity, "mining", new Color(196, 92, 0), null);
+            }
+        }
+
+        public void DetachEntity()
+        {
+            focusedEntity = null;
         }
 
         public void SubscribeToInput(InputManager input)

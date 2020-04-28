@@ -227,5 +227,20 @@ namespace EngineeringCorpsCS
             inventoryPanel.AttachComponent(inventoryMenu);
             menuContainer.AttachMenu(inventoryPanel);
         }
+
+        public MenuComponent CreatePlayerProgressBar(Camera camera, Player player, string tag, Color color, MenuComponent relativeComponent)
+        {
+            MenuProgressBar progressBar = new MenuProgressBar(new Vector2f(512, 16), new FloatRect(0,0,32,32), new FloatRect(0,0,32,32), player.GetProgress, color);
+            progressBar.tag = tag;
+            if (relativeComponent == null)
+            {
+                progressBar.SetPivots("center", "bottom", "inside", 8);
+                progressBar.SetInitialPosition(camera.GetGUIView());
+            }
+            progressBar.hideWhenEmpty = true;
+            progressBar.hideWhenFull = true;
+            menuContainer.AttachMenu(progressBar);
+            return progressBar;
+        }
     }
 }
