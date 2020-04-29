@@ -14,7 +14,7 @@ namespace EngineeringCorpsCS
         public static Dictionary<string, SoundBuffer> SFX = new Dictionary<string, SoundBuffer>();
         public static List<Music> ambience = new List<Music>();
         public static List<Music> music = new List<Music>();
-        public static int soundMax = 32;
+        public static int soundMax = 64;
         public static int currentMusic = 0;
         public static int currentAmbience = 0;
         public static Sound[] soundArray = new Sound[soundMax];
@@ -55,9 +55,10 @@ namespace EngineeringCorpsCS
                 {
                     currentMusic = 0;
                 }
+                music[currentMusic].Volume = 0.5f;
                 music[currentMusic].Play();
                 music[currentMusic].PlayingOffset = Time.Zero;
-                music[currentMusic].Volume = 30.0f;
+
                 music[currentMusic].Position = new Vector3f(0, 0, 0);
                 music[currentMusic].RelativeToListener = true;
                     //Console.WriteLine(music.Volume);
@@ -83,11 +84,11 @@ namespace EngineeringCorpsCS
             if(ambience[currentAmbience].Status == SoundStatus.Stopped)
             {
                 currentAmbience++;
-                if (currentAmbience > ambience.Count)
+                if (currentAmbience >= ambience.Count)
                 {
                     currentAmbience = 0;
                 }
-                ambience[currentAmbience].Volume = 15.0f;
+                ambience[currentAmbience].Volume = 0.4f;
                 ambience[currentAmbience].Play();
                 ambience[currentAmbience].PlayingOffset = Time.Zero;
                 ambience[currentAmbience].Play();
@@ -114,8 +115,8 @@ namespace EngineeringCorpsCS
                     if (soundArray[i] == null || soundArray[i].Status == SoundStatus.Stopped)
                     {
                         soundArray[i] = new Sound(buffer);
-                        soundArray[i].Volume = 100.0f;
-                        soundArray[i].Attenuation = 5.0f;
+                        soundArray[i].Volume = 150.0f;
+                        soundArray[i].Attenuation = 2.0f;
                         soundArray[i].Position = new Vector3f(position.x, 0, position.y);
                         soundArray[i].Play();
                     }
@@ -135,10 +136,16 @@ namespace EngineeringCorpsCS
                 {
                     if (soundArray[i] == null || soundArray[i].Status == SoundStatus.Stopped)
                     {
+                        if (soundArray[i] != null)
+                        {
+                            soundArray[i].Dispose();
+                        }
                         soundArray[i] = new Sound(buffer);
+                        soundArray[i].Volume = 150.0f;
+                        soundArray[i].Attenuation = 2.0f;
                         soundArray[i].Position = new Vector3f(position.x, 0, position.y);
                         soundArray[i].Play();
-                        soundArray[i].Attenuation = 5.0f;
+
                     }
                 }
             }

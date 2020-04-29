@@ -198,7 +198,7 @@ namespace EngineeringCorpsCS
             //Pop all menus
             menuContainer.RemoveAllMenus();
             //Game systems intialization
-            surfaceContainer = new SurfaceContainer(tileCollection, surfaceGenerator, 6000, 3000, 255) ;
+            surfaceContainer = new SurfaceContainer(tileCollection, surfaceGenerator) ;
             renderer.InitializeForGame(tileCollection);
             #region test entities
             surfaceContainer.GenerateStartingArea();
@@ -322,7 +322,7 @@ namespace EngineeringCorpsCS
 
         public void CreateMapGenMenu(string tag)
         {
-            GeneratorEntityAffinity treeCollection = new GeneratorEntityAffinity(new string[] { "pineTree1" }, new float[] { 0.5f }, new float[] { 0.5f }, new float[] { 0.5f }, new float[] { 0.6f }, new float[] { 0.6f }, new float[] { 0.6f });
+            GeneratorEntityAffinity treeCollection = new GeneratorEntityAffinity(new string[] { "Pine Tree 1" }, new float[] { 0.5f }, new float[] { 0.5f }, new float[] { 0.5f }, new float[] { 0.7f }, new float[] { 0.7f }, new float[] { 0.7f });
             treeCollection.SetDensity("", 96);
             List<GeneratorEntityAffinity> list = new List<GeneratorEntityAffinity>();
             list.Add(treeCollection);

@@ -91,12 +91,12 @@ namespace EngineeringCorpsCS
             {
                 StaticSprite itemSprite = items[key].itemSprite.Clone();
                 itemSprite.drawLayer = Drawable.DrawLayer.Item;
-                Entity itemEntity = new EntityItem(key, itemSprite);
+                Entity itemEntity = new EntityItem(key + "Item", key, itemSprite);
                 itemEntity.selectionBox = new BoundingBox(32, 32);
                 itemEntity.drawingBox = new BoundingBox(32, 32);
                 itemEntity.collisionBox = new BoundingBox(32, 32);
                 itemEntity.collisionMask = Base.CollisionLayer.Item | Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
-                entityPrototypes.Add(key, itemEntity);
+                entityPrototypes.Add(key + "Item", itemEntity);
             }
         }
         private Entity CreatePlayer()
@@ -115,7 +115,7 @@ namespace EngineeringCorpsCS
             leaves.drawLayer = Drawable.DrawLayer.EntitySorted;
             Animation shadow = new Animation(textureAtlases.GetTexture("treeshadow", out bounds), 192, bounds.Height, 1, bounds, new Vector2f(32, 0));
             shadow.drawLayer = Drawable.DrawLayer.Shadow;
-            Tree pineTree1 = new Tree("pineTree1", trunk, leaves, shadow);
+            Tree pineTree1 = new Tree("Pine Tree 1", trunk, leaves, shadow);
             pineTree1.collisionMask = Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
             pineTree1.mapColor = new Color(32, 160, 0);
             pineTree1.miningProps = new EntityPhysical.MiningProps("Wood", 1, 90, 0, "");
@@ -136,7 +136,7 @@ namespace EngineeringCorpsCS
             idle.drawLayer = Drawable.DrawLayer.EntitySorted;
             Animation shadow = new Animation(textureAtlases.GetTexture("greenhouseshadow", out bounds), bounds.Width, bounds.Height, 1, bounds, new Vector2f(96, -16));
             shadow.drawLayer = Drawable.DrawLayer.Shadow;
-            Machine greenhouse = new Machine("greenhouse", working, idle, shadow);
+            Machine greenhouse = new Machine("Greenhouse", working, idle, shadow);
             greenhouse.miningProps = new EntityPhysical.MiningProps("Greenhouse", 1, 60, 0, "");
             greenhouse.collisionMask = Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
             greenhouse.mapColor = new Color(96, 64, 0);

@@ -36,7 +36,7 @@ namespace EngineeringCorpsCS
         {
             IntRect bounds;
             StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("woodItem", out bounds), bounds, Drawable.DrawLayer.Item);
-            return new Item("Pine Sapling", itemIcon, "pineTree1", 100);
+            return new Item("Pine Sapling", itemIcon, "Pine Tree 1", 100);
         }
 
         private Item CreateWood()
@@ -50,7 +50,7 @@ namespace EngineeringCorpsCS
         {
             IntRect bounds;
             StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("greenhouseItem", out bounds), bounds, Drawable.DrawLayer.Item);
-            return new Item("Greenhouse", itemIcon, "greenhouse", 100);
+            return new Item("Greenhouse", itemIcon, "Greenhouse", 100);
         }
     }
 }

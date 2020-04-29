@@ -56,14 +56,14 @@ namespace EngineeringCorpsCS
             for (int i = 0; i < dropItems.Count; i++)
             {
                 for (int j = 0; j < dropItems[i].count; j++) {
-                    entityCollection.InstantiatePrototype(dropItems[i].item.name, position.Copy(), surface);
+                    entityCollection.InstantiatePrototype(dropItems[i].item.name + "Item", position.Copy(), surface);
                 }
             }
             dropItems.Clear();
             if (playerState == PlayerState.Mining)
             {
                 EntityPhysical entity = selectedEntity as EntityPhysical;
-                if (entity != null)
+                if (entity != null && entity.minable == true)
                 {
                     if (miningProgress % miningSoundFrequency == 0)
                     {
@@ -72,7 +72,7 @@ namespace EngineeringCorpsCS
                     miningProgress += 1;
                     if (miningProgress > entity.miningProps.miningTime)
                     {
-                        StaticSoundManager.PlaySound(entity.position, new string[] { "Pickup" });
+                        StaticSoundManager.PlaySound(position, new string[] { "Pickup" });
                         entity.OnMined(this, itemCollection, entityCollection);
                         selectedEntity = null;
                         miningProgress = 0;
@@ -86,7 +86,6 @@ namespace EngineeringCorpsCS
             }
             if (playerState == PlayerState.Moving)
             {
-                ///TODO: Move this
                 BoundingBox.ApplyPhysicalCollision(this, velocity);
                 if (velocity.x != 0 || velocity.y != 0)
                 {
@@ -99,6 +98,18 @@ namespace EngineeringCorpsCS
                 radialLight.Update();
                 directionalLight.Update();
                 directionalLight.SetDirection(270 + rotation);
+            }
+
+            //Light logic
+            if(surface.timeOfDay > surface.timeOfMidday/2 - surface.lengthOfNight)
+            {
+                radialLight.on = true;
+                directionalLight.on = true;
+            }
+            if (surface.timeOfDay > surface.timeOfMidday / 2 + surface.lengthOfNight)
+            {
+                radialLight.on = false;
+                directionalLight.on = false;
             }
         }
 
@@ -181,7 +192,7 @@ namespace EngineeringCorpsCS
             EntityItem itemCheck = selectedEntity as EntityItem;
             if (itemCheck != null && input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true))
             {
-                ItemStack leftover = InsertIntoInventory(new ItemStack(input.itemCollection.GetItem(itemCheck.name), 1), false);
+                ItemStack leftover = InsertIntoInventory(new ItemStack(input.itemCollection.GetItem(itemCheck.itemName), 1), false);
                 if (leftover == null)
                 {
                     input.entityCollection.DestroyInstance(itemCheck);
@@ -221,7 +232,7 @@ namespace EngineeringCorpsCS
                 //Check for dropping item
                 if (input.GetKeyPressed(InputBindings.dropItem, true))
                 {
-                    input.entityCollection.InstantiatePrototype(heldItem.item.name, new Vector2(mousePos[0], mousePos[1]), surface);
+                    input.entityCollection.InstantiatePrototype(heldItem.item.name + "Item", new Vector2(mousePos[0], mousePos[1]), surface);
                     heldItem = heldItem.Subtract(1);
                 }
             }

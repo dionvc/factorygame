@@ -60,6 +60,9 @@ namespace EngineeringCorpsCS
         EntityCollection entityCollection;
         List<GeneratorEntityAffinity> entitiesGenerated;
         public int surfaceSize { get; set; }
+        public byte levelOfDarkness { get; set; } = 196;
+        public int lengthOfDay { get; set; } = 12000;
+        public int lengthOfNight { get; set; } = 3000;
         float moistureFactor;
         float temperatureFactor;
         float elevationFactor;
@@ -217,6 +220,18 @@ namespace EngineeringCorpsCS
             if(tag == "temperature")
             {
                 temperatureFactor = value;
+            }
+        }
+
+        public void SetSurfaceTime(string tag, float value)
+        {
+            if(tag == "darkness")
+            {
+                levelOfDarkness = Convert.ToByte(value);
+            }
+            if(tag == "lengthOfDay")
+            {
+                lengthOfDay = (int)(value);
             }
         }
 

@@ -17,9 +17,9 @@ namespace EngineeringCorpsCS
         Dictionary<int[], List<Entity>> queuedCollisionEntities;
         //note: the clock is modeled with midday being 0:00 so that a bell curve can be easily modeled around midnight
         //midnight is assumed to be at halfway through the day
-        private int timeOfDay;
-        private int timeOfMidday; //when the clock rolls over
-        private int lengthOfNight; //the total length of night as one standard deviation
+        public int timeOfDay;
+        public int timeOfMidday; //when the clock rolls over
+        public int lengthOfNight; //the total length of night as one standard deviation
         private byte levelOfDarkness; //the maximum byte value for darkness
 
         private int emissionUpdateRate = 60;
@@ -31,7 +31,7 @@ namespace EngineeringCorpsCS
         public Vector2 spawnPoint { get; protected set; }
         int startingRadius = 50;
 
-        public SurfaceContainer(TileCollection tileCollection, SurfaceGenerator surfaceGenerator, int timeOfMidday, int lengthOfNight, byte levelOfDarkness)
+        public SurfaceContainer(TileCollection tileCollection, SurfaceGenerator surfaceGenerator)
         {
             this.worldSize = surfaceGenerator.surfaceSize / Props.chunkSize;
             tileBox = new BoundingBox(-16, -16, 16, 16);
@@ -40,9 +40,9 @@ namespace EngineeringCorpsCS
             this.surfaceGenerator = surfaceGenerator;
             activeChunks = new List<Chunk>();
             spawnPoint = new Vector2(worldSize * Props.chunkSize * Props.tileSize / 2, worldSize * Props.chunkSize * Props.tileSize / 2);
-            this.timeOfMidday = timeOfMidday;
-            this.lengthOfNight = lengthOfNight;
-            this.levelOfDarkness = levelOfDarkness;
+            this.timeOfMidday = surfaceGenerator.lengthOfDay;
+            this.lengthOfNight = surfaceGenerator.lengthOfNight;
+            this.levelOfDarkness = surfaceGenerator.levelOfDarkness;
             timeOfDay = 0;
 
             queuedCollisionEntities = new Dictionary<int[], List<Entity>>();
@@ -110,6 +110,8 @@ namespace EngineeringCorpsCS
                             }
                         }
                     }
+                    chunk.GenerateEntities(x, y, surfaceGenerator, this);
+                    activeChunks.Add(chunk);
                 }
             }
         }

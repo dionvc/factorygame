@@ -23,7 +23,9 @@ namespace EngineeringCorpsCS
         {
             IntRect bounds;
             StaticSprite recipeIcon = new StaticSprite(textureAtlases.GetTexture("woodItem", out bounds), bounds, Drawable.DrawLayer.None);
-            return new Recipe("Grow Wood", new int[0], new string[0], new int[] { 1 }, new string[] { "Wood" }, 180, recipeIcon);
+            Recipe recipe = new Recipe("Grow Wood", new int[0], new string[0], new int[] { 1 }, new string[] { "Wood" }, 180, recipeIcon);
+            recipe.canBeMadeIn = new string[] { "Greenhouse" };
+            return recipe;
         }
     }
 }

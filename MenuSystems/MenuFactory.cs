@@ -229,7 +229,7 @@ namespace EngineeringCorpsCS
             MenuInventory inventoryMenu = new MenuInventory(new Vector2i(256, 256), inventory, accessingPlayer, accessingPlayer, itemFont);
             inventoryPanel.AttachComponent(inventoryMenu);
             menuContainer.AttachMenu(inventoryPanel);
-            inventoryPanel.SetInitialPosition(camera.GetGameView());
+            inventoryPanel.SetInitialPosition(camera.GetGUIView());
 
             menuContainer.ClosePanelsWithTag("EntityGUI");
             inventoryPanel.panelTag = "EntityGUI";
