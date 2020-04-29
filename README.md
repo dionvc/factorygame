@@ -24,19 +24,31 @@ window creation, loading textures, checking whether some input has ocurred, and 
 
 The main features of our engine that are generic:
   -Dynamic Runtime texture atlasing
+  
     -Automatically packs textures into a texture atlas at runtime
+    
     -Uses scanline algorithm
+    
     -Stores bounds of individual textures in the new texture atlas for easy retrieval
+    
     -Automatically creates new texture atlases
+    
     -Functionally simple: create the texture atlas, call load textures with the texture path, and now when you need a texture, call gettexture()
+    
     -Can also specify priority texture paths, which the algorithm will try to pack together, or into as few texture atlases as possible.
+  
   -Input management system
+  
     -The input management system we implemented supports realtime input (not locked to framelimit) with consumption techniques
+    
       -Input is processed in order over a list of subscribers after being captured
+      
       -Subscribers can consume an input, meaning that other subscribers will not see the input
+      
     -The input system is somewhat simple to use: create the InputManager, implement an Entity/Camera/etc with the IInputSubscriber interface, now
       you can subscribe the Entity/Camera/etc you created to the InputManager.  The subscriber is in charge of determining what to do with the input,
       its handleInput() function will be called once per frame.
+      
   -Sprite batching System
     -Accelerates 2D drawing massively.
     -By calling draw and passing in a sprite or a supported drawable(see below), the spritebatcher determines if a drawable shares the same texture as
