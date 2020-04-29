@@ -1,13 +1,21 @@
 # factorygame
 Controls:
 WASD - movement
+
 M - open map
+
 Left Click - Place items/interact with entities and menus
+
 Right Click - Mine items/ split item stack in inventory
+
 Scroll Wheel - Zoom in and out
+
 E - Open Inventory
+
 Q - Return held item to inventory
+
 F - Drop held item on ground
+
 ESC - Open pause menu
 
 This is a demonstration of the game engine we developed over the semester.  The game engine is built out of several distinct parts,
