@@ -69,7 +69,7 @@ namespace EngineeringCorpsCS
             Vector2f pos = new Vector2f((position + origin).X, (origin + position).Y);
             //If the menu is collided with then it will consume the mouse position so that it does not interact with anything else
             bool collided = BoundingBox.CheckPointMenuCollision(mousePos.X, mousePos.Y, collisionBox, pos);
-            if (mouse && input.GetMouseClicked(InputBindings.primary, false) && collided)
+            if (mouse && input.GetMouseClicked(InputBindings.primary, false) && collided && container != null)
             {
                 container.PushMenuToFront(this);
             }

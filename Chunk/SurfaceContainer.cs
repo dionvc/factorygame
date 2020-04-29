@@ -28,6 +28,9 @@ namespace EngineeringCorpsCS
         public TileCollection tileCollection { get; protected set; }
         public int worldSize { get; protected set; }
 
+        public Vector2 spawnPoint { get; protected set; }
+        int startingRadius = 50;
+
         public SurfaceContainer(TileCollection tileCollection, SurfaceGenerator surfaceGenerator, int timeOfMidday, int lengthOfNight, byte levelOfDarkness)
         {
             this.worldSize = surfaceGenerator.surfaceSize / Props.chunkSize;
@@ -36,7 +39,7 @@ namespace EngineeringCorpsCS
             chunks = new Chunk[worldSize * worldSize];
             this.surfaceGenerator = surfaceGenerator;
             activeChunks = new List<Chunk>();
-            
+            spawnPoint = new Vector2(worldSize * Props.chunkSize * Props.tileSize / 2, worldSize * Props.chunkSize * Props.tileSize / 2);
             this.timeOfMidday = timeOfMidday;
             this.lengthOfNight = lengthOfNight;
             this.levelOfDarkness = levelOfDarkness;
@@ -79,6 +82,36 @@ namespace EngineeringCorpsCS
             }
             chunk.GenerateEntities(x, y, surfaceGenerator, this);
             activeChunks.Add(chunk);
+        }
+
+        public void GenerateStartingArea()
+        {
+            int oX = (int) (spawnPoint.x / (Props.tileSize * Props.chunkSize));
+            int oY = (int)(spawnPoint.y / (Props.tileSize * Props.chunkSize));
+            int tileX = (int)(spawnPoint.x / (Props.tileSize));
+            int tileY = (int)(spawnPoint.y / (Props.tileSize));
+            for (int x = oX - 2; x <= oX + 2; x++)
+            {
+                for (int y = oY - 2; y <= oY + 2; y++)
+                {
+                    int chunkTileX = x * Props.chunkSize;
+                    int chunkTileY = y * Props.chunkSize;
+                    Chunk chunk = new Chunk();
+                    chunk.GenerateTerrain((x) * Props.chunkSize, (y) * Props.chunkSize, surfaceGenerator);
+                    SetChunk(x * worldSize + y, chunk);
+                    for(int i = 0; i < Props.chunkSize; i++)
+                    {
+                        for(int j = 0; j < Props.chunkSize; j++)
+                        {
+                            float dist = (float) Math.Sqrt(((chunkTileX + i - tileX) * (chunkTileX + i - tileX)) + ((chunkTileY + j - tileY) * (chunkTileY + j - tileY)));
+                            if (dist < startingRadius) 
+                            {
+                                chunk.SetTile(i, j, 2);
+                            }
+                        }
+                    }
+                }
+            }
         }
         public Chunk GetChunk(int x, int y)
         {

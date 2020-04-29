@@ -42,6 +42,7 @@ namespace EngineeringCorpsCS
         public MenuContainer menuContainer { get; set; }
         public EntityCollection entityCollection { get; set; }
         public ItemCollection itemCollection { get; set; }
+        public RecipeCollection recipeCollection { get; set; }
 
         private string keyString;
         private bool keyStringConsumed;

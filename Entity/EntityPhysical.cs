@@ -76,7 +76,7 @@ namespace EngineeringCorpsCS
         /// <summary>
         /// Defines behavior of entity upon being clicked.  Example: Open a menu.
         /// </summary>
-        virtual public void OnClick(Entity accessingEntity, MenuFactory menuFactory)
+        virtual public void OnClick(Entity accessingEntity, MenuFactory menuFactory, RecipeCollection recipeCollection)
         {
 
         }
@@ -90,7 +90,7 @@ namespace EngineeringCorpsCS
             {
                 for (int i = 0; i < miningProps.results.Length; i++)
                 {
-                    player.InsertIntoInventory(new ItemStack(itemCollection.GetItem(miningProps.results[i]), miningProps.counts[i]));
+                    player.InsertIntoInventory(new ItemStack(itemCollection.GetItem(miningProps.results[i]), miningProps.counts[i]), true);
                 }
             }
             entityCollection.DestroyInstance(this);

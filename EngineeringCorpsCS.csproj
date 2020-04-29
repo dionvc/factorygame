@@ -117,6 +117,7 @@
     <Compile Include="Entity\Machine.cs" />
     <Compile Include="Menu\MenuDrawable.cs" />
     <Compile Include="Menu\MenuProgressBar.cs" />
+    <Compile Include="Menu\MenuRecipeSelector.cs" />
     <Compile Include="Recipe\Recipe.cs" />
     <Compile Include="Recipe\RecipeCollection.cs" />
     <Compile Include="Recipe\RecipeFactory.cs" />

@@ -221,7 +221,7 @@ namespace EngineeringCorpsCS
             menuContainer.AttachMenu(worldMenu);
         }
 
-        public void CreatePlayerInventory(Player accessingPlayer, ItemStack[] inventory)
+        public void CreatePlayerInventory(Player accessingPlayer, List<ItemStack> inventory)
         {
             Font itemFont = fontContainer.GetFont("SairaRegular");
             MenuPanel inventoryPanel = new MenuPanel(new Vector2i(0, 0), new Vector2i(300, 300), new FloatRect(0, 0, 96, 96), 8, null, new Color(255, 255, 255, 224));
@@ -229,9 +229,11 @@ namespace EngineeringCorpsCS
             MenuInventory inventoryMenu = new MenuInventory(new Vector2i(256, 256), inventory, accessingPlayer, accessingPlayer, itemFont);
             inventoryPanel.AttachComponent(inventoryMenu);
             menuContainer.AttachMenu(inventoryPanel);
+            inventoryPanel.SetInitialPosition(camera.GetGameView());
 
             menuContainer.ClosePanelsWithTag("EntityGUI");
             inventoryPanel.panelTag = "EntityGUI";
+            
         }
 
         public MenuComponent CreatePlayerProgressBar(Camera camera, Player player, string tag, Color color, MenuComponent relativeComponent)
@@ -249,14 +251,22 @@ namespace EngineeringCorpsCS
             return progressBar;
         }
 
-        public MenuComponent CreateMachineInterface(Machine machine, Player player)
+        public MenuComponent CreateMachineInterface(Machine machine, Player player, RecipeCollection recipeCollection)
         {
             Font menuFont = fontContainer.GetFont("SairaRegular");
             MenuPanel machinePanel = new MenuPanel(new Vector2i(0, 0), new Vector2i(500, 200), new FloatRect(0, 0, 96, 96), 8, null, new Color(255, 255, 255, 224));
             MenuInventory inputInventory = new MenuInventory(new Vector2i(96, 64), machine.input, player, machine, menuFont);
             MenuInventory outputInventory = new MenuInventory(new Vector2i(96, 64), machine.result, player, machine, menuFont);
+            outputInventory.allowInsertion = false;
             MenuProgressBar recipeProgress = new MenuProgressBar(new Vector2i(128, 16), new FloatRect(0, 0, 32, 32), new FloatRect(0, 0, 32, 32), machine.GetProgress, new Color(196, 92, 0));
             MenuDrawable machineGraphic = new MenuDrawable(new Vector2i(128,128), machine, 0);
+            Recipe[] recipes = recipeCollection.GetRecipes(new string[] { machine.name });
+            MenuPanel recipePanel = CreateRecipePanel(machine.ApplyRecipe, player, recipes);
+
+            machinePanel.AttachComponent(recipePanel);
+            recipePanel.SetPivots("right", "center", "outside", 0);
+            recipePanel.SetInitialPosition(machinePanel);
+            recipePanel.lockedPosition = true;
             machinePanel.AttachComponent(inputInventory);
             machinePanel.AttachComponent(recipeProgress);
             machinePanel.AttachComponent(outputInventory);
@@ -270,8 +280,20 @@ namespace EngineeringCorpsCS
             machinePanel.closePanelKey = InputBindings.showInventory;
             menuContainer.ClosePanelsWithTag("EntityGUI");
             machinePanel.panelTag = "EntityGUI";
+            machinePanel.SetInitialPosition(camera.GetGUIView());
 
             return machinePanel;
+        }
+
+        public MenuPanel CreateRecipePanel(MenuRecipeSelector.ApplyRecipe applyRecipe, Player player, Recipe[] recipes)
+        {
+            Font menuFont = fontContainer.GetFont("SairaRegular");
+            MenuPanel recipePanel = new MenuPanel(new Vector2i(0, 0), new Vector2i(300, 200), new FloatRect(0, 0, 96, 96), 8, null, new Color(255, 255, 255, 224));
+            MenuRecipeSelector selector = new MenuRecipeSelector(new Vector2i(128, 128), applyRecipe, player, recipes, menuFont);
+            recipePanel.AttachComponent(selector);
+            selector.SetPivots("top", "left", "inside", 8);
+
+            return recipePanel;
         }
     }
 }

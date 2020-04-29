@@ -20,7 +20,8 @@ namespace EngineeringCorpsCS
         Vector2 velocity;
         float rotation = 0;
         int playerVelocity = 12;
-        ItemStack[] inventory;
+        List<ItemStack> inventory;
+        List<ItemStack> dropItems = new List<ItemStack>();
         public ItemStack heldItem { get; set; } = null;
         EntityGhost heldItemGhost;
         public Entity selectedEntity { get; protected set; } = null;
@@ -51,6 +52,13 @@ namespace EngineeringCorpsCS
         /// </summary>
         public override void Update(EntityCollection entityCollection, ItemCollection itemCollection)
         {
+            for (int i = 0; i < dropItems.Count; i++)
+            {
+                for (int j = 0; j < dropItems[i].count; j++) {
+                    entityCollection.InstantiatePrototype(dropItems[i].item.name, position, surface);
+                }
+            }
+            dropItems.Clear();
             if (playerState == PlayerState.Mining)
             {
                 EntityPhysical entity = selectedEntity as EntityPhysical;
@@ -97,10 +105,10 @@ namespace EngineeringCorpsCS
             //TODO: Debug code (move dis)
             if(inventory == null)
             {
-                inventory = new ItemStack[10];
-                for (int i = 0; i < inventory.Length - 2; i++)
+                inventory = new List<ItemStack>();
+                for (int i = 0; i < 10; i++)
                 {
-                    inventory[i] = new ItemStack(input.itemCollection.GetItem("Pine Sapling"), 100);
+                    inventory.Add(new ItemStack(input.itemCollection.GetItem("Pine Sapling"), 100));
                 }
                 inventory[8] = new ItemStack(input.itemCollection.GetItem("Greenhouse"), 10);
             }
@@ -156,14 +164,14 @@ namespace EngineeringCorpsCS
             bool mousefloat = input.GetMousePositionAsFloat(out mousePos);
             EntityPhysical entity = selectedEntity as EntityPhysical;
             //Switch to mining state if suitable
-            if (entity != null && input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true))
+            if (entity != null && input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true) && entity.minable == true)
             {
                 playerState = PlayerState.Mining;
             }
             EntityItem itemCheck = selectedEntity as EntityItem;
             if (itemCheck != null && input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true))
             {
-                ItemStack leftover = InsertIntoInventory(new ItemStack(input.itemCollection.GetItem(itemCheck.name), 1));
+                ItemStack leftover = InsertIntoInventory(new ItemStack(input.itemCollection.GetItem(itemCheck.name), 1), false);
                 if (leftover == null)
                 {
                     input.entityCollection.DestroyInstance(itemCheck);
@@ -173,7 +181,7 @@ namespace EngineeringCorpsCS
             //Check for onClick
             if (entity != null && selectedEntity is EntityPhysical && input.GetMouseClicked(InputBindings.primary, true))
             {
-                entity.OnClick(this, input.menuFactory);
+                entity.OnClick(this, input.menuFactory, input.recipeCollection);
                 input.ConsumeMousePosition();
             }
 
@@ -204,6 +212,7 @@ namespace EngineeringCorpsCS
                 if (input.GetKeyPressed(InputBindings.dropItem, true))
                 {
                     input.entityCollection.InstantiatePrototype(heldItem.item.name, new Vector2(mousePos[0], mousePos[1]), surface);
+                    heldItem = heldItem.Subtract(1);
                 }
             }
 
@@ -216,7 +225,7 @@ namespace EngineeringCorpsCS
             //Return item to inventory
             if (input.GetKeyPressed(InputBindings.returnItem, true) && heldItem != null)
             {
-                ItemStack leftover = InsertIntoInventory(heldItem);
+                ItemStack leftover = InsertIntoInventory(heldItem, false);
                 if(leftover == null)
                 {
                     heldItem = null;
@@ -265,9 +274,9 @@ namespace EngineeringCorpsCS
         /// </summary>
         /// <param name="itemStack"></param>
         /// <returns></returns>
-        public ItemStack InsertIntoInventory(ItemStack itemStack)
+        public ItemStack InsertIntoInventory(ItemStack itemStack, bool dropIfFull)
         {
-            for (int i = 0; i < inventory.Length; i++)
+            for (int i = 0; i < inventory.Count; i++)
             {
                 if (inventory[i] == null)
                 {
@@ -286,6 +295,11 @@ namespace EngineeringCorpsCS
                         return null;
                     }
                 }
+            }
+            if(dropIfFull)
+            {
+                dropItems.Add(itemStack);
+                return null;
             }
             return itemStack;
         }

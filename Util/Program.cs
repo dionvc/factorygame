@@ -75,6 +75,7 @@ namespace EngineeringCorpsCS
         TileCollection tileCollection;
         EntityCollection entityCollection;
         ItemCollection itemCollection;
+        RecipeCollection recipeCollection;
         //Debug variable
         Clock clock;
         float fps;
@@ -170,10 +171,11 @@ namespace EngineeringCorpsCS
             entityCollection = new EntityCollection(textureAtlases, entityUpdateSystem);
             itemCollection = new ItemCollection(textureAtlases);
             entityCollection.LoadPrototypes(itemCollection);
+            recipeCollection = new RecipeCollection(textureAtlases);
+            recipeCollection.LoadRecipes();
             input.entityCollection = entityCollection;
             input.itemCollection = itemCollection;
-
-            
+            input.recipeCollection = recipeCollection;
         }
         public void StartMenu()
         {
@@ -198,8 +200,8 @@ namespace EngineeringCorpsCS
             surfaceContainer = new SurfaceContainer(tileCollection, surfaceGenerator, 6000, 3000, 255) ;
             renderer.InitializeForGame(tileCollection);
             #region test entities
-
-            player = entityCollection.InstantiatePrototype("player", new Vector2(1024, 1024), surfaceContainer);
+            surfaceContainer.GenerateStartingArea();
+            player = entityCollection.InstantiatePrototype("player", surfaceContainer.spawnPoint, surfaceContainer);
             IInputSubscriber playerSubscriber = player as IInputSubscriber;
             if (playerSubscriber != null)
             {

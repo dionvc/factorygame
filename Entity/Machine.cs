@@ -23,8 +23,8 @@ namespace EngineeringCorpsCS
         int recipeProgress = 0;
         float workingSpeed = 1;
         int bufferAmount = 10;
-        public ItemStack[] result { get; set; }
-        public ItemStack[] input { get; set; }
+        public List<ItemStack> result { get; set; }
+        public List<ItemStack> input { get; set; }
 
         public Machine(string name, Animation working, StaticSprite idle, Animation shadow)
         {
@@ -32,7 +32,6 @@ namespace EngineeringCorpsCS
             this.working = working;
             this.shadow = shadow;
             this.idle = idle;
-            activeRecipe = new Recipe(new int[] { 1 }, new string[] { "Pine Sapling" }, new int[] { 1 }, new string[] { "Wood" }, 60);
             if (idle != null)
             {
                 drawArray = new Drawable[] { idle, shadow };
@@ -41,9 +40,9 @@ namespace EngineeringCorpsCS
             {
                 drawArray = new Drawable[] { working, shadow };
             }
-            result = new ItemStack[activeRecipe.itemsResults.Length];
-            input = new ItemStack[activeRecipe.itemsRequired.Length];
             machineState = MachineState.Idle;
+            input = new List<ItemStack>();
+            result = new List<ItemStack>();
         }
 
         public override void Update(EntityCollection entityCollection, ItemCollection itemCollection)
@@ -127,13 +126,12 @@ namespace EngineeringCorpsCS
             return clone;
         }
 
-        public override void OnClick(Entity entity, MenuFactory menuFactory)
+        public override void OnClick(Entity entity, MenuFactory menuFactory, RecipeCollection recipeCollection)
         {
             //create menu for machine
             if (entity is Player)
             {
-                
-                menuFactory.CreateMachineInterface(this, (Player)entity);
+                menuFactory.CreateMachineInterface(this, (Player)entity, recipeCollection);
             }
         }
 
@@ -146,6 +144,29 @@ namespace EngineeringCorpsCS
             else
             {
                 return 0.0f;
+            }
+        }
+
+        public void ApplyRecipe(Recipe recipe, Player player)
+        {
+            activeRecipe = recipe;
+            for(int i = 0; i < input.Count; i++)
+            {
+                player.InsertIntoInventory(input[i], true);
+            }
+            for (int j = 0; j < input.Count; j++)
+            {
+                player.InsertIntoInventory(result[j], true);
+            }
+            input.Clear();
+            result.Clear();
+            for(int i = 0; i < activeRecipe.itemsRequired.Length; i++)
+            {
+                input.Add(null);
+            }
+            for(int i = 0; i < activeRecipe.itemsResults.Length; i++)
+            {
+                result.Add(null);
             }
         }
     }
