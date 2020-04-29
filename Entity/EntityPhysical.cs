@@ -59,6 +59,7 @@ namespace EngineeringCorpsCS
 
         public bool minable = false;
         public MiningProps miningProps;
+        public string[] miningSounds = new string[] { "Pick1", "Pick2", "Pick3" };
         string remainsMined;
         string remainsDestroyed;
         /// <summary>

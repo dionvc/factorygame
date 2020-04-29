@@ -119,6 +119,7 @@ namespace EngineeringCorpsCS
             pineTree1.collisionMask = Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
             pineTree1.mapColor = new Color(32, 160, 0);
             pineTree1.miningProps = new EntityPhysical.MiningProps("Wood", 1, 90, 0, "");
+            pineTree1.miningSounds = new string[] { "Chop1", "Chop2", "Chop3" };
             pineTree1.minable = true;
             pineTree1.collisionBox = new BoundingBox(16, 16);
             pineTree1.drawingBox = new BoundingBox(128, 192);

@@ -20,6 +20,7 @@ namespace EngineeringCorpsCS
             program.InitializeResources();
             //end loading screen
             //launch sound thread before entering main program
+            StaticSoundManager.LoadSounds();
             while (program.window.IsOpen)
             {
                 if (program.gameState == GameState.mainMenu)
@@ -224,6 +225,7 @@ namespace EngineeringCorpsCS
             surfaceContainer = null;
             input.ClearGameSubscribers();
             renderer.DetachGameWorld();
+            StaticSoundManager.StopAmbience();
         }
 
         public void RunGame()
@@ -244,6 +246,8 @@ namespace EngineeringCorpsCS
             }
             while (window.IsOpen && (gameState == GameState.inGame || gameState == GameState.paused))
             {
+                StaticSoundManager.PlayMusic();
+                StaticSoundManager.PlayAmbience();
                 //Check fps
                 fps = 1.0f / clock.ElapsedTime.AsSeconds();
                 fpsQueue.Enqueue(fps);

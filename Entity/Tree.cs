@@ -80,6 +80,7 @@ namespace EngineeringCorpsCS
             clone.minable = this.minable;
             clone.miningProps = this.miningProps;
             clone.mapColor = new Color(this.mapColor);
+            clone.miningSounds = (string[])this.miningSounds.Clone();
             //Things that are retained between instances of a prototype
 
             return clone;

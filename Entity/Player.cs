@@ -26,6 +26,7 @@ namespace EngineeringCorpsCS
         EntityGhost heldItemGhost;
         public Entity selectedEntity { get; protected set; } = null;
         public int miningProgress;
+        public int miningSoundFrequency = 30;
         public float selectionRange = 100.0f;
         TextureAtlases textureAtlases;
         AnimationRotated walking;
@@ -55,7 +56,7 @@ namespace EngineeringCorpsCS
             for (int i = 0; i < dropItems.Count; i++)
             {
                 for (int j = 0; j < dropItems[i].count; j++) {
-                    entityCollection.InstantiatePrototype(dropItems[i].item.name, position, surface);
+                    entityCollection.InstantiatePrototype(dropItems[i].item.name, position.Copy(), surface);
                 }
             }
             dropItems.Clear();
@@ -64,14 +65,23 @@ namespace EngineeringCorpsCS
                 EntityPhysical entity = selectedEntity as EntityPhysical;
                 if (entity != null)
                 {
+                    if (miningProgress % miningSoundFrequency == 0)
+                    {
+                        StaticSoundManager.PlaySound(entity.position, entity.miningSounds);
+                    }
                     miningProgress += 1;
                     if (miningProgress > entity.miningProps.miningTime)
                     {
+                        StaticSoundManager.PlaySound(entity.position, new string[] { "Pickup" });
                         entity.OnMined(this, itemCollection, entityCollection);
                         selectedEntity = null;
                         miningProgress = 0;
                         playerState = PlayerState.Idle;
                     }
+                }
+                else
+                {
+                    playerState = PlayerState.Idle;
                 }
             }
             if (playerState == PlayerState.Moving)
