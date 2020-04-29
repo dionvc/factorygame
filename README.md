@@ -18,6 +18,8 @@ F - Drop held item on ground
 
 ESC - Open pause menu
 
+F3 - some debug information
+
 This is a demonstration of the game engine we developed over the semester.  The game engine is built out of several distinct parts,
 some of which are dependent on previous parts.  The entire engine was built using SFML.NET, an OpenGL multimedia library which simplifies
 window creation, loading textures, checking whether some input has ocurred, and loading audio,  but does not offer any game engine specific features.
@@ -27,25 +29,17 @@ The main features of our engine that are generic:
   -Dynamic Runtime texture atlasing
   
     -Automatically packs textures into a texture atlas at runtime
-    
     -Uses scanline algorithm
-    
     -Stores bounds of individual textures in the new texture atlas for easy retrieval
-    
     -Automatically creates new texture atlases
-    
     -Functionally simple: create the texture atlas, call load textures with the texture path, and now when you need a texture, call gettexture()
-    
     -Can also specify priority texture paths, which the algorithm will try to pack together, or into as few texture atlases as possible.
   
   -Input management system
   
     -The input management system we implemented supports realtime input (not locked to framelimit) with consumption techniques
-    
       -Input is processed in order over a list of subscribers after being captured
-      
       -Subscribers can consume an input, meaning that other subscribers will not see the input
-      
     -The input system is somewhat simple to use: create the InputManager, implement an Entity/Camera/etc with the IInputSubscriber interface, now
       you can subscribe the Entity/Camera/etc you created to the InputManager.  The subscriber is in charge of determining what to do with the input,
       its handleInput() function will be called once per frame.
@@ -137,3 +131,5 @@ Main features of our engine that are more specific to our game:
   -Tile transition system
     
     -Our engine implements a solution to layering different types of tiles in a visually pleasing way.  The algorithm we developed roughly follows the Marching Squares algorithm: https://en.wikipedia.org/wiki/Marching_squares .  The rendering also supports cliffs into the void and beachs into water.  There is 13 different variants of tiles, 12 variants of cliffs and 12 variants of beaches.
+
+Our engine can support about 3 to 10 thousand sprites on screen at once without dropping below 60 fps, depending on conditions (if all sprites are packed to the same texture atlas, and are not huge sprites).  Our engine can also support thousands of collision checks.
