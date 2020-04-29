@@ -23,7 +23,8 @@ some of which are dependent on previous parts.  The entire engine was built usin
 window creation, loading textures, checking whether some input has ocurred, and loading audio,  but does not offer any game engine specific features.
 
 The main features of our engine that are generic:
-  -Dynamic Runtime texture atlasing
+  
+  Dynamic Runtime texture atlasing
   
     -Automatically packs textures into a texture atlas at runtime
     
