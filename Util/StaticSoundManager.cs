@@ -55,7 +55,7 @@ namespace EngineeringCorpsCS
                 {
                     currentMusic = 0;
                 }
-                music[currentMusic].Volume = 0.5f;
+                music[currentMusic].Volume = 0.75f;
                 music[currentMusic].Play();
                 music[currentMusic].PlayingOffset = Time.Zero;
 
@@ -88,7 +88,7 @@ namespace EngineeringCorpsCS
                 {
                     currentAmbience = 0;
                 }
-                ambience[currentAmbience].Volume = 0.4f;
+                ambience[currentAmbience].Volume = 0.6f;
                 ambience[currentAmbience].Play();
                 ambience[currentAmbience].PlayingOffset = Time.Zero;
                 ambience[currentAmbience].Play();
