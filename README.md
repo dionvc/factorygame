@@ -132,4 +132,9 @@ Main features of our engine that are more specific to our game:
     
     -Our engine implements a solution to layering different types of tiles in a visually pleasing way.  The algorithm we developed roughly follows the Marching Squares algorithm: https://en.wikipedia.org/wiki/Marching_squares .  The rendering also supports cliffs into the void and beachs into water.  There is 13 different variants of tiles, 12 variants of cliffs and 12 variants of beaches.
 
+  -Sound system
+    
+    -This system is partially handled by SFML, however SFML does not guarantee that limits on sound will not be exceeded and cause issues.  We handled this by creating Static soundmanager which ensures that the limit of number of sounds is not exceeded.  The soundmanager also takes care of loading sounds, and playing them in 3D using several public functions.
+    
+Overall, our engine handles rendering of tile-based worlds and entities, collision/physics, 3d sound/music, menus, texture atlasing and draw batching, flexible input management, as well as some smaller features such as fake lighting and A star pathing.  The engine would be suitable for games with the possibility for a lot of entities.  RTS's and Simulation games fall in this category.  There is also capability for open world RPG style games, as the engine can handle rendering and simulating large worlds without issue, and the menu system provides all the basic features needed to create an RPG.
 Our engine can support about 3 to 10 thousand sprites on screen at once without dropping below 60 fps, depending on conditions (if all sprites are packed to the same texture atlas, and are not huge sprites).  Our engine can also support thousands of collision checks.
