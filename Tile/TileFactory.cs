@@ -21,7 +21,8 @@ namespace EngineeringCorpsCS
         {
             List<Tile> tiles = new List<Tile>();
             tiles.Add(CreateVoid((byte)tiles.Count));
-            //tiles.Add(CreateDeepWater((byte)tiles.Count));
+            tiles.Add(CreateDeepWater((byte)tiles.Count));
+            tiles.Add(CreateShallowWater((byte)tiles.Count));
             tiles.Add(CreateBeachSand((byte)tiles.Count));
             tiles.Add(CreateSnow((byte)tiles.Count));
             return tiles;
@@ -35,8 +36,16 @@ namespace EngineeringCorpsCS
         {
             Base.CollisionLayer collisionMask = Base.CollisionLayer.TerrainSolid;
             IntRect bounds;
-            Texture tileSheet = textureAtlases.GetTexture("", out bounds);
-            return new Tile(tileSheet, bounds, index, "Deep Water", 0, defaultShade, new Color(0,45,200), collisionMask, 1.0f, 0.25f, 0.0f);
+            Texture tileSheet = textureAtlases.GetTexture("deepwaterTilesheet", out bounds);
+            return new Tile(tileSheet, bounds, index, "Deep Water", 0, defaultShade, new Color(0,45,200), collisionMask, 1.0f, 0.5f, 0.0f);
+        }
+
+        public Tile CreateShallowWater(byte index)
+        {
+            Base.CollisionLayer collisionMask = Base.CollisionLayer.TerrainSolid;
+            IntRect bounds;
+            Texture tileSheet = textureAtlases.GetTexture("shallowwaterTilesheet", out bounds);
+            return new Tile(tileSheet, bounds, index, "Shallow Water", 0, new Color(255, 255, 255), new Color(0, 0, 255), collisionMask, 1.0f, 0.25f, 0.0f);
         }
 
         public Tile CreateBeachSand(byte index)

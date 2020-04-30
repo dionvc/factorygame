@@ -164,9 +164,9 @@ namespace EngineeringCorpsCS
             window.Draw(loadingText);
             window.Display();
             Dictionary<System.Type, UpdateProperties> updateOrder = new Dictionary<Type, UpdateProperties>();
-            updateOrder.Add(typeof(Player), new UpdateProperties(typeof(Player), 1, false));
             updateOrder.Add(typeof(Machine), new UpdateProperties(typeof(Machine), 1, false));
             updateOrder.Add(typeof(Tree), new UpdateProperties(typeof(Tree), 600, false));
+            updateOrder.Add(typeof(Player), new UpdateProperties(typeof(Player), 1, false));
             entityUpdateSystem = new EntityUpdateSystem(updateOrder);
             tileCollection = new TileCollection(textureAtlases);
             entityCollection = new EntityCollection(textureAtlases, entityUpdateSystem);
@@ -226,6 +226,7 @@ namespace EngineeringCorpsCS
             input.ClearGameSubscribers();
             renderer.DetachGameWorld();
             StaticSoundManager.StopAmbience();
+            entityUpdateSystem.ResetSystem();
         }
 
         public void RunGame()

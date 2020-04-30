@@ -106,7 +106,7 @@ namespace EngineeringCorpsCS
                             float dist = (float) Math.Sqrt(((chunkTileX + i - tileX) * (chunkTileX + i - tileX)) + ((chunkTileY + j - tileY) * (chunkTileY + j - tileY)));
                             if (dist < startingRadius) 
                             {
-                                chunk.SetTile(i, j, 2);
+                                chunk.SetTile(i, j, 4);
                             }
                         }
                     }

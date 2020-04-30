@@ -150,15 +150,21 @@ namespace EngineeringCorpsCS
         {
             //Declaring elements
             Font mapGenFont = fontContainer.GetFont("SairaRegular");
-            MenuPanel worldMenu = new MenuPanel(new Vector2i(0, 0), new Vector2i(500,500), new FloatRect(0, 0, 96, 96), 4, null, new Color(255, 255, 255, 224));
+            MenuPanel worldMenu = new MenuPanel(new Vector2i(0, 0), new Vector2i(600,500), new FloatRect(0, 0, 96, 96), 4, null, new Color(255, 255, 255, 224));
             //Noise dropdowns
             string[] noiseNames = Enum.GetNames(typeof(FastNoise.NoiseType));
             int[] noiseValues = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             MenuListBox moistureNoiseType = new MenuListBox(new Vector2i(150,25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, mapGenFont, 24, 24, 0);
             moistureNoiseType.tag = "moisture";
+            MenuText moistureNoiseText = new MenuText(new Vector2i(150, 25), mapGenFont, "Moisture Noise:", 24, 24);
+            moistureNoiseText.SetTextPosition("right", "center");
             MenuListBox elevationNoiseType = new MenuListBox(new Vector2i(150, 25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, mapGenFont, 24, 24, 0);
             elevationNoiseType.tag = "elevation";
+            MenuText elevationNoiseText = new MenuText(new Vector2i(150, 25), mapGenFont, "Elevation Noise:", 24, 24);
+            elevationNoiseText.SetTextPosition("right", "center");
             MenuListBox temperatureNoiseType = new MenuListBox(new Vector2i(150, 25), noiseNames, noiseValues, surfaceGenerator.SetNoiseType, mapGenFont, 24, 24, 0);
+            MenuText temperatureNoiseText = new MenuText(new Vector2i(150, 25), mapGenFont, "Temperature Noise:", 24, 24);
+            temperatureNoiseText.SetTextPosition("right", "center");
             temperatureNoiseType.tag = "temperature";
             //Surface size field
             MenuText surfaceSizeFieldTitle = new MenuText(new Vector2i(100, 25), mapGenFont, "Map size:", 24, 24);
@@ -177,14 +183,21 @@ namespace EngineeringCorpsCS
             seedFieldTitle.SetPivots("left", "center", "outside", 0);
             seedFieldTitle.SetInitialPosition(seedField);
             //Start game button
-            MenuButton startGame = new MenuButton(new Vector2i(100, 25), program.SwitchGameState);
+            MenuButton startGame = new MenuButton(new Vector2i(100, 40), program.SwitchGameState);
+            MenuText startGameText = new MenuText(new Vector2i(100, 40), mapGenFont, "Start Game", 24, 24);
+            startGame.AttachComponent(startGameText);
+            startGameText.SetTextPosition("center", "center");
+            startGameText.SetPivots("center", "center", "inside", 0);
             startGame.tag = "inGame";
             //Slider
             MenuSlider elevationFactor = new MenuSlider(5, surfaceGenerator.SetNoiseFactor, 0.5f, 1.5f, 1.0f);
             elevationFactor.tag = "elevation";
+            MenuText elevationSliderText = new MenuText(new Vector2i(150, 25), mapGenFont, "Elevation Factor", 24, 24);
             MenuSlider moistureFactor = new MenuSlider(5, surfaceGenerator.SetNoiseFactor, 0.5f, 1.5f, 1.0f);
             moistureFactor.tag = "moisture";
+            MenuText moistureSliderText = new MenuText(new Vector2i(150, 25), mapGenFont, "Moisture Factor", 24, 24);
             MenuSlider temperatureFactor = new MenuSlider(5, surfaceGenerator.SetNoiseFactor, 0.5f, 1.5f, 1.0f);
+            MenuText temperatureSliderText = new MenuText(new Vector2i(150, 25), mapGenFont, "Temperature Factor", 24, 24);
             temperatureFactor.tag = "temperature";
             //Attaching Elements
             worldMenu.AttachComponent(startGame);
@@ -193,14 +206,20 @@ namespace EngineeringCorpsCS
             worldMenu.AttachComponent(temperatureNoiseType);
             worldMenu.AttachComponent(elevationNoiseType);
             worldMenu.AttachComponent(moistureNoiseType);
-
+            worldMenu.AttachComponent(moistureNoiseText);
+            worldMenu.AttachComponent(temperatureNoiseText);
+            worldMenu.AttachComponent(elevationNoiseText);
+            
 
             worldMenu.AttachComponent(elevationFactor);
             worldMenu.AttachComponent(moistureFactor);
             worldMenu.AttachComponent(temperatureFactor);
+            worldMenu.AttachComponent(elevationSliderText);
+            worldMenu.AttachComponent(moistureSliderText);
+            worldMenu.AttachComponent(temperatureSliderText);
+
             //Positioning elements
-            seedField.SetPivots("bottom", "center", "outside", 25);
-            seedField.SetInitialPosition(moistureNoiseType);
+            seedField.SetRelativePosition(new Vector2i(100, 25));
             surfaceSizeField.SetPivots("bottom", "center", "outside", 25);
             surfaceSizeField.SetInitialPosition(seedField);
             startGame.SetPivots("bottom", "right", "inside", 25);
@@ -211,12 +230,21 @@ namespace EngineeringCorpsCS
             moistureFactor.SetInitialPosition(elevationFactor);
             temperatureFactor.SetPivots("bottom", "center", "outside", 25);
             temperatureFactor.SetInitialPosition(moistureFactor);
-            moistureNoiseType.SetPivots("top", "center", "inside", 25);
+            moistureNoiseType.SetPivots("top", "right", "inside", 25);
             moistureNoiseType.SetInitialPosition(camera.GetGUIView());
             elevationNoiseType.SetPivots("bottom", "center", "outside", 25);
             elevationNoiseType.SetInitialPosition(moistureNoiseType);
             temperatureNoiseType.SetPivots("bottom", "center", "outside", 25);
             temperatureNoiseType.SetInitialPosition(elevationNoiseType);
+
+            moistureNoiseText.SetRelativePosition(moistureNoiseType.position - new Vector2i(230, 0));
+            elevationNoiseText.SetRelativePosition(elevationNoiseType.position - new Vector2i(230, 0));
+            temperatureNoiseText.SetRelativePosition(temperatureNoiseType.position - new Vector2i(230, 0));
+
+            moistureSliderText.SetRelativePosition(moistureFactor.position - new Vector2i(150, 0));
+            elevationSliderText.SetRelativePosition(elevationFactor.position - new Vector2i(150, 0));
+            temperatureSliderText.SetRelativePosition(temperatureFactor.position - new Vector2i(150, 0));
+
             //Finalize into menu container
             menuContainer.AttachMenu(worldMenu);
         }

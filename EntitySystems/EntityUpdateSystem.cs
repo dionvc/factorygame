@@ -35,6 +35,18 @@ namespace EngineeringCorpsCS
             }
         }
 
+        public void ResetSystem()
+        {
+            entities.Clear();
+            activeEntities.Clear();
+            foreach (System.Type key in updateProperties.Keys)
+            {
+                entities.Add(updateProperties[key].type, new List<Entity>());
+                activeEntities.Add(updateProperties[key].type, new List<Entity>());
+                updateProperties[key].updateCounter = 0;
+            }
+        }
+
         /// <summary>
         /// Updates all active entities.  All active entities get a chance to update, even if they will be destroyed.
         /// </summary>

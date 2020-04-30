@@ -60,6 +60,7 @@ namespace EngineeringCorpsCS
                 texts[i].SetText(listHeaders[i]);
                 texts[i].SetTextPosition("left", "center");
                 texts[i].SetRelativePosition(new Vector2i(0, (i + 1) * (lineSpacing + 1) - 2));
+                attachedComponents.Clear();
             }
             dropdownBox = new BoundingBox(new Vector2f(size.X, lineSpacing));
             collisionBox = new BoundingBox(size + new Vector2i(size.Y, 0));
@@ -67,6 +68,7 @@ namespace EngineeringCorpsCS
 
             dropdownMainBox = CreateMenuGraphicArrayWithBorder(new FloatRect(96, 0, 96, 96), 10);
             dropdownArrow = CreateMenuGraphic(new FloatRect(416, 0, 96, 96), new Vector2i(size.Y, size.Y));
+
         }
 
         public override void Draw(RenderTexture gui, Vector2i origin, RenderStates guiState)
@@ -104,6 +106,7 @@ namespace EngineeringCorpsCS
             //Draw the highlight over currently hovered value
             //Draw the text for the values
             guiState.Transform = original;
+            base.Draw(gui, origin + position, guiState);
         }
 
         public override void HandleInput(InputManager input)
