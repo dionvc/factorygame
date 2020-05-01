@@ -28,6 +28,12 @@ namespace EngineeringCorpsCS
             itemCollection.Add(item.name, item);
             item = CreateGreenhouse();
             itemCollection.Add(item.name, item);
+            item = CreateCoalOre();
+            itemCollection.Add(item.name, item);
+            item = CreateCopperOre();
+            itemCollection.Add(item.name, item);
+            item = CreateIronOre();
+            itemCollection.Add(item.name, item);
             return itemCollection;
         }
 
@@ -52,5 +58,27 @@ namespace EngineeringCorpsCS
             StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("greenhouseItem", out bounds), bounds, Drawable.DrawLayer.Item);
             return new Item("Greenhouse", itemIcon, "Greenhouse", 100);
         }
+
+        private Item CreateCoalOre()
+        {
+            IntRect bounds;
+            StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("CoalOreItem", out bounds), bounds, Drawable.DrawLayer.Item);
+            return new Item("Coal Ore", itemIcon, null, 100);
+        }
+
+        private Item CreateIronOre()
+        {
+            IntRect bounds;
+            StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("IronOreItem", out bounds), bounds, Drawable.DrawLayer.Item);
+            return new Item("Iron Ore", itemIcon, null, 100);
+        }
+
+        private Item CreateCopperOre()
+        {
+            IntRect bounds;
+            StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("CopperOreItem", out bounds), bounds, Drawable.DrawLayer.Item);
+            return new Item("Copper Ore", itemIcon, null, 100);
+        }
+
     }
 }

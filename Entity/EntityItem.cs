@@ -24,6 +24,8 @@ namespace EngineeringCorpsCS
             clone.drawingBox = this.drawingBox;
             clone.collisionBox = this.collisionBox;
             clone.collisionMask = Base.CollisionLayer.Item;
+            clone.miningProps = this.miningProps;
+            clone.minable = this.minable;
             return clone;
         }
     }

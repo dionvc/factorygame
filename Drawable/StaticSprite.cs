@@ -38,7 +38,8 @@ namespace EngineeringCorpsCS
         {
             StaticSprite cloned = new StaticSprite(this.texture, this.textureFrame, new Vector2f(this.drawOffset.X, this.drawOffset.Y));
             cloned.drawLayer = this.drawLayer;
-            cloned.color = this.color;
+            cloned.scale = new Vector2f(this.scale.X, this.scale.Y);
+            cloned.color = new Color(this.color);
             return cloned;
         }
 

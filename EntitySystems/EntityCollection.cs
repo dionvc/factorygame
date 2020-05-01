@@ -29,7 +29,12 @@ namespace EngineeringCorpsCS
             entityPrototypes.Add(pineTree1Prototype.name, pineTree1Prototype);
             Entity greenhousePrototype = CreateGreenhouse();
             entityPrototypes.Add(greenhousePrototype.name, greenhousePrototype);
-
+            Entity entity = CreateIron();
+            entityPrototypes.Add(entity.name, entity);
+            entity = CreateCopper();
+            entityPrototypes.Add(entity.name, entity);
+            entity = CreateCoal();
+            entityPrototypes.Add(entity.name, entity);
             LoadItemEntityPrototypes(itemCollection);
         }
 
@@ -90,12 +95,15 @@ namespace EngineeringCorpsCS
             foreach(string key in items.Keys)
             {
                 StaticSprite itemSprite = items[key].itemSprite.Clone();
+                itemSprite.scale = new Vector2f(0.5f, 0.5f);
                 itemSprite.drawLayer = Drawable.DrawLayer.Item;
                 Entity itemEntity = new EntityItem(key + "Item", key, itemSprite);
-                itemEntity.selectionBox = new BoundingBox(32, 32);
-                itemEntity.drawingBox = new BoundingBox(32, 32);
-                itemEntity.collisionBox = new BoundingBox(32, 32);
+                itemEntity.selectionBox = new BoundingBox(16, 16);
+                itemEntity.drawingBox = new BoundingBox(16, 16) ;
+                itemEntity.collisionBox = new BoundingBox(16, 16);
                 itemEntity.collisionMask = Base.CollisionLayer.Item | Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
+                itemEntity.miningProps = new Entity.MiningProps(key, 1, 10, 0, "");
+                itemEntity.minable = true;
                 entityPrototypes.Add(key + "Item", itemEntity);
             }
         }
@@ -137,7 +145,7 @@ namespace EngineeringCorpsCS
             Animation shadow = new Animation(textureAtlases.GetTexture("greenhouseshadow", out bounds), bounds.Width, bounds.Height, 1, bounds, new Vector2f(96, -16));
             shadow.drawLayer = Drawable.DrawLayer.Shadow;
             Machine greenhouse = new Machine("Greenhouse", working, idle, shadow);
-            greenhouse.miningProps = new EntityPhysical.MiningProps("Greenhouse", 1, 60, 0, "");
+            greenhouse.miningProps = new Entity.MiningProps("Greenhouse", 1, 60, 0, "");
             greenhouse.collisionMask = Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
             greenhouse.mapColor = new Color(96, 64, 0);
             greenhouse.minable = true;
@@ -146,6 +154,63 @@ namespace EngineeringCorpsCS
             greenhouse.selectionBox = new BoundingBox(-96, -112, 96, 48);
             greenhouse.tileAligned = true;
             return greenhouse;
+        }
+
+        public Entity CreateIron()
+        {
+            IntRect bounds;
+            StaticSprite ironOreSprite = new StaticSprite(this.textureAtlases.GetTexture("IronOre", out bounds), bounds, Drawable.DrawLayer.Resource);
+            ironOreSprite.drawLayer = Drawable.DrawLayer.Resource;
+            ironOreSprite.scale = new Vector2f(0.5f, 0.5f);
+            Resource ironOre = new Resource("Iron", ironOreSprite);
+            ironOre.tileAligned = true;
+            ironOre.tileHeight = 1;
+            ironOre.tileWidth = 1;
+            ironOre.collisionBox = new BoundingBox(32, 32);
+            ironOre.collisionMask = Base.CollisionLayer.Resource;
+            ironOre.selectionBox = new BoundingBox(32, 32);
+            ironOre.drawingBox = new BoundingBox(32, 32);
+            ironOre.minable = true;
+            ironOre.miningProps = new Entity.MiningProps("Iron Ore", 1, 30, 0, "");
+            return ironOre;
+        }
+
+        public Entity CreateCopper()
+        {
+            IntRect bounds;
+            StaticSprite copperOreSprite = new StaticSprite(this.textureAtlases.GetTexture("CopperOre", out bounds), bounds, Drawable.DrawLayer.Resource);
+            copperOreSprite.drawLayer = Drawable.DrawLayer.Resource;
+            copperOreSprite.scale = new Vector2f(0.5f, 0.5f);
+            Resource copperOre = new Resource("Copper", copperOreSprite);
+            copperOre.tileAligned = true;
+            copperOre.tileHeight = 1;
+            copperOre.tileWidth = 1;
+            copperOre.collisionBox = new BoundingBox(32, 32);
+            copperOre.collisionMask = Base.CollisionLayer.Resource;
+            copperOre.selectionBox = new BoundingBox(32, 32);
+            copperOre.drawingBox = new BoundingBox(32, 32);
+            copperOre.minable = true;
+            copperOre.miningProps = new Entity.MiningProps("Copper Ore", 1, 30, 0, "");
+            return copperOre;
+        }
+
+        public Entity CreateCoal()
+        {
+            IntRect bounds;
+            StaticSprite coalOreSprite = new StaticSprite(this.textureAtlases.GetTexture("CoalOre", out bounds), bounds, Drawable.DrawLayer.Resource);
+            coalOreSprite.drawLayer = Drawable.DrawLayer.Resource;
+            coalOreSprite.scale = new Vector2f(0.5f, 0.5f);
+            Resource coalOre = new Resource("Coal", coalOreSprite);
+            coalOre.tileAligned = true;
+            coalOre.tileHeight = 1;
+            coalOre.tileWidth = 1;
+            coalOre.collisionBox = new BoundingBox(32, 32);
+            coalOre.collisionMask = Base.CollisionLayer.Resource;
+            coalOre.selectionBox = new BoundingBox(32, 32);
+            coalOre.drawingBox = new BoundingBox(32, 32);
+            coalOre.minable = true;
+            coalOre.miningProps = new Entity.MiningProps("Coal Ore", 1, 30, 0, "");
+            return coalOre;
         }
 
         #endregion Entity Definitions

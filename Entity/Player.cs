@@ -62,18 +62,17 @@ namespace EngineeringCorpsCS
             dropItems.Clear();
             if (playerState == PlayerState.Mining)
             {
-                EntityPhysical entity = selectedEntity as EntityPhysical;
-                if (entity != null && entity.minable == true)
+                if (selectedEntity != null && selectedEntity.minable == true)
                 {
                     if (miningProgress % miningSoundFrequency == 0)
                     {
-                        StaticSoundManager.PlaySound(entity.position, entity.miningSounds);
+                        StaticSoundManager.PlaySound(selectedEntity.position, selectedEntity.miningSounds);
                     }
                     miningProgress += 1;
-                    if (miningProgress > entity.miningProps.miningTime)
+                    if (miningProgress > selectedEntity.miningProps.miningTime)
                     {
                         StaticSoundManager.PlaySound(position, new string[] { "Pickup" });
-                        entity.OnMined(this, itemCollection, entityCollection);
+                        selectedEntity.OnMined(this, itemCollection, entityCollection);
                         selectedEntity = null;
                         miningProgress = 0;
                         playerState = PlayerState.Idle;
@@ -183,24 +182,15 @@ namespace EngineeringCorpsCS
 
             float[] mousePos;
             bool mousefloat = input.GetMousePositionAsFloat(out mousePos);
-            EntityPhysical entity = selectedEntity as EntityPhysical;
+
             //Switch to mining state if suitable
-            if (entity != null && input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true) && entity.minable == true)
+            if (selectedEntity != null && input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true) && selectedEntity.minable == true)
             {
                 playerState = PlayerState.Mining;
             }
-            EntityItem itemCheck = selectedEntity as EntityItem;
-            if (itemCheck != null && input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true))
-            {
-                ItemStack leftover = InsertIntoInventory(new ItemStack(input.itemCollection.GetItem(itemCheck.itemName), 1), false);
-                if (leftover == null)
-                {
-                    input.entityCollection.DestroyInstance(itemCheck);
-                }
-            }
-
+            EntityPhysical entity = selectedEntity as EntityPhysical;
             //Check for onClick
-            if (entity != null && selectedEntity is EntityPhysical && input.GetMouseClicked(InputBindings.primary, true))
+            if (entity != null && input.GetMouseClicked(InputBindings.primary, true))
             {
                 entity.OnClick(this, input.menuFactory, input.recipeCollection);
                 input.ConsumeMousePosition();
@@ -258,9 +248,8 @@ namespace EngineeringCorpsCS
         {
             if(tag.Equals("mining"))
             {
-                EntityPhysical entity = selectedEntity as EntityPhysical;
-                if (entity != null && entity.minable == true) {
-                    return miningProgress * 1.0f / entity.miningProps.miningTime;
+                if (selectedEntity != null && selectedEntity.minable == true) {
+                    return miningProgress * 1.0f / selectedEntity.miningProps.miningTime;
                 }
                 else
                 {

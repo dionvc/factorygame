@@ -17,6 +17,8 @@ namespace EngineeringCorpsCS
         public float[] elevationRange { get; protected set; }
         public float density { get; protected set; }
 
+        public Base.CollisionLayer placementMask = Base.CollisionLayer.TerrainSolid | Base.CollisionLayer.EntityPhysical;
+
         public int prototypeCount;
         public GeneratorEntityAffinity(string[] prototypes, float[] moistureAffinities, float[] temperatureAffinities, float[] elevationAffinities, float[] moistureRange, float[] temperatureRange, float[] elevationRange)
         {
@@ -173,7 +175,11 @@ namespace EngineeringCorpsCS
                         && entitiesGenerated[i].elevationRange[lowestPrototype % entitiesGenerated[i].prototypeCount] > moistureDiff)
                     {
                         Entity prototype = entityCollection.GetPrototype(entitiesGenerated[i].prototypeVars[lowestPrototype]);
-                        if (prototype != null && !BoundingBox.CheckForPlacementCollision(prototype.collisionBox, curPos, surface, prototype.collisionMask))
+                        if(prototype.tileAligned)
+                        {
+                            curPos = new Vector2(curPos.x - curPos.x % 32 + 16, curPos.y - curPos.y % 32 + 16);
+                        }
+                        if (prototype != null && !BoundingBox.CheckForPlacementCollision(prototype.collisionBox, curPos, surface, entitiesGenerated[i].placementMask))
                         {
                             entityCollection.InstantiatePrototype(prototype.name, curPos, surface);
                         }

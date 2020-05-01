@@ -166,6 +166,7 @@ namespace EngineeringCorpsCS
             Dictionary<System.Type, UpdateProperties> updateOrder = new Dictionary<Type, UpdateProperties>();
             updateOrder.Add(typeof(Machine), new UpdateProperties(typeof(Machine), 1, false));
             updateOrder.Add(typeof(Tree), new UpdateProperties(typeof(Tree), 600, false));
+            updateOrder.Add(typeof(Resource), new UpdateProperties(typeof(Resource), 0, true));
             updateOrder.Add(typeof(Player), new UpdateProperties(typeof(Player), 1, false));
             entityUpdateSystem = new EntityUpdateSystem(updateOrder);
             tileCollection = new TileCollection(textureAtlases);
@@ -277,7 +278,7 @@ namespace EngineeringCorpsCS
                 {
                     renderer.RenderWorld(window, camera, camera.viewedSurface);
                     if (camera.focusedEntity is Player) {
-                        renderer.RenderSelectionBox(window, input, camera, (Player)camera.focusedEntity, textureAtlases);
+                        renderer.RenderSelectionBox(window, camera, (Player)camera.focusedEntity, textureAtlases);
                     }
                     window.SetView(camera.GetGameView());
                     //debug pathtesting
@@ -324,9 +325,12 @@ namespace EngineeringCorpsCS
         public void CreateMapGenMenu(string tag)
         {
             GeneratorEntityAffinity treeCollection = new GeneratorEntityAffinity(new string[] { "Pine Tree 1" }, new float[] { 0.5f }, new float[] { 0.5f }, new float[] { 0.5f }, new float[] { 0.7f }, new float[] { 0.7f }, new float[] { 0.7f });
+            GeneratorEntityAffinity resourceCollection = new GeneratorEntityAffinity(new string[] { "Iron", "Copper", "Coal" }, new float[] { 0.0f, 0.0f, 0.3f }, new float[] { 0.0f, 0.2f, 0.5f }, new float[] { 0.2f, 0.4f, 0.0f }, new float[] { 0.2f, 0.2f, 0.2f }, new float[] { 0.2f, 0.2f, 0.2f }, new float[] { 0.2f, 0.2f, 0.2f });
+            resourceCollection.SetDensity("", 32);
             treeCollection.SetDensity("", 96);
             List<GeneratorEntityAffinity> list = new List<GeneratorEntityAffinity>();
             list.Add(treeCollection);
+            list.Add(resourceCollection);
             surfaceGenerator = new SurfaceGenerator(tileCollection, entityCollection, list);
             menuFactory.CreateMapGenMenu(surfaceGenerator);
         }

@@ -51,7 +51,7 @@ namespace EngineeringCorpsCS
             GUI = new RenderTexture(window.Size.X, window.Size.Y);
             guiState = new RenderStates(guiElements);
             lightingBatch = new SpriteBatch(window, BlendMode.Multiply);
-            entityBatch = new SpriteBatch[9];
+            entityBatch = new SpriteBatch[(int)Drawable.DrawLayer.IconOverlay];
             for(int i = 0; i < entityBatch.Length; i++)
             {
                 entityBatch[i] = new SpriteBatch(window, BlendMode.Alpha);
@@ -368,19 +368,15 @@ namespace EngineeringCorpsCS
         /// <param name="camera"></param>
         /// <param name="player"></param>
         /// <param name="textureAtlases"></param>
-        public void RenderSelectionBox(RenderWindow window, InputManager input, Camera camera, Player player, TextureAtlases textureAtlases)
+        public void RenderSelectionBox(RenderWindow window, Camera camera, Player player, TextureAtlases textureAtlases)
         {
             window.SetView(camera.GetGameView());
-            BoundingBox box = new BoundingBox(-2, -2, 2, 2);
-            Vector2f mousePos;
-            input.GetMousePosition(out mousePos);
-            List<EntityPhysical> list = BoundingBox.CheckSelectionOfType<EntityPhysical>(new Vector2(mousePos), box, player.surface);
-            if(list.Count > 0)
+            if(player.selectedEntity != null)
             {
                 VertexArray selectionArray = new VertexArray(PrimitiveType.Triangles);
                 RenderStates selectionState;
                 IntRect bounds;
-                if((list[0].position - player.position).GetMagnitude() < player.selectionRange)
+                if((player.selectedEntity.position - player.position).GetMagnitude() < player.selectionRange)
                 {
                     selectionState = new RenderStates(textureAtlases.GetTexture("SelectionBox", out bounds));
                 }
@@ -388,8 +384,8 @@ namespace EngineeringCorpsCS
                 {
                     selectionState = new RenderStates(textureAtlases.GetTexture("SelectionBoxInvalid", out bounds));
                 }
-                float[] points = list[0].selectionBox.GetPoints();
-                Vector2f pos = list[0].position.internalVector;
+                float[] points = player.selectedEntity.selectionBox.GetPoints();
+                Vector2f pos = player.selectedEntity.position.internalVector;
                 int toX = bounds.Left;
                 int toY = bounds.Top;
                 Vector2f posOrigin = new Vector2f(points[0], points[1]);
