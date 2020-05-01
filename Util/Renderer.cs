@@ -367,7 +367,7 @@ namespace EngineeringCorpsCS
         public void RenderHeldDrawable(RenderWindow window, Camera camera, Player player, EntityCollection entityCollection, InputManager input)
         {
             window.SetView(camera.GetGameView());
-            if (player.heldItem != null)
+            if (player.heldItem != null && player.heldItem.item.placeResult != null)
             {
                 Entity entity = entityCollection.GetPrototype(player.heldItem.item.placeResult);
                 if (entity != null)

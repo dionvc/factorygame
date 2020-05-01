@@ -27,6 +27,14 @@ namespace EngineeringCorpsCS
             lightBatch.Draw(texture, position.internalVector, bounds, color, lightScale, origin, rotation);
         }
 
+        virtual public void Initialize(Entity entity)
+        {
+            attachedEntity = entity;
+            this.surface = entity.surface;
+            position = attachedEntity.position;
+            surface.UpdateLightSource(this);
+        }
+
         virtual public void Update()
         {
             position = attachedEntity.position;

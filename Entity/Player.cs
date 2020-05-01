@@ -206,7 +206,6 @@ namespace EngineeringCorpsCS
             //Check for placement ability
             if (mousefloat && heldItem != null)
             {
-                
                 if (heldItem.item.placeResult != null && mousePosV.GetDistance(position) < selectionRange)
                 {
                     Entity prototype = input.entityCollection.GetPrototype(heldItem.item.placeResult);

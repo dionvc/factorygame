@@ -25,6 +25,7 @@ namespace EngineeringCorpsCS
         int bufferAmount = 10;
         public List<ItemStack> result { get; set; }
         public List<ItemStack> input { get; set; }
+        public LightSourceFlicker lightSourceFlicker;
 
         public Machine(string name, Animation working, StaticSprite idle, Animation shadow)
         {
@@ -47,6 +48,37 @@ namespace EngineeringCorpsCS
 
         public override void Update(EntityCollection entityCollection, ItemCollection itemCollection)
         {
+            if (machineState == MachineState.Working)
+            {
+                if (recipeProgress >= activeRecipe.recipeTime)
+                {
+                    //Output products
+                    for (int i = 0; i < activeRecipe.itemsResults.Length; i++)
+                    {
+                        if (result[i] == null)
+                        {
+                            result[i] = new ItemStack(itemCollection.GetItem(activeRecipe.itemsResults[i]), 0);
+                        }
+                        result[i].Add(activeRecipe.countsResult[i]);
+                    }
+                    recipeProgress = 0;
+                    machineState = MachineState.Idle;
+                    if (idle != null)
+                    {
+                        drawArray = new Drawable[] { idle, shadow };
+                    }
+                    if (lightSourceFlicker != null)
+                    {
+                        lightSourceFlicker.on = false;
+                    }
+                }
+                else
+                {
+                    recipeProgress += (int)Math.Ceiling(workingSpeed);
+                    working.Update();
+                    shadow.currentFrame = working.currentFrame;
+                }
+            }
             if (machineState == MachineState.Idle)
             {
                 //Check that machine has recipe
@@ -81,37 +113,15 @@ namespace EngineeringCorpsCS
                             {
                                 input[i] = input[i].Subtract(activeRecipe.counts[i]);
                             }
+                            if(lightSourceFlicker != null)
+                            {
+                                lightSourceFlicker.on = true;
+                            }
                         }
                     }
                 }
             }
-            if (machineState == MachineState.Working)
-            {
-                if (recipeProgress >= activeRecipe.recipeTime)
-                {
-                    //Output products
-                    for(int i = 0; i < activeRecipe.itemsResults.Length; i++)
-                    {
-                        if(result[i] == null)
-                        {
-                            result[i] = new ItemStack(itemCollection.GetItem(activeRecipe.itemsResults[i]), 0);
-                        }
-                        result[i].Add(activeRecipe.countsResult[i]);
-                    }
-                    recipeProgress = 0;
-                    machineState = MachineState.Idle;
-                    if(idle != null)
-                    {
-                        drawArray = new Drawable[] { idle, shadow };
-                    }
-                }
-                else
-                {
-                    recipeProgress += (int)Math.Ceiling(workingSpeed);
-                    working.Update();
-                    shadow.currentFrame = working.currentFrame;
-                }
-            }
+            
         }
         public override Entity Clone()
         {
@@ -123,7 +133,16 @@ namespace EngineeringCorpsCS
             clone.minable = this.minable;
             clone.miningProps = this.miningProps;
             clone.mapColor = new Color(this.mapColor);
+            //Test light
+            clone.lightSourceFlicker = this.lightSourceFlicker.Clone();
             return clone;
+        }
+
+        public override void InitializeEntity(Vector2 position, SurfaceContainer surface)
+        {
+            base.InitializeEntity(position, surface);
+            lightSourceFlicker.on = false;
+            lightSourceFlicker.Initialize(this);
         }
 
         public override void OnClick(Entity entity, MenuFactory menuFactory, RecipeCollection recipeCollection)

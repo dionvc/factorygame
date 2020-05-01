@@ -122,6 +122,7 @@
     <Compile Include="Recipe\Recipe.cs" />
     <Compile Include="Recipe\RecipeCollection.cs" />
     <Compile Include="Recipe\RecipeFactory.cs" />
+    <Compile Include="Drawable\LightSourceFlicker.cs" />
     <Compile Include="Util\Pathing.cs" />
     <Compile Include="Entity\Remains.cs" />
     <Compile Include="ItemPlusFluidCollection\Item.cs" />

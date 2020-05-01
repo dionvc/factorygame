@@ -153,6 +153,7 @@ namespace EngineeringCorpsCS
             greenhouse.drawingBox = new BoundingBox(192, 192);
             greenhouse.selectionBox = new BoundingBox(-96, -112, 96, 48);
             greenhouse.tileAligned = true;
+            greenhouse.lightSourceFlicker = new LightSourceFlicker(400.0f, textureAtlases.GetTexture("lightsource", out bounds), bounds);
             return greenhouse;
         }
 
