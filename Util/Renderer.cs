@@ -118,6 +118,10 @@ namespace EngineeringCorpsCS
                 for (int j = begPos[1]; j <= endPos[1] + 1; j++)
                 {
                     Chunk chunk = surface.GetChunk(i, j);
+                    if(chunk == null)
+                    {
+                        continue;
+                    }
                     List<Entity> entityList = chunk.entityList;
                     for (int k = 0; k < entityList.Count; k++)
                     {
@@ -360,6 +364,47 @@ namespace EngineeringCorpsCS
             window.Draw(itemSprite);
         }
 
+        public void RenderHeldDrawable(RenderWindow window, Camera camera, Player player, EntityCollection entityCollection, InputManager input)
+        {
+            window.SetView(camera.GetGameView());
+            if (player.heldItem != null)
+            {
+                Entity entity = entityCollection.GetPrototype(player.heldItem.item.placeResult);
+                if (entity != null)
+                {
+                    Vector2f mousePos;
+                    bool mouse = input.GetMousePosition(out mousePos);
+                    if (mouse)
+                    {
+                        Sprite sprite = entity.drawArray[0].GetSprite();
+                        Vector2f drawOffset = entity.drawArray[0].drawOffset;
+                        sprite.Scale = new Vector2f(1, 1);
+                        if (entity.tileAligned == true)
+                        {
+                            sprite.Position = new Vector2f((int)(mousePos.X - mousePos.X % Props.tileSize + 16), (int)(mousePos.Y - mousePos.Y % Props.tileSize + 16)) + drawOffset;
+                        }
+                        else
+                        {
+                            sprite.Position = mousePos + drawOffset;
+                        }
+                        if (player.placeable == true)
+                        {
+                            sprite.Color = new Color(0, 255, 0, 160);
+                        }
+                        else
+                        {
+                            sprite.Color = new Color(255, 0, 0, 160);
+                        }
+                        if (sprite.Origin.X == 0 && sprite.Origin.Y == 0)
+                        {
+                            sprite.Origin = new Vector2f(sprite.TextureRect.Width / 2, sprite.TextureRect.Height / 2);
+                        }
+                        window.Draw(sprite);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Renders the selection box of an entity for a player
         /// </summary>
@@ -391,6 +436,8 @@ namespace EngineeringCorpsCS
                 Vector2f posOrigin = new Vector2f(points[0], points[1]);
                 Vector2f xInc = new Vector2f(32, 0);
                 Vector2f yInc = new Vector2f(0, 32);
+                xInc = xInc * player.selectedEntity.selectionBox.GetWidth() / 64;
+                yInc = yInc * player.selectedEntity.selectionBox.GetHeight() / 64;
                 //Top left
                 selectionArray.Append(new Vertex(posOrigin + pos, new Vector2f(toX, toY)));
                 selectionArray.Append(new Vertex(posOrigin + pos + xInc, new Vector2f(toX + 32, toY)));

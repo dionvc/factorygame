@@ -32,7 +32,7 @@ namespace EngineeringCorpsCS
             this.shadow = shadow;
             leaves.currentFrame = 3;
             shadow.currentFrame = 3;
-            drawArray = new Drawable[] { shadow, trunk, leaves };
+            drawArray = new Drawable[] { trunk, leaves, shadow };
 
         }
 

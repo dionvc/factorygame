@@ -279,6 +279,7 @@ namespace EngineeringCorpsCS
                     renderer.RenderWorld(window, camera, camera.viewedSurface);
                     if (camera.focusedEntity is Player) {
                         renderer.RenderSelectionBox(window, camera, (Player)camera.focusedEntity, textureAtlases);
+                        renderer.RenderHeldDrawable(window, camera, (Player)camera.focusedEntity, entityCollection, input);
                     }
                     window.SetView(camera.GetGameView());
                     //debug pathtesting

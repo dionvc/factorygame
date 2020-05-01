@@ -203,6 +203,16 @@ namespace EngineeringCorpsCS
             return normals;
         }
 
+        public float GetWidth()
+        {
+            return width;
+        }
+
+        public float GetHeight()
+        {
+            return height;
+        }
+
         /// <summary>
         /// Returns whether a collision between two collision boxes has occurred.  Also returns a pushback vector for bounding box 1 (0 for no collision).
         /// </summary>

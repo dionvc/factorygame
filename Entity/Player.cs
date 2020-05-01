@@ -27,11 +27,12 @@ namespace EngineeringCorpsCS
         public Entity selectedEntity { get; protected set; } = null;
         public int miningProgress;
         public int miningSoundFrequency = 30;
-        public float selectionRange = 100.0f;
+        public float selectionRange = 300.0f;
         TextureAtlases textureAtlases;
         AnimationRotated walking;
         LightSourceDirectional directionalLight;
         LightSourceRadial radialLight;
+        public bool placeable = false;
         public Player(TextureAtlases textureAtlases, string name)
         {
             this.name = name;
@@ -158,6 +159,8 @@ namespace EngineeringCorpsCS
             //Determining Selected Entity
             Vector2f mousePosf;
             BoundingBox box = new BoundingBox(-2, -2, 2, 2);
+            Vector2 mousePosV;
+            input.GetMousePosition(out mousePosV);
             bool mouse = input.GetMousePosition(out mousePosf);
             if (mouse) {
                 List<Entity> list = BoundingBox.CheckSelectionOfType<Entity>(new Vector2(mousePosf), box, surface);
@@ -167,6 +170,10 @@ namespace EngineeringCorpsCS
                     {
                         miningProgress = 0;
                         selectedEntity = list[0];
+                        if (playerState == PlayerState.Mining)
+                        {
+                            playerState = PlayerState.Idle;
+                        }
                     }
                 }
                 else
@@ -184,7 +191,7 @@ namespace EngineeringCorpsCS
             bool mousefloat = input.GetMousePositionAsFloat(out mousePos);
 
             //Switch to mining state if suitable
-            if (selectedEntity != null && input.GetMousePositionAsFloat(out mousePos) && input.GetMouseHeld(InputBindings.secondary, true) && selectedEntity.minable == true)
+            if (selectedEntity != null && mousefloat && input.GetMouseHeld(InputBindings.secondary, true) && selectedEntity.minable == true && selectedEntity.position.GetDistance(position) < selectionRange)
             {
                 playerState = PlayerState.Mining;
             }
@@ -199,7 +206,8 @@ namespace EngineeringCorpsCS
             //Check for placement ability
             if (mousefloat && heldItem != null)
             {
-                if (heldItem.item.placeResult != null && input.GetMouseHeld(InputBindings.primary, true))
+                
+                if (heldItem.item.placeResult != null && mousePosV.GetDistance(position) < selectionRange)
                 {
                     Entity prototype = input.entityCollection.GetPrototype(heldItem.item.placeResult);
                     float[] tileAligned;
@@ -215,9 +223,21 @@ namespace EngineeringCorpsCS
                     //Use prototype animation to construct entityghost
                     if (!BoundingBox.CheckForPlacementCollision(placeBox, new Vector2(tileAligned[0], tileAligned[1]), surface, prototype.collisionMask))
                     {
-                        Entity placeItem = input.entityCollection.InstantiatePrototype(heldItem.item.placeResult, new Vector2(tileAligned[0], tileAligned[1]), surface);
-                        heldItem = heldItem.Subtract(1);
+                        placeable = true;
+                        if (input.GetMouseHeld(InputBindings.primary, true))
+                        {
+                            Entity placeItem = input.entityCollection.InstantiatePrototype(heldItem.item.placeResult, new Vector2(tileAligned[0], tileAligned[1]), surface);
+                            heldItem = heldItem.Subtract(1);
+                        }
                     }
+                    else
+                    {
+                        placeable = false;
+                    }
+                }
+                else
+                {
+                    placeable = false;
                 }
                 //Check for dropping item
                 if (input.GetKeyPressed(InputBindings.dropItem, true))

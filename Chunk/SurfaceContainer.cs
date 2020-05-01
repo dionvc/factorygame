@@ -94,6 +94,10 @@ namespace EngineeringCorpsCS
             {
                 for (int y = oY - 2; y <= oY + 2; y++)
                 {
+                    if(x >= worldSize || x < 0 || y >= worldSize || y < 0)
+                    {
+                        continue;
+                    }
                     int chunkTileX = x * Props.chunkSize;
                     int chunkTileY = y * Props.chunkSize;
                     Chunk chunk = new Chunk();

@@ -438,6 +438,16 @@ namespace EngineeringCorpsCS
             return false;
         }
 
+        public bool GetMousePosition(out Vector2 coords)
+        {
+            coords = new Vector2(window.MapPixelToCoords(mousePos));
+            if (mousePositionConsumedForFrame == false)
+            {
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// Returns whether the mouse position was available. Also outputs the coordinates themselves as a float array.
         /// </summary>
