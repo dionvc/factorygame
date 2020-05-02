@@ -32,7 +32,7 @@ namespace EngineeringCorpsCS
         public override void Draw(SpriteBatch lightBatch)
         {
             time++;
-            Vector2f flickerScale = lightScale * (float)((Math.Sin(time/5.0f) + 0.5 * Math.Sin(time)/10.0f)/15 + 1.0f);
+            Vector2f flickerScale = lightScale * (float)((Math.Sin(time/10.0f) + Math.Sin(time)/20.0f)/30 + 1.0f);
             lightBatch.Draw(texture, position.internalVector, bounds, color, flickerScale, origin, rotation);
         }
 
