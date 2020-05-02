@@ -275,6 +275,7 @@
     <Content Include="Graphics\Entity\Resource\IronOre.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\Entity\Tree\snowtree.png" />
     <Content Include="Graphics\Entity\Tree\tree.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -284,6 +285,7 @@
     <Content Include="Graphics\Entity\Tree\treeshadow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\Entity\Tree\untitled.png" />
     <Content Include="Graphics\GUI\EngineeringCorpsIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

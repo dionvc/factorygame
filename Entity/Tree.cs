@@ -50,6 +50,7 @@ namespace EngineeringCorpsCS
             {
                 treeState = TreeState.Dead;
             }
+            EvaluateTree();
         }
 
         public void EvaluateTree()
@@ -57,12 +58,20 @@ namespace EngineeringCorpsCS
             switch (treeState)
             {
                 case (TreeState.Healthy):
+                    leaves.currentFrame = 3;
+                    shadow.currentFrame = 3;
                     break;
                 case (TreeState.Affected):
+                    leaves.currentFrame = 2;
+                    shadow.currentFrame = 2;
                     break;
                 case (TreeState.Dying):
+                    leaves.currentFrame = 1;
+                    shadow.currentFrame = 1;
                     break;
                 case (TreeState.Dead):
+                    drawArray = new Drawable[] { trunk, shadow };
+                    shadow.currentFrame = 0;
                     break;
                 case (TreeState.Chopped):
                     break;

@@ -94,6 +94,8 @@ namespace EngineeringCorpsCS
         {
             if(internalSprite == null)
             {
+                textureFrame.Left = textureBounds.Left + (textureFrame.Width * currentFrame) % (textureBounds.Width);
+                textureFrame.Top = textureBounds.Top + (textureFrame.Width * currentFrame) / (textureBounds.Width) * textureFrame.Height;
                 internalSprite = new Sprite(texture, textureFrame);
                 internalSprite.Color = color;
             }

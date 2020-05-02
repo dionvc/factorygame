@@ -212,7 +212,7 @@ namespace EngineeringCorpsCS
                     float[] tileAligned;
                     if (prototype.tileAligned == true)
                     {
-                        tileAligned = new float[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + 16) };
+                        tileAligned = new float[] { (int)(mousePos[0] - mousePos[0] % Props.tileSize + (prototype.tileWidth % 2) * 16), (int)(mousePos[1] - mousePos[1] % Props.tileSize + (prototype.tileHeight % 2 + 1) * 16) };
                     }
                     else
                     {

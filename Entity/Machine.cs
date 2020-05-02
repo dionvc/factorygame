@@ -133,6 +133,7 @@ namespace EngineeringCorpsCS
             clone.minable = this.minable;
             clone.miningProps = this.miningProps;
             clone.mapColor = new Color(this.mapColor);
+            clone.emissionPerSecond = this.emissionPerSecond;
             //Test light
             clone.lightSourceFlicker = this.lightSourceFlicker.Clone();
             return clone;
@@ -152,6 +153,19 @@ namespace EngineeringCorpsCS
             {
                 menuFactory.CreateMachineInterface(this, (Player)entity, recipeCollection);
             }
+        }
+
+        public override void OnMined(Player player, ItemCollection itemCollection, EntityCollection entityCollection)
+        {
+            surface.RemoveLightSource(this.lightSourceFlicker);
+            for (int i = 0; i < input.Count; i++) {
+                player.InsertIntoInventory(input[i], true);
+            }
+            for (int i = 0; i < result.Count; i++)
+            {
+                player.InsertIntoInventory(result[i], true);
+            }
+            base.OnMined(player, itemCollection, entityCollection);
         }
 
         public float GetProgress(string tag)

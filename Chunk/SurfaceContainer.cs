@@ -57,11 +57,11 @@ namespace EngineeringCorpsCS
                 for (int i = 0; i < activeChunks.Count; i++)
                 {
                     activeChunks[i].Update();
-                    if (activeChunks[i].pollutionValue >= Props.maxPollution || activeChunks[i].pollutionValue <= 0)
-                    {
-                        activeChunks.RemoveAt(i);
-                        i--;
-                    }
+                    //if (activeChunks[i].pollutionValue >= Props.maxPollution || activeChunks[i].pollutionValue <= 0)
+                    //{
+                    //    activeChunks.RemoveAt(i);
+                    //    i--;
+                    //}
                 }
                 emissionCounter = 0;
             }
@@ -391,8 +391,8 @@ namespace EngineeringCorpsCS
 
         public Vector2 WorldToTileVector(int chunkIndex, int tileIndex)
         {
-            float x = 16.5f + (chunkIndex / worldSize) * Props.chunkSize * Props.tileSize;
-            float y = 16.5f + (chunkIndex % worldSize) * Props.chunkSize * Props.tileSize;
+            float x = 16.0f + (chunkIndex / worldSize) * Props.chunkSize * Props.tileSize;
+            float y = 16.0f + (chunkIndex % worldSize) * Props.chunkSize * Props.tileSize;
             x += (tileIndex / Props.chunkSize) * Props.tileSize;
             y += (tileIndex % Props.chunkSize) * Props.tileSize;
             return new Vector2(x, y);

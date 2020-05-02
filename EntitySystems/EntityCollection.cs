@@ -149,10 +149,13 @@ namespace EngineeringCorpsCS
             greenhouse.collisionMask = Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
             greenhouse.mapColor = new Color(96, 64, 0);
             greenhouse.minable = true;
+            greenhouse.emissionPerSecond = 1.0f;
             greenhouse.collisionBox = new BoundingBox(-85, -80, 85, 48);
             greenhouse.drawingBox = new BoundingBox(192, 192);
             greenhouse.selectionBox = new BoundingBox(-96, -112, 96, 48);
             greenhouse.tileAligned = true;
+            greenhouse.tileWidth = 6;
+            greenhouse.tileHeight = 4;
             greenhouse.lightSourceFlicker = new LightSourceFlicker(400.0f, textureAtlases.GetTexture("lightsource", out bounds), bounds);
             return greenhouse;
         }

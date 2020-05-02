@@ -376,30 +376,37 @@ namespace EngineeringCorpsCS
                     bool mouse = input.GetMousePosition(out mousePos);
                     if (mouse)
                     {
-                        Sprite sprite = entity.drawArray[0].GetSprite();
-                        Vector2f drawOffset = entity.drawArray[0].drawOffset;
-                        sprite.Scale = new Vector2f(1, 1);
-                        if (entity.tileAligned == true)
+                        for (int i = 0; i < entity.drawArray.Length; i++)
                         {
-                            sprite.Position = new Vector2f((int)(mousePos.X - mousePos.X % Props.tileSize + 16), (int)(mousePos.Y - mousePos.Y % Props.tileSize + 16)) + drawOffset;
+                            if(entity.drawArray[i].drawLayer == Drawable.DrawLayer.Shadow)
+                            {
+                                continue;
+                            }
+                            Sprite sprite = entity.drawArray[i].GetSprite();
+                            Vector2f drawOffset = entity.drawArray[i].drawOffset;
+                            sprite.Scale = new Vector2f(1, 1);
+                            if (entity.tileAligned == true)
+                            {
+                                sprite.Position = new Vector2f((int)(mousePos.X - mousePos.X % Props.tileSize + (entity.tileWidth % 2) * 16), (int)(mousePos.Y - mousePos.Y % Props.tileSize + (entity.tileHeight % 2 + 1) * 16)) + drawOffset;
+                            }
+                            else
+                            {
+                                sprite.Position = mousePos + drawOffset;
+                            }
+                            if (player.placeable == true)
+                            {
+                                sprite.Color = new Color(0, 255, 0, 160);
+                            }
+                            else
+                            {
+                                sprite.Color = new Color(255, 0, 0, 160);
+                            }
+                            if (sprite.Origin.X == 0 && sprite.Origin.Y == 0)
+                            {
+                                sprite.Origin = new Vector2f(sprite.TextureRect.Width / 2, sprite.TextureRect.Height / 2);
+                            }
+                            window.Draw(sprite);
                         }
-                        else
-                        {
-                            sprite.Position = mousePos + drawOffset;
-                        }
-                        if (player.placeable == true)
-                        {
-                            sprite.Color = new Color(0, 255, 0, 160);
-                        }
-                        else
-                        {
-                            sprite.Color = new Color(255, 0, 0, 160);
-                        }
-                        if (sprite.Origin.X == 0 && sprite.Origin.Y == 0)
-                        {
-                            sprite.Origin = new Vector2f(sprite.TextureRect.Width / 2, sprite.TextureRect.Height / 2);
-                        }
-                        window.Draw(sprite);
                     }
                 }
             }
