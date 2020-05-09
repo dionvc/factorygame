@@ -116,6 +116,7 @@
     <Compile Include="Drawable\SpriteBatch.cs" />
     <Compile Include="Entity\Machine.cs" />
     <Compile Include="Entity\Resource.cs" />
+    <Compile Include="Entity\Furnace.cs" />
     <Compile Include="Menu\MenuDrawable.cs" />
     <Compile Include="Menu\MenuProgressBar.cs" />
     <Compile Include="Menu\MenuRecipeSelector.cs" />
@@ -257,6 +258,12 @@
     <Content Include="Graphics\DebugTextures\Tree01leaves.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graphics\Entity\Furnace\furnace.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Entity\Furnace\furnaceshadow.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Graphics\Entity\Greenhouse\greenhouse.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -302,6 +309,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\Items\CopperOreItem.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Graphics\Items\FurnaceItem.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Graphics\Items\greenhouseItem.png">

@@ -38,18 +38,20 @@ namespace EngineeringCorpsCS
 
         public override void Update(EntityCollection entityCollection, ItemCollection itemCollection)
         {
-            if(surface.GetChunk(centeredChunk, false).pollutionValue > 50)
-            {
-                treeState = TreeState.Affected;
-            }
-            else if(surface.GetChunk(centeredChunk, false).pollutionValue > 100)
-            {
-                treeState = TreeState.Dying;
-            }
-            else if(surface.GetChunk(centeredChunk, false).pollutionValue > 150)
+            if (surface.GetChunk(centeredChunk, false).pollutionValue > 150)
             {
                 treeState = TreeState.Dead;
             }
+            else if (surface.GetChunk(centeredChunk, false).pollutionValue > 100)
+            {
+                treeState = TreeState.Dying;
+            }
+            else if (surface.GetChunk(centeredChunk, false).pollutionValue > 50)
+            {
+                treeState = TreeState.Affected;
+            }
+            
+            
             EvaluateTree();
         }
 

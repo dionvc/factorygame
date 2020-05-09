@@ -35,6 +35,8 @@ namespace EngineeringCorpsCS
             entityPrototypes.Add(entity.name, entity);
             entity = CreateCoal();
             entityPrototypes.Add(entity.name, entity);
+            entity = CreateFurnace();
+            entityPrototypes.Add(entity.name, entity);
             LoadItemEntityPrototypes(itemCollection);
         }
 
@@ -158,6 +160,28 @@ namespace EngineeringCorpsCS
             greenhouse.tileHeight = 4;
             greenhouse.lightSourceFlicker = new LightSourceFlicker(400.0f, textureAtlases.GetTexture("lightsource", out bounds), bounds);
             return greenhouse;
+        }
+
+        public Entity CreateFurnace()
+        {
+            IntRect bounds;
+            StaticSprite furnace = new StaticSprite(textureAtlases.GetTexture("furnace", out bounds), bounds, new Vector2f(0, -32));
+            StaticSprite furnaceshadow = new StaticSprite(textureAtlases.GetTexture("furnaceshadow", out bounds), bounds, new Vector2f(36, 0));
+            furnaceshadow.scale = new Vector2f(0.5f, 0.5f);
+            furnace.drawLayer = Drawable.DrawLayer.EntitySorted;
+            furnaceshadow.drawLayer = Drawable.DrawLayer.Shadow;
+            Furnace furnaces = new Furnace("Furnace", furnaceshadow, furnace);
+            furnaces.miningProps = new Entity.MiningProps("Furnace", 1, 60, 0, "");
+            furnaces.collisionMask = Base.CollisionLayer.EntityPhysical | Base.CollisionLayer.TerrainSolid;
+            furnaces.minable = true;
+            furnaces.emissionPerSecond = 1.0f;
+            furnaces.collisionBox = new BoundingBox(64, 32);
+            furnaces.drawingBox = new BoundingBox(192, 192);
+            furnaces.selectionBox = new BoundingBox(64, 64);
+            furnaces.tileAligned = true;
+            furnaces.tileWidth = 2;
+            furnaces.tileHeight = 1;
+            return furnaces;
         }
 
         public Entity CreateIron()

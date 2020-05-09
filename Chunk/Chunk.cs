@@ -26,7 +26,7 @@ namespace EngineeringCorpsCS
 
         public void Update()
         {
-            incrementPollution();
+            IncrementPollution();
         }
         public void GenerateTerrain(int x, int y, SurfaceGenerator surfaceGenerator)
         {
@@ -94,7 +94,7 @@ namespace EngineeringCorpsCS
             lightSources.Remove(lightSource);
         }
 
-        public void incrementPollution()
+        public void IncrementPollution()
         {
             foreach(Entity e in entityList)
             {

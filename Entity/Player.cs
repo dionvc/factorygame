@@ -132,6 +132,7 @@ namespace EngineeringCorpsCS
                     inventory.Add(new ItemStack(input.itemCollection.GetItem("Pine Sapling"), 100));
                 }
                 inventory[8] = new ItemStack(input.itemCollection.GetItem("Greenhouse"), 10);
+                inventory.Add(new ItemStack(input.itemCollection.GetItem("Furnace"), 50));
             }
 
             //Movement

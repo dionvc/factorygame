@@ -34,6 +34,8 @@ namespace EngineeringCorpsCS
             itemCollection.Add(item.name, item);
             item = CreateIronOre();
             itemCollection.Add(item.name, item);
+            item = CreateFurnace();
+            itemCollection.Add(item.name, item);
             return itemCollection;
         }
 
@@ -80,5 +82,11 @@ namespace EngineeringCorpsCS
             return new Item("Copper Ore", itemIcon, null, 100);
         }
 
+        private Item CreateFurnace()
+        {
+            IntRect bounds;
+            StaticSprite itemIcon = new StaticSprite(textureAtlases.GetTexture("FurnaceItem", out bounds), bounds, Drawable.DrawLayer.Item);
+            return new Item("Furnace", itemIcon, "Furnace", 50);
+        }
     }
 }
